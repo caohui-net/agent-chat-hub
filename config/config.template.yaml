@@ -1,0 +1,44 @@
+# Agent Chat Hub 配置文件
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  reload: false
+
+session:
+  max_concurrent_per_user: 3
+  timeout_seconds: 30
+  cleanup_interval: 300
+
+validator:
+  strict_mode: false
+  auto_repair: true
+  error_threshold: 3
+
+agents:
+  claude:
+    enabled: true
+    base_url: "https://code.newcli.com/claude/aws"
+    model: "claude-opus-4-8"
+    timeout: 30
+
+  codex:
+    enabled: true
+    base_url: "https://dm-fox.rjj.cc/codex/v1"
+    model: "gpt-5.6-sol"
+    timeout: 30
+
+  gemini:
+    enabled: true
+    base_url: "https://code.newcli.com/gemini"
+    model: "gemini-3.1-pro"
+    timeout: 30
+
+monitoring:
+  log_level: "INFO"
+  metrics_enabled: true
+  metrics_port: 9090
+
+# 注意：不要在此文件中存储敏感信息（API keys等）
+# 使用 config.secret.yaml 或环境变量
