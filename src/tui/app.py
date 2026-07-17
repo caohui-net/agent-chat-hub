@@ -60,6 +60,11 @@ class ChatApp(App):
         self.session_manager.create_session("Agent Chat Hub")
         self.update_display("欢迎使用 Agent Chat Hub!\n请输入消息开始对话...")
 
+    async def on_unmount(self) -> None:
+        """应用退出时清理资源"""
+        # 关闭异步HTTP客户端
+        await self.session_manager.executor.aclose()
+
     def update_display(self, content: str) -> None:
         """更新聊天显示区域
 
@@ -69,8 +74,8 @@ class ChatApp(App):
         chat_display = self.query_one("#chat_display", Static)
         chat_display.update(content)
 
-    def on_input_submitted(self, event: Input.Submitted) -> None:
-        """处理用户输入
+    async def on_input_submitted(self, event: Input.Submitted) -> None:
+        """处理用户输入（异步，支持并发agent调用）
 
         Args:
             event: 输入提交事件
@@ -83,8 +88,8 @@ class ChatApp(App):
         event.input.value = ""
 
         try:
-            # 处理用户输入并获取响应
-            responses = self.session_manager.process_user_input(user_input)
+            # 处理用户输入并获取响应（异步并发）
+            responses = await self.session_manager.process_user_input(user_input)
 
             # 更新显示
             history = self.session_manager.get_message_history()

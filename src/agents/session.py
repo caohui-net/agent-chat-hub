@@ -1,10 +1,11 @@
 """
-会话管理器 - 管理对话历史和会话状态
+会话管理器 - 管理对话历史和会话状态（支持并发agent调用）
 """
 from typing import List, Optional
 from time import time
 from pathlib import Path
 import json
+import asyncio
 import structlog
 
 from src.core.models import SessionConfig, Message, AgentConfig
@@ -91,8 +92,8 @@ class SessionManager:
         self.current_session.messages.append(message)
         self.current_session.updated_at = time()
 
-    def process_user_input(self, user_input: str) -> List[str]:
-        """处理用户输入并获取agent响应
+    async def process_user_input(self, user_input: str) -> List[str]:
+        """处理用户输入并获取agent响应（并发版本）
 
         Args:
             user_input: 用户输入内容
@@ -129,15 +130,31 @@ class SessionManager:
             logger.info("round_stopped", reason=stop_reason.value)
             return [f"对话已停止：{stop_reason.value}"]
 
-        responses = []
-        for agent_config in selected_agents:
+        # 并发调用所有selected agents
+        async def call_agent(agent_config: AgentConfig) -> tuple[AgentConfig, Optional[str], Optional[Exception]]:
+            """调用单个agent（捕获异常）"""
             try:
-                # 执行agent调用
-                response = self.executor.execute(
+                response = await self.executor.execute(
                     agent_config,
                     self.current_session.messages
                 )
+                return (agent_config, response, None)
+            except Exception as e:
+                return (agent_config, None, e)
 
+        # 使用asyncio.gather并发调用所有agents
+        results = await asyncio.gather(*[call_agent(agent) for agent in selected_agents])
+
+        # 处理响应结果
+        responses = []
+        for agent_config, response, error in results:
+            if error:
+                # 执行失败
+                error_msg = f"Agent {agent_config.name} 执行失败: {error}"
+                logger.error("agent_execution_failed", agent_id=agent_config.agent_id, error=str(error))
+                responses.append(f"[{agent_config.name}] ❌ {error_msg}")
+            else:
+                # 执行成功
                 # 记录调用（估算token数）
                 estimated_tokens = len(user_input) + len(response)
                 self.coordinator.record_call(
@@ -159,11 +176,6 @@ class SessionManager:
                     agent_id=agent_config.agent_id,
                     response_length=len(response)
                 )
-
-            except Exception as e:
-                error_msg = f"Agent {agent_config.name} 执行失败: {e}"
-                logger.error("agent_execution_failed", agent_id=agent_config.agent_id, error=str(e))
-                responses.append(f"[{agent_config.name}] ❌ {error_msg}")
 
         # 标记轮次完成
         self.coordinator.mark_round_complete()

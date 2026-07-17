@@ -1,5 +1,5 @@
 """
-Agent执行器 - 负责调用模型API并获取响应
+Agent执行器 - 负责调用模型API并获取响应（异步版本支持并发）
 """
 from typing import List, Optional, Dict, Any
 import httpx
@@ -18,12 +18,13 @@ class AgentExecutionError(Exception):
 
 class AgentExecutor:
     """
-    Agent执行器 - 处理实际的模型API调用
+    Agent执行器 - 处理实际的模型API调用（异步版本）
 
     职责：
     - 根据agent配置调用对应的模型API
     - 处理不同provider的API差异
     - 返回标准化的响应
+    - 支持并发调用多个agents
     """
 
     def __init__(self, config_manager: ConfigManager):
@@ -33,12 +34,12 @@ class AgentExecutor:
             config_manager: 配置管理器，用于获取模型配置和API密钥
         """
         self.config_manager = config_manager
-        self.http_client = httpx.Client(timeout=120.0)
+        self.http_client = httpx.AsyncClient(timeout=120.0)
 
-    def __del__(self):
-        """清理HTTP客户端"""
+    async def aclose(self):
+        """异步关闭HTTP客户端"""
         if hasattr(self, 'http_client'):
-            self.http_client.close()
+            await self.http_client.aclose()
 
     def _build_messages(self, messages: List[Message]) -> List[Dict[str, str]]:
         """将Message对象转换为API消息格式
@@ -55,13 +56,13 @@ class AgentExecutor:
             if msg.role in ("user", "assistant")  # 过滤system消息
         ]
 
-    def _call_anthropic(
+    async def _call_anthropic(
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None
     ) -> str:
-        """调用Anthropic API
+        """调用Anthropic API（异步）
 
         Args:
             model_config: 模型配置
@@ -98,7 +99,7 @@ class AgentExecutor:
         payload.update(model_config.extra_params)
 
         try:
-            response = self.http_client.post(
+            response = await self.http_client.post(
                 f"{model_config.base_url}/v1/messages",
                 headers=headers,
                 json=payload,
@@ -114,13 +115,13 @@ class AgentExecutor:
             logger.error("anthropic_call_failed", error=str(e))
             raise AgentExecutionError(f"调用Anthropic失败: {e}")
 
-    def _call_openai(
+    async def _call_openai(
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None
     ) -> str:
-        """调用OpenAI API
+        """调用OpenAI API（异步）
 
         Args:
             model_config: 模型配置
@@ -158,7 +159,7 @@ class AgentExecutor:
         payload.update(model_config.extra_params)
 
         try:
-            response = self.http_client.post(
+            response = await self.http_client.post(
                 f"{model_config.base_url}/v1/chat/completions",
                 headers=headers,
                 json=payload,
@@ -174,12 +175,12 @@ class AgentExecutor:
             logger.error("openai_call_failed", error=str(e))
             raise AgentExecutionError(f"调用OpenAI失败: {e}")
 
-    def execute(
+    async def execute(
         self,
         agent_config: AgentConfig,
         messages: List[Message]
     ) -> str:
-        """执行agent调用
+        """执行agent调用（异步）
 
         Args:
             agent_config: Agent配置
@@ -207,15 +208,15 @@ class AgentExecutor:
             message_count=len(api_messages)
         )
 
-        # 根据provider分发调用
+        # 根据provider分发调用（异步）
         if model_config.provider == "anthropic":
-            return self._call_anthropic(
+            return await self._call_anthropic(
                 model_config,
                 api_messages,
                 agent_config.system_prompt
             )
         elif model_config.provider == "openai":
-            return self._call_openai(
+            return await self._call_openai(
                 model_config,
                 api_messages,
                 agent_config.system_prompt
