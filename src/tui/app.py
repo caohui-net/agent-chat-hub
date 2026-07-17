@@ -1,23 +1,27 @@
-"""TUI主应用 - 基于Textual的终端界面"""
-
+"""
+TUI应用 - 基于Textual的终端界面
+"""
+from typing import Optional
 from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Header, Footer, Static, Input
+from textual.containers import Container, ScrollableContainer
+from textual.widgets import Header, Footer, Input, Static
 from textual.binding import Binding
+
+from src.agents.session import SessionManager
 
 
 class ChatApp(App):
-    """Agent Chat Hub TUI主应用"""
+    """Agent Chat Hub TUI应用"""
 
-    # CSS样式定义
     CSS = """
     Screen {
         layout: vertical;
     }
 
-    #message_container {
+    #chat_container {
         height: 1fr;
         border: solid $primary;
+        padding: 1;
     }
 
     #input_box {
@@ -26,37 +30,44 @@ class ChatApp(App):
     }
     """
 
-    # 键盘绑定
     BINDINGS = [
         Binding("ctrl+c", "quit", "退出", priority=True),
-        Binding("ctrl+s", "toggle_sidebar", "切换侧边栏"),
+        Binding("ctrl+n", "new_session", "新会话"),
     ]
 
-    def __init__(self, config_dir=None):
+    def __init__(self, session_manager: SessionManager):
         """初始化应用
 
         Args:
-            config_dir: 配置目录路径
+            session_manager: 会话管理器
         """
         super().__init__()
-        self.config_dir = config_dir
-        self.title = "Agent Chat Hub"
-        self.sub_title = "多模型Agent聊天系统"
+        self.session_manager = session_manager
 
     def compose(self) -> ComposeResult:
         """构建UI组件"""
         yield Header()
-
-        # 消息容器（中部）
-        yield Container(
-            Static("欢迎使用 Agent Chat Hub!", id="message_container"),
-            id="chat_area"
+        yield ScrollableContainer(
+            Static("", id="chat_display"),
+            id="chat_container"
         )
-
-        # 输入框（底部）
-        yield Input(placeholder="输入消息...", id="input_box")
-
+        yield Input(placeholder="输入消息... (Ctrl+C 退出)", id="input_box")
         yield Footer()
+
+    def on_mount(self) -> None:
+        """应用启动时初始化"""
+        # 创建新会话
+        self.session_manager.create_session("Agent Chat Hub")
+        self.update_display("欢迎使用 Agent Chat Hub!\n请输入消息开始对话...")
+
+    def update_display(self, content: str) -> None:
+        """更新聊天显示区域
+
+        Args:
+            content: 要显示的内容
+        """
+        chat_display = self.query_one("#chat_display", Static)
+        chat_display.update(content)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """处理用户输入
@@ -64,29 +75,39 @@ class ChatApp(App):
         Args:
             event: 输入提交事件
         """
-        message = event.value
-        if message.strip():
-            # TODO: 处理消息发送逻辑
-            self.query_one("#message_container", Static).update(
-                f"已发送: {message}"
-            )
-            event.input.value = ""
+        user_input = event.value.strip()
+        if not user_input:
+            return
 
-    def action_toggle_sidebar(self) -> None:
-        """切换侧边栏显示"""
-        # TODO: 实现侧边栏切换逻辑
-        pass
+        # 清空输入框
+        event.input.value = ""
+
+        try:
+            # 处理用户输入并获取响应
+            responses = self.session_manager.process_user_input(user_input)
+
+            # 更新显示
+            history = self.session_manager.get_message_history()
+            display_content = "\n\n".join(history)
+            self.update_display(display_content)
+
+            # 保存会话
+            self.session_manager.save_session()
+
+        except Exception as e:
+            self.update_display(f"错误: {e}")
+
+    def action_new_session(self) -> None:
+        """创建新会话"""
+        self.session_manager.create_session("新对话")
+        self.update_display("新会话已创建！\n请输入消息开始对话...")
 
 
-def run_app(config_dir=None):
-    """启动TUI应用
+def run_app(session_manager: SessionManager) -> None:
+    """运行TUI应用
 
     Args:
-        config_dir: 配置目录路径
+        session_manager: 会话管理器
     """
-    app = ChatApp(config_dir=config_dir)
+    app = ChatApp(session_manager)
     app.run()
-
-
-if __name__ == "__main__":
-    run_app()

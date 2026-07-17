@@ -32,29 +32,52 @@ agent-chat-hub/
 ## 技术栈
 
 - **语言**：Python 3.14+
-- **Web框架**：FastAPI
-- **实时通信**：SSE (Server-Sent Events) + WebSocket
+- **UI框架**：Textual (TUI终端界面) - 基于ADR-0001决策
 - **数据验证**：Pydantic v2
 - **日志**：structlog
+- **API密钥管理**：keyring (系统密钥环)
+- **HTTP客户端**：httpx
 
 ## 快速开始
 
-### 安装依赖
+### 1. 安装依赖
 
 ```bash
-# 创建虚拟环境
-python3 -m venv venv
-source venv/bin/activate
-
-# 安装依赖（待创建pyproject.toml后）
 pip install -e .
 ```
 
-### 运行
+### 2. 初始化配置
+
+首次使用需要配置模型和agent：
 
 ```bash
-# 待实现
+python init_config.py
 ```
+
+脚本会引导你：
+- 选择模型provider（Anthropic或OpenAI）
+- 输入API密钥（安全存储到系统密钥环）
+- 创建第一个agent
+
+### 3. 启动应用
+
+```bash
+python main.py
+```
+
+### 4. 使用界面
+
+- 在底部输入框输入消息，按回车发送
+- `Ctrl+C`: 退出应用
+- `Ctrl+N`: 创建新会话
+
+## 配置文件
+
+- 配置目录: `~/.agent-chat-hub/`
+- 模型配置: `~/.agent-chat-hub/models.json`
+- Agent配置: `~/.agent-chat-hub/agents.json`
+- 会话历史: `~/.agent-chat-hub/sessions/`
+- API密钥: 系统密钥环（不保存到文件）
 
 ## 参考项目
 
@@ -65,7 +88,55 @@ pip install -e .
 
 ## 开发状态
 
-🚧 **项目初始化中** - 2026-07-16
+### Phase 1 - MVP基础设施 ✅ (2026-07-17)
+
+- [x] **ADR-0001**: TUI替代React架构决策
+- [x] **数据模型**: ModelConfig, AgentConfig, Message, SessionConfig
+- [x] **配置管理**: 模型/agent配置，API密钥安全存储（keyring）
+- [x] **响应协调器**: 6条响应控制规则 + 18个单元测试全部通过
+- [x] **Agent执行器**: Anthropic/OpenAI API调用支持
+- [x] **会话管理器**: 对话历史管理，会话持久化
+- [x] **TUI界面**: 基于Textual的终端界面
+- [x] **单agent对话PoC**: 完整的对话流程验证
+
+**响应协调规则（6条 - 基于ADR-0001）：**
+1. Qualification: 确定性路由，基于配置
+2. Ordering: 优先级升序 + agent_id字典序
+3. Deduplication: (session, round, agent)三元组去重
+4. Cancellation: 取消后禁止新调用
+5. Budget: MVP限额（3 agents, 3 calls, 12k tokens, 120s）
+6. Stop: 6种停止条件，禁止agent自动续轮
+
+**MVP预算限制：**
+- 最大并发agents: 3
+- 每轮最大调用次数: 3
+- 最大token数: 12,000
+- 超时时间: 120秒
+
+### Phase 2 - 多agent协作 🔜
+
+- [ ] 多agent并发响应
+- [ ] 高级TUI组件（agent面板、状态栏、配置界面）
+- [ ] Agent间消息传递
+- [ ] 更多模型provider支持（Google Gemini等）
+- [ ] 性能优化和错误处理增强
+
+## 测试
+
+运行测试：
+
+```bash
+pytest tests/ -v
+```
+
+当前测试覆盖：
+- 响应协调器: 18个单元测试 ✅
+
+## 架构文档
+
+- **ADR-0001**: [采用TUI替代React Web界面](docs/adr/0001-采用TUI替代React-Web界面.md)
+- **实施计划**: [Agent Chat Hub MVP实施计划](.omc/plans/Agent-Chat-Hub-MVP-实施计划.md)
+- **HTTP/WebSocket消费者清单**: [消费者清单](docs/architecture/HTTP-WebSocket-消费者清单.md)
 
 ## License
 
