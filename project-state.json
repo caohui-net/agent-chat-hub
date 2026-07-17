@@ -1,0 +1,82 @@
+{
+  "project_name": "Agent Chat Hub",
+  "description": "多模型Agent聊天系统 - 个人用户与多个AI模型建立的Agent进行沟通和交互",
+  "version": "0.1.0",
+  "current_phase": "Phase 0 完成 → Phase 1 准备",
+  "phase_description": "技术选型已完成，即将开始核心基础设施开发",
+  "last_updated": "2026-07-17T07:51:52.756Z",
+  "tech_stack": {
+    "language": "Python 3.14+",
+    "ui": {
+      "type": "TUI (Terminal User Interface)",
+      "framework": "Textual/Rich",
+      "note": "已替代React Web界面（见ADR-0001）"
+    },
+    "backend": {
+      "agent_framework": "LangGraph (实现层，非验收层)",
+      "optional_adapter": "FastAPI + WebSocket (按消费者契约保留)",
+      "dependencies": ["pydantic", "structlog", "httpx"]
+    },
+    "architecture": "TUI单体应用 + 领域核心分离 + 可选API适配层 + Ruflo风格插件系统"
+  },
+  "milestones": {
+    "phase_0": {
+      "name": "技术选型分析",
+      "status": "completed",
+      "completed_date": "2026-07-16",
+      "deliverables": [
+        "技术选型分析报告.md",
+        "确定FastAPI + LangGraph技术栈",
+        "定义三阶段实施路径"
+      ]
+    },
+    "phase_1": {
+      "name": "核心基础设施（TUI导向）",
+      "status": "not_started",
+      "target_weeks": "Week 1-2",
+      "tasks": [
+        "TUI界面框架搭建（Textual/Rich）",
+        "模型配置功能（base URL、API key、密钥环存储）",
+        "Agent角色管理功能",
+        "LangGraph基础集成（框架无关测试套件）",
+        "确定性响应协调器（6项规则）",
+        "单Agent对话PoC",
+        "HTTP/WebSocket消费者盘点"
+      ],
+      "reference": "ADR-0001"
+    },
+    "phase_2": {
+      "name": "多Agent支持",
+      "status": "not_started",
+      "target_weeks": "Week 3-4"
+    },
+    "phase_3": {
+      "name": "插件系统",
+      "status": "not_started",
+      "target_weeks": "Week 5-6"
+    }
+  },
+  "next_focus": "开始Phase 1：TUI界面搭建、模型配置功能、Agent角色管理（参考ADR-0001）",
+  "blockers": [],
+  "decisions": [
+    {
+      "date": "2026-07-17",
+      "decision": "ADR-0001: 采用TUI替代React Web界面",
+      "rationale": "用户需求变更，TUI更适合开发者工具场景，简化架构",
+      "reference": "docs/adr/0001-采用TUI替代React-Web界面.md",
+      "supersedes": ["前后端分离架构决策"]
+    },
+    {
+      "date": "2026-07-16",
+      "decision": "选择LangGraph而非AutoGen",
+      "rationale": "LangGraph更适合用户-Agent交互场景，原生支持状态持久化和human-in-the-loop",
+      "status": "细化为实现手段非验收条件（ADR-0001）"
+    },
+    {
+      "date": "2026-07-16",
+      "decision": "采用前后端分离架构",
+      "rationale": "API优先设计，提高可扩展性和维护性",
+      "status": "已被ADR-0001部分取代：TUI为主，API为可选适配层"
+    }
+  ]
+}
