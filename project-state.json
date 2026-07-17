@@ -2,9 +2,9 @@
   "project_name": "Agent Chat Hub",
   "description": "多模型Agent聊天系统 - 个人用户与多个AI模型建立的Agent进行沟通和交互",
   "version": "0.1.0",
-  "current_phase": "Phase 0 完成 → Phase 1 准备",
-  "phase_description": "技术选型已完成，即将开始核心基础设施开发",
-  "last_updated": "2026-07-17T07:51:52.756Z",
+  "current_phase": "Phase 1 完成 → Phase 2 准备",
+  "phase_description": "MVP基础设施已完成，单agent对话系统可用，准备开始多agent协作开发",
+  "last_updated": "2026-07-17T16:55:08.269Z",
   "tech_stack": {
     "language": "Python 3.14+",
     "ui": {
@@ -32,16 +32,31 @@
     },
     "phase_1": {
       "name": "核心基础设施（TUI导向）",
-      "status": "not_started",
+      "status": "completed",
       "target_weeks": "Week 1-2",
+      "completed_date": "2026-07-17",
       "tasks": [
-        "TUI界面框架搭建（Textual/Rich）",
-        "模型配置功能（base URL、API key、密钥环存储）",
-        "Agent角色管理功能",
-        "LangGraph基础集成（框架无关测试套件）",
-        "确定性响应协调器（6项规则）",
-        "单Agent对话PoC",
-        "HTTP/WebSocket消费者盘点"
+        "✅ TUI界面框架搭建（Textual）",
+        "✅ 模型配置功能（base URL、API key、密钥环存储）",
+        "✅ Agent角色管理功能",
+        "✅ 响应协调器实现（6项规则 + 18个测试）",
+        "✅ Agent执行器（Anthropic/OpenAI支持）",
+        "✅ 会话管理器（对话历史、持久化）",
+        "✅ 单Agent对话PoC",
+        "✅ HTTP/WebSocket消费者盘点"
+      ],
+      "deliverables": [
+        "src/core/models.py - Pydantic数据模型",
+        "src/core/config.py - 配置管理（keyring集成）",
+        "src/agents/coordinator.py - 响应协调器",
+        "src/agents/executor.py - Agent执行器",
+        "src/agents/session.py - 会话管理器",
+        "src/tui/app.py - TUI界面",
+        "tests/test_coordinator.py - 18个单元测试",
+        "init_config.py - 配置初始化脚本",
+        "main.py - 应用入口",
+        "docs/adr/0001-采用TUI替代React-Web界面.md",
+        "docs/architecture/HTTP-WebSocket-消费者清单.md"
       ],
       "reference": "ADR-0001"
     },
@@ -56,7 +71,7 @@
       "target_weeks": "Week 5-6"
     }
   },
-  "next_focus": "开始Phase 1：TUI界面搭建、模型配置功能、Agent角色管理（参考ADR-0001）",
+  "next_focus": "Phase 2 - 多agent并发协作：并发响应处理、高级TUI组件（agent面板、状态栏）、agent间消息传递",
   "blockers": [],
   "decisions": [
     {
