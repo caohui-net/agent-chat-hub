@@ -8,6 +8,7 @@ from textual.widgets import Header, Footer, Input, Static, DataTable, Label
 from textual.binding import Binding
 
 from src.agents.session import SessionManager
+from src.tui.config_screen import ConfigScreen
 
 
 class ChatApp(App):
@@ -17,6 +18,7 @@ class ChatApp(App):
     BINDINGS = [
         Binding("ctrl+t", "toggle_agent", "切换Agent", show=True),
         Binding("ctrl+r", "refresh_agents", "刷新Agent列表", show=True),
+        Binding("ctrl+g", "open_config", "配置管理", show=True),
         Binding("ctrl+q", "quit", "退出", show=True),
     ]
 
@@ -176,6 +178,11 @@ class ChatApp(App):
     def action_refresh_agents(self) -> None:
         """刷新agent面板"""
         self.refresh_agent_panel()
+
+    def action_open_config(self) -> None:
+        """打开配置管理界面"""
+        config_screen = ConfigScreen(self.session_manager.config_manager)
+        self.push_screen(config_screen)
 
     async def on_input_submitted(self, event: Input.Submitted) -> None:
         """处理用户输入（异步，支持并发agent调用）
