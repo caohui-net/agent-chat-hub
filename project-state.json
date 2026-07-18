@@ -2,9 +2,9 @@
   "project_name": "Agent Chat Hub",
   "description": "多模型Agent聊天系统 - 个人用户与多个AI模型建立的Agent进行沟通和交互",
   "version": "0.1.0",
-  "current_phase": "Phase 1 完成 → Phase 2 准备",
-  "phase_description": "MVP基础设施已完成，单agent对话系统可用，准备开始多agent协作开发",
-  "last_updated": "2026-07-17T16:55:08.269Z",
+  "current_phase": "Phase 2 进行中（~40%完成）",
+  "phase_description": "多Agent协作开发进行中：Task #11和#12已完成，正在实现Agent间消息传递机制",
+  "last_updated": "2026-07-18T07:19:51.323Z",
   "tech_stack": {
     "language": "Python 3.14+",
     "ui": {
@@ -62,8 +62,23 @@
     },
     "phase_2": {
       "name": "多Agent支持",
-      "status": "not_started",
-      "target_weeks": "Week 3-4"
+      "status": "in_progress",
+      "target_weeks": "Week 3-4",
+      "progress": "~40%",
+      "tasks": [
+        "✅ Task #11: AgentExecutor异步化（并发API调用）",
+        "✅ Task #12: 高级TUI组件（Agent面板、状态栏、快捷键）",
+        "🔄 Task #13: Agent间消息传递机制",
+        "⏳ Task #14: 配置管理界面",
+        "⏳ Task #15: 集成测试",
+        "⏳ Task #16: 性能优化"
+      ],
+      "deliverables": [
+        "src/agents/executor.py - 异步Agent执行器",
+        "src/agents/session.py - 并发会话管理",
+        "src/tui/app.py - 增强TUI（Agent面板+状态栏+快捷键）",
+        "tests/test_tui.py - TUI基础测试"
+      ]
     },
     "phase_3": {
       "name": "插件系统",
@@ -71,7 +86,7 @@
       "target_weeks": "Week 5-6"
     }
   },
-  "next_focus": "Phase 2 - 多agent并发协作：并发响应处理、高级TUI组件（agent面板、状态栏）、agent间消息传递",
+  "next_focus": "Task #13: 实现Agent间消息传递机制 - 消息协议、事件总线、Agent通信流",
   "blockers": [],
   "decisions": [
     {
