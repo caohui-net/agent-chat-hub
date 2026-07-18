@@ -4,6 +4,8 @@
 """
 from .base import IPlugin, PluginHook, PluginEvent
 from .models import PluginMetadata, PluginConfig, PluginState
+from .registry import PluginRegistry
+from .loader import PluginLoader
 
 __all__ = [
     'IPlugin',
@@ -12,4 +14,6 @@ __all__ = [
     'PluginMetadata',
     'PluginConfig',
     'PluginState',
+    'PluginRegistry',
+    'PluginLoader',
 ]
