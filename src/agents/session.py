@@ -273,7 +273,16 @@ class SessionManager:
             if msg.role == "user":
                 history.append(f"👤 用户: {msg.content}")
             elif msg.role == "assistant":
-                agent_name = msg.agent_id or "Agent"
-                history.append(f"🤖 {agent_name}: {msg.content}")
+                # 获取agent的实际名称
+                agent_name = "Agent"
+                if msg.agent_id:
+                    try:
+                        agent_config = self.config_manager.get_agent(msg.agent_id)
+                        if agent_config:
+                            agent_name = agent_config.name
+                    except:
+                        agent_name = msg.agent_id
+
+                history.append(f"🤖 [{agent_name}]: {msg.content}")
 
         return history
