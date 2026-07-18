@@ -12,6 +12,7 @@ from src.core.models import SessionConfig, Message, AgentConfig
 from src.core.config import ConfigManager
 from src.agents.coordinator import ResponseCoordinator
 from src.agents.executor import AgentExecutor
+from src.agents.message_bus import MessageBus
 
 logger = structlog.get_logger()
 
@@ -47,6 +48,9 @@ class SessionManager:
         self.session_dir = session_dir or Path.home() / ".agent-chat-hub" / "sessions"
         self.session_dir.mkdir(parents=True, exist_ok=True)
 
+        # Agent间消息总线
+        self.message_bus = MessageBus()
+
         self.current_session: Optional[SessionConfig] = None
         self.current_round = 0
 
@@ -69,7 +73,15 @@ class SessionManager:
         self.current_session = session
         self.current_round = 0
 
-        logger.info("session_created", session_id=session_id, title=title)
+        # 注册所有活跃的agent到消息总线
+        active_agents = self.config_manager.list_agents(active_only=True)
+        for agent in active_agents:
+            self.message_bus.register_agent(agent.agent_id)
+            # 订阅广播消息
+            self.message_bus.subscribe(agent.agent_id, "broadcast")
+
+        logger.info("session_created", session_id=session_id, title=title,
+                   active_agents=len(active_agents))
         return session
 
     def add_message(self, role: str, content: str, agent_id: Optional[str] = None) -> None:
