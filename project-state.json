@@ -2,9 +2,9 @@
   "project_name": "Agent Chat Hub",
   "description": "多模型Agent聊天系统 - 个人用户与多个AI模型建立的Agent进行沟通和交互",
   "version": "0.1.0",
-  "current_phase": "Phase 2 进行中（~40%完成）",
-  "phase_description": "多Agent协作开发进行中：Task #11和#12已完成，正在实现Agent间消息传递机制",
-  "last_updated": "2026-07-18T07:19:51.323Z",
+  "current_phase": "Phase 2 进行中（~60%完成）",
+  "phase_description": "多Agent协作开发进行中：Task #11-13已完成，正在准备配置管理界面实现",
+  "last_updated": "2026-07-18T08:15:33.891Z",
   "tech_stack": {
     "language": "Python 3.14+",
     "ui": {
@@ -64,20 +64,23 @@
       "name": "多Agent支持",
       "status": "in_progress",
       "target_weeks": "Week 3-4",
-      "progress": "~40%",
+      "progress": "~60%",
       "tasks": [
         "✅ Task #11: AgentExecutor异步化（并发API调用）",
         "✅ Task #12: 高级TUI组件（Agent面板、状态栏、快捷键）",
-        "🔄 Task #13: Agent间消息传递机制",
+        "✅ Task #13: Agent间消息传递机制（MessageBus、发送/接收、TUI显示）",
         "⏳ Task #14: 配置管理界面",
         "⏳ Task #15: 集成测试",
         "⏳ Task #16: 性能优化"
       ],
       "deliverables": [
         "src/agents/executor.py - 异步Agent执行器",
-        "src/agents/session.py - 并发会话管理",
-        "src/tui/app.py - 增强TUI（Agent面板+状态栏+快捷键）",
-        "tests/test_tui.py - TUI基础测试"
+        "src/agents/session.py - 并发会话管理 + agent消息功能",
+        "src/agents/message_bus.py - Agent间消息总线",
+        "src/core/models.py - AgentMessage模型",
+        "src/tui/app.py - 增强TUI（Agent面板+状态栏+快捷键+消息显示）",
+        "tests/test_tui.py - TUI基础测试",
+        "tests/test_message_bus.py - MessageBus单元测试（9个测试）"
       ]
     },
     "phase_3": {
@@ -86,7 +89,7 @@
       "target_weeks": "Week 5-6"
     }
   },
-  "next_focus": "Task #13: 实现Agent间消息传递机制 - 消息协议、事件总线、Agent通信流",
+  "next_focus": "Task #14: 实现配置管理界面 - 模型/Agent配置、API Key管理、导入导出功能",
   "blockers": [],
   "decisions": [
     {
