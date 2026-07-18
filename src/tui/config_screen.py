@@ -8,6 +8,8 @@ from textual.widgets import Header, Footer, Button, Static, DataTable, Input, La
 from textual.binding import Binding
 
 from src.core.config import ConfigManager
+from src.core.models import ModelConfig
+from src.tui.dialogs import AddModelDialog
 
 
 class ConfigScreen(Screen):
@@ -19,6 +21,7 @@ class ConfigScreen(Screen):
     BINDINGS = [
         Binding("escape", "back", "返回", show=True),
         Binding("ctrl+s", "save", "保存", show=True),
+        Binding("a", "add_item", "添加", show=True),
     ]
 
     CSS = """
@@ -169,3 +172,36 @@ class ConfigScreen(Screen):
         """保存配置"""
         # 配置在修改时已自动保存
         self.app.pop_screen()
+
+    async def action_add_item(self) -> None:
+        """添加配置项（根据当前视图）"""
+        if self.current_view == "models":
+            await self.add_model()
+        elif self.current_view == "agents":
+            # 将来实现
+            pass
+
+    async def add_model(self) -> None:
+        """添加模型配置"""
+        result = await self.app.push_screen_wait(AddModelDialog())
+
+        if result:
+            # 验证必填字段
+            if not all([result["model_id"], result["display_name"], result["provider"],
+                       result["base_url"], result["api_key_name"]]):
+                return
+
+            # 创建模型配置
+            model_config = ModelConfig(
+                model_id=result["model_id"],
+                provider=result["provider"],
+                display_name=result["display_name"],
+                base_url=result["base_url"],
+                api_key_name=result["api_key_name"]
+            )
+
+            # 保存配置
+            self.config_manager.add_model(model_config)
+
+            # 刷新显示
+            self.show_models_view()
