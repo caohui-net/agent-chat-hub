@@ -126,3 +126,30 @@ class SessionConfig(BaseModel):
     # 元数据
     created_at: float = Field(default_factory=lambda: __import__('time').time(), description="创建时间戳")
     updated_at: float = Field(default_factory=lambda: __import__('time').time(), description="更新时间戳")
+
+
+class AgentMessage(BaseModel):
+    """Agent间消息
+
+    用于Agent之间的通信。
+    """
+
+    model_config = ConfigDict(frozen=False)
+
+    # 消息标识
+    message_id: str = Field(..., description="消息唯一标识符")
+    message_type: str = Field(..., description="消息类型: 'query', 'response', 'notification', 'broadcast'")
+
+    # 路由信息
+    from_agent_id: str = Field(..., description="发送方Agent ID")
+    to_agent_id: Optional[str] = Field(default=None, description="接收方Agent ID，None表示广播")
+
+    # 消息内容
+    content: str = Field(..., description="消息内容")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="消息元数据")
+
+    # 时间戳
+    timestamp: float = Field(default_factory=lambda: __import__('time').time(), description="消息时间戳")
+
+    # 关联信息（用于响应消息）
+    reply_to: Optional[str] = Field(default=None, description="回复的消息ID")
