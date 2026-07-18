@@ -9,6 +9,7 @@ from textual.binding import Binding
 
 from src.agents.session import SessionManager
 from src.tui.config_screen import ConfigScreen
+from src.tui.plugin_screen import PluginScreen
 
 
 class ChatApp(App):
@@ -19,6 +20,7 @@ class ChatApp(App):
         Binding("ctrl+t", "toggle_agent", "切换Agent", show=True),
         Binding("ctrl+r", "refresh_agents", "刷新Agent列表", show=True),
         Binding("ctrl+g", "open_config", "配置管理", show=True),
+        Binding("ctrl+p", "open_plugins", "插件管理", show=True),
         Binding("ctrl+q", "quit", "退出", show=True),
     ]
 
@@ -183,6 +185,25 @@ class ChatApp(App):
         """打开配置管理界面"""
         config_screen = ConfigScreen(self.session_manager.config_manager)
         self.push_screen(config_screen)
+
+    def action_open_plugins(self) -> None:
+        """打开插件管理界面"""
+        from pathlib import Path
+        from src.plugins.registry import PluginRegistry
+        from src.plugins.loader import PluginLoader
+
+        # 初始化插件系统（如果还没有初始化）
+        if not hasattr(self, 'plugin_registry'):
+            plugins_dir = Path(__file__).parent.parent.parent / "plugins"
+            self.plugin_registry = PluginRegistry()
+            self.plugin_loader = PluginLoader(plugins_dir, self.plugin_registry)
+
+            # 加载所有插件
+            self.plugin_loader.load_all_plugins()
+
+        # 打开插件管理界面
+        plugin_screen = PluginScreen(self.plugin_registry, self.plugin_loader)
+        self.push_screen(plugin_screen)
 
     async def on_input_submitted(self, event: Input.Submitted) -> None:
         """处理用户输入（异步，支持并发agent调用）
