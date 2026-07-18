@@ -197,6 +197,14 @@ class ChatApp(App):
             # 更新显示
             history = self.session_manager.get_message_history()
             display_content = "\n\n".join(history)
+
+            # 添加agent间消息历史（如果有）
+            agent_messages = self.session_manager.get_agent_message_history(limit=10)
+            if agent_messages:
+                display_content += "\n\n" + "─" * 40
+                display_content += "\n\n💬 Agent间通信:\n\n"
+                display_content += "\n".join(agent_messages)
+
             self.update_display(display_content)
 
             # 更新状态栏

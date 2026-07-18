@@ -298,3 +298,66 @@ class SessionManager:
                 history.append(f"🤖 [{agent_name}]: {msg.content}")
 
         return history
+
+    async def send_agent_message(
+        self,
+        from_agent_id: str,
+        content: str,
+        to_agent_id: Optional[str] = None,
+        message_type: str = "notification"
+    ) -> None:
+        """发送agent间消息
+
+        Args:
+            from_agent_id: 发送方agent ID
+            content: 消息内容
+            to_agent_id: 接收方agent ID（None表示广播）
+            message_type: 消息类型
+        """
+        message = MessageBus.create_message(
+            from_agent_id=from_agent_id,
+            content=content,
+            to_agent_id=to_agent_id,
+            message_type=message_type
+        )
+        await self.message_bus.publish(message)
+        logger.info("agent_message_sent",
+                   from_agent=from_agent_id,
+                   to_agent=to_agent_id or "broadcast",
+                   message_type=message_type)
+
+    def get_agent_message_history(self, limit: int = 20) -> List[str]:
+        """获取格式化的agent间消息历史
+
+        Args:
+            limit: 返回的最大消息数量
+
+        Returns:
+            格式化的消息历史列表
+        """
+        history = []
+        messages = self.message_bus.get_message_history(limit=limit)
+
+        for msg in messages:
+            # 获取agent名称
+            from_name = self._get_agent_name(msg.from_agent_id)
+            to_name = "所有人" if not msg.to_agent_id else self._get_agent_name(msg.to_agent_id)
+
+            history.append(f"💬 [{from_name}] → [{to_name}]: {msg.content}")
+
+        return history
+
+    def _get_agent_name(self, agent_id: str) -> str:
+        """获取agent显示名称（内部辅助方法）
+
+        Args:
+            agent_id: Agent ID
+
+        Returns:
+            Agent显示名称
+        """
+        try:
+            agent_config = self.config_manager.get_agent(agent_id)
+            return agent_config.name if agent_config else agent_id
+        except:
+            return agent_id
