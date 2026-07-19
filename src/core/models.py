@@ -2,6 +2,24 @@
 
 from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator, ConfigDict
+from dataclasses import dataclass
+
+
+@dataclass
+class TokenUsage:
+    """Token使用统计（统一接口）
+
+    用于跨provider的token使用追踪，支持缓存token统计。
+    """
+    input_tokens: int
+    output_tokens: int
+    cache_read_tokens: int
+    cache_write_tokens: int = 0
+
+    @property
+    def total_tokens(self) -> int:
+        """总token数（不包括缓存读取，只计算实际消耗）"""
+        return self.input_tokens + self.output_tokens
 
 
 class ModelConfig(BaseModel):
