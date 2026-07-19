@@ -1,8 +1,20 @@
 """核心数据模型 - 使用Pydantic进行数据验证"""
 
+import time
 from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from dataclasses import dataclass
+
+
+def _current_timestamp() -> float:
+    """获取当前Unix时间戳（秒）
+
+    P3-001: 提取时间戳生成为独立函数，提升代码清晰度和可测试性
+
+    Returns:
+        当前Unix时间戳
+    """
+    return time.time()
 
 
 @dataclass
@@ -111,7 +123,7 @@ class Message(BaseModel):
 
     # 元数据
     agent_id: Optional[str] = Field(default=None, description="发送此消息的Agent ID（若为Agent消息）")
-    timestamp: float = Field(default_factory=lambda: __import__('time').time(), description="消息时间戳")
+    timestamp: float = Field(default_factory=_current_timestamp, description="消息时间戳")
 
     @field_validator("role")
     @classmethod
@@ -142,8 +154,8 @@ class SessionConfig(BaseModel):
     messages: list[Message] = Field(default_factory=list, description="消息历史")
 
     # 元数据
-    created_at: float = Field(default_factory=lambda: __import__('time').time(), description="创建时间戳")
-    updated_at: float = Field(default_factory=lambda: __import__('time').time(), description="更新时间戳")
+    created_at: float = Field(default_factory=_current_timestamp, description="创建时间戳")
+    updated_at: float = Field(default_factory=_current_timestamp, description="更新时间戳")
 
 
 class AgentMessage(BaseModel):
@@ -167,7 +179,7 @@ class AgentMessage(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict, description="消息元数据")
 
     # 时间戳
-    timestamp: float = Field(default_factory=lambda: __import__('time').time(), description="消息时间戳")
+    timestamp: float = Field(default_factory=_current_timestamp, description="消息时间戳")
 
     # 关联信息（用于响应消息）
     reply_to: Optional[str] = Field(default=None, description="回复的消息ID")
