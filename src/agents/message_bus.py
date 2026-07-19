@@ -4,7 +4,7 @@
 """
 import asyncio
 import uuid
-from typing import Dict, List, Callable, Optional, Set
+from typing import Any, Dict, List, Callable, Optional, Set
 from collections import defaultdict
 
 from src.core.models import AgentMessage
@@ -153,7 +153,7 @@ class MessageBus:
         to_agent_id: Optional[str] = None,
         message_type: str = "notification",
         reply_to: Optional[str] = None,
-        metadata: Optional[Dict[str, any]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> AgentMessage:
         """创建消息的辅助方法
 
