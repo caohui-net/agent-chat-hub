@@ -152,6 +152,7 @@ class SessionManager:
                 )
                 return (agent_config, response, None)
             except Exception as e:
+                # P3-005: 保留Exception兜底 - 并发调用容错设计，捕获单个agent异常不影响其他
                 return (agent_config, None, e)
 
         # 使用asyncio.gather并发调用所有agents

@@ -165,6 +165,7 @@ class AgentExecutor:
             logger.error("anthropic_api_error", status=e.response.status_code, body=e.response.text)
             raise AgentExecutionError(f"Anthropic API错误: {e.response.status_code}")
         except Exception as e:
+            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(网络、JSON解析等)
             logger.error("anthropic_call_failed", error=str(e))
             raise AgentExecutionError(f"调用Anthropic失败: {e}")
 
@@ -237,6 +238,7 @@ class AgentExecutor:
             logger.error("openai_api_error", status=e.response.status_code, body=e.response.text)
             raise AgentExecutionError(f"OpenAI API错误: {e.response.status_code}")
         except Exception as e:
+            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(网络、JSON解析等)
             logger.error("openai_call_failed", error=str(e))
             raise AgentExecutionError(f"调用OpenAI失败: {e}")
 
