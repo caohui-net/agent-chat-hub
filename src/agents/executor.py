@@ -7,6 +7,7 @@ import structlog
 
 from src.core.models import AgentConfig, ModelConfig, Message
 from src.core.config import ConfigManager
+from src.core.exceptions import UnsupportedProviderError
 
 logger = structlog.get_logger()
 
@@ -26,6 +27,9 @@ class AgentExecutor:
     - 返回标准化的响应
     - 支持并发调用多个agents
     """
+
+    # 支持的provider列表（执行层拦截）
+    SUPPORTED_PROVIDERS = ["anthropic", "openai"]
 
     def __init__(self, config_manager: ConfigManager):
         """初始化执行器
@@ -197,6 +201,13 @@ class AgentExecutor:
         if not model_config:
             raise AgentExecutionError(f"模型配置不存在: {agent_config.model_id}")
 
+        # 检查provider支持（执行层拦截）
+        if model_config.provider not in self.SUPPORTED_PROVIDERS:
+            raise UnsupportedProviderError(
+                provider=model_config.provider,
+                supported_providers=self.SUPPORTED_PROVIDERS
+            )
+
         # 转换消息格式
         api_messages = self._build_messages(messages)
 
@@ -209,18 +220,17 @@ class AgentExecutor:
         )
 
         # 根据provider分发调用（异步）
+        # provider已在上方检查，此处仅处理支持的providers
         if model_config.provider == "anthropic":
             return await self._call_anthropic(
                 model_config,
                 api_messages,
                 agent_config.system_prompt
             )
-        elif model_config.provider == "openai":
+        else:  # openai
             return await self._call_openai(
                 model_config,
                 api_messages,
                 agent_config.system_prompt
             )
-        else:
-            raise AgentExecutionError(f"不支持的provider: {model_config.provider}")
 
