@@ -1,10 +1,13 @@
 """配置管理模块 - 处理模型和Agent配置，提供API密钥安全存储"""
 
 import json
+import logging
 from pathlib import Path
 from typing import Optional, Dict, List
 import keyring
 from .models import ModelConfig, AgentConfig
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigManager:
@@ -220,7 +223,7 @@ class ConfigManager:
                         for model_id, data in models_data.items()
                     }
             except (json.JSONDecodeError, ValueError) as e:
-                print(f"警告: 模型配置文件加载失败: {e}")
+                logger.warning(f"模型配置文件加载失败: {e}")
                 self.models = {}
 
         # 加载Agent配置
@@ -244,13 +247,13 @@ class ConfigManager:
                         f"{agent_id}(model_id={model_id})"
                         for agent_id, model_id in invalid_agents
                     )
-                    print(
-                        f"警告: 发现无效的模型引用，以下Agent引用的模型不存在: {invalid_list}。"
+                    logger.warning(
+                        f"发现无效的模型引用，以下Agent引用的模型不存在: {invalid_list}。"
                         f"请检查配置文件或添加缺失的模型。"
                     )
 
             except (json.JSONDecodeError, ValueError) as e:
-                print(f"警告: Agent配置文件加载失败: {e}")
+                logger.warning(f"Agent配置文件加载失败: {e}")
                 self.agents = {}
 
     def save_configs(self) -> None:
