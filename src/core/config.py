@@ -120,7 +120,21 @@ class ConfigManager:
 
         Returns:
             是否成功删除
+
+        Raises:
+            ValueError: 有Agent正在引用此模型
         """
+        # P1-003: 删除前检查是否有agent引用
+        referencing_agents = [
+            agent.agent_id for agent in self.agents.values()
+            if agent.model_id == model_id
+        ]
+        if referencing_agents:
+            raise ValueError(
+                f"无法删除模型 '{model_id}': 仍被以下Agent引用: {', '.join(referencing_agents)}。"
+                f"请先删除或更新这些Agent的model_id。"
+            )
+
         if model_id in self.models:
             del self.models[model_id]
             return True
@@ -141,7 +155,16 @@ class ConfigManager:
 
         Args:
             agent: Agent配置对象
+
+        Raises:
+            ValueError: model_id对应的模型配置不存在
         """
+        # P1-003: 验证model_id引用的原子性
+        if agent.model_id not in self.models:
+            raise ValueError(
+                f"模型引用无效: model_id '{agent.model_id}' 不存在。"
+                f"请先使用 add_model() 添加模型配置。"
+            )
         self.agents[agent.agent_id] = agent
 
     def get_agent(self, agent_id: str) -> Optional[AgentConfig]:
@@ -209,6 +232,23 @@ class ConfigManager:
                         agent_id: AgentConfig(**data)
                         for agent_id, data in agents_data.items()
                     }
+
+                # P1-003: 验证加载后的agent引用完整性
+                invalid_agents = [
+                    (agent_id, agent.model_id)
+                    for agent_id, agent in self.agents.items()
+                    if agent.model_id not in self.models
+                ]
+                if invalid_agents:
+                    invalid_list = ", ".join(
+                        f"{agent_id}(model_id={model_id})"
+                        for agent_id, model_id in invalid_agents
+                    )
+                    print(
+                        f"警告: 发现无效的模型引用，以下Agent引用的模型不存在: {invalid_list}。"
+                        f"请检查配置文件或添加缺失的模型。"
+                    )
+
             except (json.JSONDecodeError, ValueError) as e:
                 print(f"警告: Agent配置文件加载失败: {e}")
                 self.agents = {}
