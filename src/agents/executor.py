@@ -116,7 +116,8 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
-        api_key = self.config_manager.get_api_key(model_config.api_key_name)
+        # 优先使用配置文件中的api_key，否则从keyring读取
+        api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
             raise AgentExecutionError(f"API密钥未设置: {model_config.api_key_name}")
 
@@ -188,7 +189,8 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
-        api_key = self.config_manager.get_api_key(model_config.api_key_name)
+        # 优先使用配置文件中的api_key，否则从keyring读取
+        api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
             raise AgentExecutionError(f"API密钥未设置: {model_config.api_key_name}")
 
