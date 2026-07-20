@@ -21,7 +21,7 @@
     "agent_id": "agent_gemini",
     "name": "Gemini助手",
     "role": "分析专家",
-    "model_id": "gemini-3.1-pro",
+    "model_id": "gemini-3-pro-preview",
     "priority": 200,
     "active": true,
     "system_prompt": "你是Gemini，擅长数据分析和推理的AI助手。"
