@@ -71,7 +71,7 @@ class ModelConfig(BaseModel):
     @classmethod
     def validate_provider(cls, v: str) -> str:
         """验证provider值"""
-        allowed = ["anthropic", "openai", "google", "custom", "gemini-cli"]
+        allowed = ["anthropic", "openai", "google", "custom", "gemini-cli", "gemini-http"]
         if v not in allowed:
             raise ValueError(f"provider必须是以下之一: {allowed}")
         return v

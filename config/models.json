@@ -21,9 +21,9 @@
   },
   "gemini-3.1-pro-preview": {
     "model_id": "gemini-3.1-pro-preview",
-    "provider": "gemini-cli",
+    "provider": "gemini-http",
     "display_name": "Gemini 3.1 Pro Preview",
-    "base_url": "https://code.newcli.com",
+    "base_url": "https://code.newcli.com/gemini",
     "api_key_name": "gemini_api_key",
     "api_key": "sk-ant-oat01-SZsw5Ya6pzXdLTwcws5nzEXz1qh67PGdgoGGkcT-t8JnwD5sLKUAZegizIB53HrJ1N63iAza1IZaWErvwGAMu9c2gtr8LAA",
     "max_tokens": 4096,
