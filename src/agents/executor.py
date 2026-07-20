@@ -160,7 +160,18 @@ class AgentExecutor:
                 )
                 await self._publish_usage(model_config.model_id, token_usage)
 
-            return data["content"][0]["text"]
+            # 提取响应内容（支持Extended Thinking格式）
+            # Extended Thinking: content数组可能包含多个元素，需要找到type="text"的元素
+            content_blocks = data.get("content", [])
+            for block in content_blocks:
+                if block.get("type") == "text" and "text" in block:
+                    return block["text"]
+
+            # Fallback: 如果没有找到text类型，尝试使用第一个元素（标准格式）
+            if content_blocks and "text" in content_blocks[0]:
+                return content_blocks[0]["text"]
+
+            raise AgentExecutionError("API响应格式异常：未找到text内容")
 
         except httpx.HTTPStatusError as e:
             logger.error("anthropic_api_error", status=e.response.status_code, body=e.response.text)
