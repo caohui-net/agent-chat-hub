@@ -1,10 +1,13 @@
 """配置管理模块 - 处理模型和Agent配置，提供API密钥安全存储"""
 
 import json
+import logging
 from pathlib import Path
 from typing import Optional, Dict, List
 import keyring
 from .models import ModelConfig, AgentConfig
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigManager:
@@ -28,7 +31,8 @@ class ConfigManager:
         if config_dir is None:
             config_dir = Path.home() / ".agent-chat-hub"
 
-        self.config_dir = config_dir
+        # 确保config_dir是Path对象（兼容str输入）
+        self.config_dir = Path(config_dir)
         self.config_dir.mkdir(parents=True, exist_ok=True)
 
         self.models_file = self.config_dir / "models.json"
@@ -120,7 +124,21 @@ class ConfigManager:
 
         Returns:
             是否成功删除
+
+        Raises:
+            ValueError: 有Agent正在引用此模型
         """
+        # P1-003: 删除前检查是否有agent引用
+        referencing_agents = [
+            agent.agent_id for agent in self.agents.values()
+            if agent.model_id == model_id
+        ]
+        if referencing_agents:
+            raise ValueError(
+                f"无法删除模型 '{model_id}': 仍被以下Agent引用: {', '.join(referencing_agents)}。"
+                f"请先删除或更新这些Agent的model_id。"
+            )
+
         if model_id in self.models:
             del self.models[model_id]
             return True
@@ -141,7 +159,16 @@ class ConfigManager:
 
         Args:
             agent: Agent配置对象
+
+        Raises:
+            ValueError: model_id对应的模型配置不存在
         """
+        # P1-003: 验证model_id引用的原子性
+        if agent.model_id not in self.models:
+            raise ValueError(
+                f"模型引用无效: model_id '{agent.model_id}' 不存在。"
+                f"请先使用 add_model() 添加模型配置。"
+            )
         self.agents[agent.agent_id] = agent
 
     def get_agent(self, agent_id: str) -> Optional[AgentConfig]:
@@ -197,7 +224,7 @@ class ConfigManager:
                         for model_id, data in models_data.items()
                     }
             except (json.JSONDecodeError, ValueError) as e:
-                print(f"警告: 模型配置文件加载失败: {e}")
+                logger.warning(f"模型配置文件加载失败: {e}")
                 self.models = {}
 
         # 加载Agent配置
@@ -209,8 +236,25 @@ class ConfigManager:
                         agent_id: AgentConfig(**data)
                         for agent_id, data in agents_data.items()
                     }
+
+                # P1-003: 验证加载后的agent引用完整性
+                invalid_agents = [
+                    (agent_id, agent.model_id)
+                    for agent_id, agent in self.agents.items()
+                    if agent.model_id not in self.models
+                ]
+                if invalid_agents:
+                    invalid_list = ", ".join(
+                        f"{agent_id}(model_id={model_id})"
+                        for agent_id, model_id in invalid_agents
+                    )
+                    logger.warning(
+                        f"发现无效的模型引用，以下Agent引用的模型不存在: {invalid_list}。"
+                        f"请检查配置文件或添加缺失的模型。"
+                    )
+
             except (json.JSONDecodeError, ValueError) as e:
-                print(f"警告: Agent配置文件加载失败: {e}")
+                logger.warning(f"Agent配置文件加载失败: {e}")
                 self.agents = {}
 
     def save_configs(self) -> None:

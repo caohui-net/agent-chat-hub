@@ -21,8 +21,7 @@ def temp_config_dir(tmp_path):
 @pytest.fixture
 def config_manager(temp_config_dir):
     """创建配置管理器"""
-    config_file = temp_config_dir / "config.json"
-    cm = ConfigManager(str(config_file))
+    cm = ConfigManager(temp_config_dir)
 
     # 添加测试模型
     model = ModelConfig(
@@ -101,8 +100,8 @@ def test_agent_message_sending():
     """测试Agent间消息发送"""
     async def run_test():
         # 创建测试环境
-        config_file = Path("/tmp/test_config.json")
-        cm = ConfigManager(str(config_file))
+        config_dir = Path("/tmp/test_agent_message_sending")
+        cm = ConfigManager(config_dir)
 
         # 添加测试模型和agents
         model = ModelConfig(
@@ -145,7 +144,9 @@ def test_agent_message_sending():
 
         # 清理
         await executor.aclose()
-        config_file.unlink(missing_ok=True)
+        import shutil
+        if config_dir.exists():
+            shutil.rmtree(config_dir)
 
     asyncio.run(run_test())
 
@@ -153,20 +154,21 @@ def test_agent_message_sending():
 def test_coordinator_with_multiple_agents(config_manager, coordinator):
     """测试协调器处理多Agent场景"""
     # 启动新轮次
-    round_state = coordinator.start_round()
+    coordinator.start_round(session_id="test_session", round_num=1)
 
     # 获取所有活跃agents
     agents = config_manager.list_agents(active_only=True)
     assert len(agents) >= 2
 
     # 协调器应该能筛选agents
-    qualified = coordinator.qualify_agents(agents, round_state)
+    qualified = coordinator.qualify_agents(agents)
     assert len(qualified) > 0
 
     # 选择agents（按优先级排序）
-    selected = coordinator.select_agents(qualified, round_state)
+    selected, stop_reason = coordinator.select_agents(qualified)
     assert len(selected) > 0
-    assert selected[0].priority >= selected[-1].priority
+    # 优先级升序排列（数值越小越优先）
+    assert selected[0].priority <= selected[-1].priority
 
 
 def test_session_message_history(session_manager):
@@ -189,10 +191,9 @@ def test_session_message_history(session_manager):
 
 def test_config_persistence(temp_config_dir):
     """测试配置持久化"""
-    config_file = temp_config_dir / "persist_test.json"
 
     # 创建配置管理器并添加模型
-    cm1 = ConfigManager(str(config_file))
+    cm1 = ConfigManager(temp_config_dir)
     model = ModelConfig(
         model_id="persist-model",
         provider="openai",
@@ -201,9 +202,11 @@ def test_config_persistence(temp_config_dir):
         api_key_name="persist_key"
     )
     cm1.add_model(model)
+    cm1.save_configs()  # 显式保存到文件
 
-    # 创建新的配置管理器读取同一文件
-    cm2 = ConfigManager(str(config_file))
+    # 创建新的配置管理器读取同一目录
+    cm2 = ConfigManager(temp_config_dir)
+    cm2.load_configs()  # 显式从文件加载
     models = cm2.list_models()
 
     assert len(models) > 0

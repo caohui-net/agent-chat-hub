@@ -4,7 +4,7 @@
 """
 import asyncio
 import uuid
-from typing import Dict, List, Callable, Optional, Set
+from typing import Any, Dict, List, Callable, Optional, Set
 from collections import defaultdict
 
 from src.core.models import AgentMessage
@@ -42,7 +42,8 @@ class MessageBus:
             agent_id: Agent唯一标识符
         """
         if agent_id not in self._queues:
-            self._queues[agent_id] = asyncio.Queue()
+            # P2-004: 设置队列容量限制防止内存问题
+            self._queues[agent_id] = asyncio.Queue(maxsize=1000)
 
     def unregister_agent(self, agent_id: str) -> None:
         """从消息总线注销Agent
@@ -153,7 +154,7 @@ class MessageBus:
         to_agent_id: Optional[str] = None,
         message_type: str = "notification",
         reply_to: Optional[str] = None,
-        metadata: Optional[Dict[str, any]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> AgentMessage:
         """创建消息的辅助方法
 

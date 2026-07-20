@@ -208,8 +208,11 @@ class ResponseCoordinator:
         # 过滤active agents
         qualified = [a for a in available_agents if a.active]
 
+        # 按priority升序排序（priority越小，优先级越高）
+        qualified_sorted = sorted(qualified, key=lambda a: a.priority)
+
         # 限制数量（应用在排序后）
-        return qualified[:max_count] if len(qualified) > max_count else qualified
+        return qualified_sorted[:max_count] if len(qualified_sorted) > max_count else qualified_sorted
 
     def should_stop(self) -> Tuple[bool, Optional[StopReason]]:
         """Rule 6: Stop - 检查是否应该停止
