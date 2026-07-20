@@ -7,10 +7,6 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.14"
-
-[project.scripts]
-agent-chat-hub = "main:main"
-
 dependencies = [
     # TUI framework
     "textual>=0.50.0",
@@ -27,6 +23,9 @@ dependencies = [
     # Database
     "aiosqlite>=0.20.0",
 ]
+
+[project.scripts]
+agent-chat-hub = "main:main"
 
 [project.optional-dependencies]
 dev = [
