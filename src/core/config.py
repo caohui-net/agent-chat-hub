@@ -31,7 +31,8 @@ class ConfigManager:
         if config_dir is None:
             config_dir = Path.home() / ".agent-chat-hub"
 
-        self.config_dir = config_dir
+        # 确保config_dir是Path对象（兼容str输入）
+        self.config_dir = Path(config_dir)
         self.config_dir.mkdir(parents=True, exist_ok=True)
 
         self.models_file = self.config_dir / "models.json"
