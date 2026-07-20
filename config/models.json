@@ -19,13 +19,13 @@
     "max_tokens": 4096,
     "temperature": 1.0
   },
-  "gemini-3-pro-preview": {
-    "model_id": "gemini-3-pro-preview",
-    "provider": "openai",
-    "display_name": "Gemini 3 Pro Preview",
-    "base_url": "https://code.newcli.com/gemini",
+  "gemini-3.1-pro-preview": {
+    "model_id": "gemini-3.1-pro-preview",
+    "provider": "gemini-cli",
+    "display_name": "Gemini 3.1 Pro Preview",
+    "base_url": "https://code.newcli.com",
     "api_key_name": "gemini_api_key",
-    "api_key": "sk-ant-oat01-2rnNEeb_OZBU2FWaZ1tupPikN9eVoKG9zzziUjOEaKmA2Yl2h2_X-bkhUVhqZKeeZ5TGF2Je4r9ui2N-D6mxdd3uWm1rgAA",
+    "api_key": "sk-ant-oat01-SZsw5Ya6pzXdLTwcws5nzEXz1qh67PGdgoGGkcT-t8JnwD5sLKUAZegizIB53HrJ1N63iAza1IZaWErvwGAMu9c2gtr8LAA",
     "max_tokens": 4096,
     "temperature": 1.0
   }

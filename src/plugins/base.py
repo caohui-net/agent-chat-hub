@@ -21,7 +21,7 @@ class IPlugin(ABC):
         """
         self.plugin_api = plugin_api
         self._metadata: Optional[PluginMetadata] = None
-        self._config: Dict[str, Any] =
+        self._config: Dict[str, Any] = {}
 
     @abstractmethod
     def get_metadata(self) -> PluginMetadata:
