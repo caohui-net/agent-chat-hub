@@ -5,8 +5,6 @@ from typing import List, Optional, Dict, Any, TYPE_CHECKING
 import httpx
 import structlog
 import uuid
-import subprocess
-import json
 
 from src.core.models import AgentConfig, ModelConfig, Message, TokenUsage, AgentMessage
 from src.core.config import ConfigManager
@@ -35,7 +33,7 @@ class AgentExecutor:
     """
 
     # 支持的provider列表（执行层拦截）
-    SUPPORTED_PROVIDERS = ["anthropic", "openai", "gemini-cli", "gemini-http"]
+    SUPPORTED_PROVIDERS = ["anthropic", "openai", "gemini-http"]
 
     def __init__(
         self,
@@ -246,65 +244,6 @@ class AgentExecutor:
             logger.error("openai_call_failed", error=str(e))
             raise AgentExecutionError(f"调用OpenAI失败: {e}")
 
-    async def _call_gemini_cli(
-        self,
-        model_config: ModelConfig,
-        messages: List[Dict[str, str]],
-        system_prompt: Optional[str] = None
-    ) -> str:
-        """通过Gemini CLI调用模型（subprocess方式）
-
-        Args:
-            model_config: 模型配置
-            messages: API格式的消息列表
-            system_prompt: 系统提示词（暂不支持）
-
-        Returns:
-            模型响应内容
-
-        Raises:
-            AgentExecutionError: CLI调用失败
-        """
-        try:
-            # 构造用户消息（只取最后一条user消息）
-            user_messages = [msg for msg in messages if msg["role"] == "user"]
-            if not user_messages:
-                raise AgentExecutionError("没有用户消息")
-
-            prompt = user_messages[-1]["content"]
-
-            # 调用gemini CLI
-            result = subprocess.run(
-                ["gemini", "-p", prompt, "--output-format", "json"],
-                capture_output=True,
-                text=True,
-                timeout=120
-            )
-
-            if result.returncode != 0:
-                logger.error("gemini_cli_error", stderr=result.stderr)
-                raise AgentExecutionError(f"Gemini CLI返回错误: {result.stderr}")
-
-            # 解析JSON输出
-            output_data = json.loads(result.stdout)
-            response_text = output_data.get("response", "")
-
-            if not response_text:
-                raise AgentExecutionError("Gemini CLI返回空响应")
-
-            logger.info("gemini_cli_success", response_length=len(response_text))
-            return response_text
-
-        except subprocess.TimeoutExpired:
-            logger.error("gemini_cli_timeout")
-            raise AgentExecutionError("Gemini CLI调用超时")
-        except json.JSONDecodeError as e:
-            logger.error("gemini_cli_json_error", error=str(e))
-            raise AgentExecutionError(f"解析Gemini CLI输出失败: {e}")
-        except Exception as e:
-            logger.error("gemini_cli_failed", error=str(e))
-            raise AgentExecutionError(f"调用Gemini CLI失败: {e}")
-
     async def _call_gemini_http(
         self,
         model_config: ModelConfig,
@@ -458,12 +397,6 @@ class AgentExecutor:
             )
         elif model_config.provider == "gemini-http":
             return await self._call_gemini_http(
-                model_config,
-                api_messages,
-                agent_config.system_prompt
-            )
-        else:  # gemini-cli
-            return await self._call_gemini_cli(
                 model_config,
                 api_messages,
                 agent_config.system_prompt
