@@ -208,8 +208,8 @@ class ResponseCoordinator:
         # 过滤active agents
         qualified = [a for a in available_agents if a.active]
 
-        # 按priority升序排序（priority越小，优先级越高）
-        qualified_sorted = sorted(qualified, key=lambda a: a.priority)
+        # 按priority升序排序，相同priority按agent_id字典序（与sort_agents保持一致）
+        qualified_sorted = sorted(qualified, key=lambda a: (a.priority, a.agent_id))
 
         # 限制数量（应用在排序后）
         return qualified_sorted[:max_count] if len(qualified_sorted) > max_count else qualified_sorted
