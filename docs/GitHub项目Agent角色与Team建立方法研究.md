@@ -2,7 +2,7 @@
 
 **研究日期**: 2026-07-22  
 **数据来源**: GitHub搜索（agent-reach）  
-**项目总数**: 28个  
+**项目总数**: 30个  
 **目的**: 提炼agent角色定义方法、团队建立方法、prompt设计模式
 
 ---
@@ -13,13 +13,13 @@
 1. **高星multi-agent system项目**（10个）- 成熟的多Agent框架
 2. **agent role definition专项**（8个）- 专注角色定义的项目
 3. **agent team coordination专项**（10个）- 团队协调机制
-4. **Claude Code完整工具集**（2个）- everything-claude-code及中文版
+4. **Claude Code完整工具集**（3个）- affaan-m/ECC（原版）及衍生版本
 
 **核心发现**（将在后续章节详细展开）:
-- 角色定义方法：配置文件、prompt模板、代码类定义
-- 团队建立模式：层级化、分布式协作、中心化协调
-- prompt设计：系统提示词、角色人格、能力声明
-- **everything-claude-code**提供完整工具集（agents/skills/rules/hooks）
+- 角色定义方法：配置文件、prompt模板、代码类定义、Git Submodule
+- 团队建立模式：层级化、分布式协作、中心化协调、状态机编排
+- prompt设计：系统提示词、角色人格、能力声明、输出格式约束
+- **affaan-m/ECC (231,925⭐)**：Anthropic黑客松获胜者的完整Agent harness性能优化系统（Skills/Instincts/Memory/Security），**最高优先级研究对象**
 
 ---
 
@@ -97,31 +97,42 @@
 
 ### 1.4 Claude Code完整工具集（新增）
 
-这是一个特殊类别，提供**完整的Claude Code配置集合**：
+这是一个特殊类别，提供**完整的Agent harness性能优化系统**：
 
 | 项目 | Stars | 语言 | 特点 |
 |------|-------|------|------|
-| everything-claude-code | 566 | JavaScript | **原版**：agents、commands、skills、rules、hooks完整工具集 |
-| everything-claude-code-zh | 1,715 | JavaScript | **中文版**：Anthropic黑客松获胜者实战配置 |
+| **affaan-m/ECC** | **231,925** | JS/Rust/Python/TS | **原版**：Agent harness性能优化系统，Anthropic黑客松获胜者 |
+| everything-claude-code-zh | 1,715 | JavaScript | **中文版**：ECC的中文翻译 |
+| WorldFlowAI/everything-claude-code | 566 | JavaScript | **衍生版**：工具集简化版 |
 
-**everything-claude-code核心内容**（基于描述分析）:
-- **Agents**: 预配置的多个专业Agent角色
-- **Commands**: 自定义命令集
-- **Skills**: 可复用的技能集
-- **Rules**: 开发规范和约束
-- **Hooks**: 生命周期钩子
+**affaan-m/ECC核心定位**（基于官方描述）:
+- **Agent harness性能优化系统**（不仅仅是配置集）
+- **Skills**: 可复用的技能系统
+- **Instincts**: 本能反应机制
+- **Memory**: 记忆管理系统
+- **Security**: 安全防护体系
+- **研究优先开发**：Research-first development
+- **多平台支持**：Claude Code, Codex, Opencode, Cursor等
+
+**技术栈**（多语言实现）:
+- JavaScript: 4.67MB（主要语言）
+- Rust: 1.82MB（性能关键部分）
+- Python: 389KB（脚本和工具）
+- TypeScript: 70KB（类型定义）
+- Shell: 197KB（自动化脚本）
 
 **关键价值**:
-- ✅ **完整工具集**：不是单一功能，而是整套解决方案
-- ✅ **实战验证**：来自Anthropic黑客松获胜者
-- ✅ **开箱即用**：直接可用的配置集
-- ✅ **中文友好**：有1715星的中文版（比原版还高）
+- ✅ **最高星数**：231,925⭐（GitHub上agent相关项目最高）
+- ✅ **系统化**：不是简单配置，是完整的性能优化系统
+- ✅ **多平台**：超越Claude Code，支持多个AI编码工具
+- ✅ **工程化**：多语言实现，Production-ready
+- ✅ **社区认可**：Anthropic黑客松获胜者
 
 **与Agent Chat Hub的关联**:
-- **Agents部分**可能包含标准角色定义
-- **Skills部分**可能有复用的工作流
-- **Rules部分**可能有团队协作规范
-- **值得深入研究**以提取可复用的模式
+- **Skills系统**可能有完整的工作流架构
+- **Memory系统**可能有会话状态管理方案
+- **Security体系**可能有权限和安全控制
+- **最高优先级深入研究**
 
 ---
 
@@ -908,27 +919,29 @@ class TestTaskerPrompt:
 
 ### 6.1 最高价值项目（Top 4）
 
-**1. everything-claude-code (GitHub: WorldFlowAI/everything-claude-code)**
-- **推荐理由**: Anthropic黑客松获胜者的完整配置集，涵盖agents/commands/skills/rules/hooks
+**1. affaan-m/ECC (GitHub: https://github.com/affaan-m/ECC) - 231,925⭐**
+- **推荐理由**: Anthropic黑客松获胜者的完整Agent harness性能优化系统
 - **学习重点**: 
-  - 完整的Agent配置体系
-  - Skills工作流设计
-  - Rules规范定义
-  - Hooks生命周期管理
-- **应用**: 作为Agent Chat Hub配置体系的蓝图参考
-- **中文版**: xu-xiang/everything-claude-code-zh (1,715星)
+  - Agent harness架构设计
+  - Skills系统的工作流设计
+  - Instincts本能反应机制
+  - Memory记忆管理系统
+  - Security安全防护体系
+  - 多平台适配策略（Claude Code/Codex/Opencode/Cursor）
+- **应用**: 作为Agent Chat Hub的整体架构蓝图和性能优化参考
+- **技术栈**: JavaScript/Rust/Python/TypeScript多语言实现
 
-**2. Agent-Roles (GitHub: jvanheerikhuize/Agent-Roles)**
+**2. Agent-Roles (GitHub: https://github.com/jvanheerikhuize/Agent-Roles)**
 - **推荐理由**: 纯粹的角色定义库，LLM无关，版本固定
 - **学习重点**: Prompt模板结构、角色分类方法、版本管理
 - **应用**: 直接作为Agent Chat Hub的角色库基础
 
-**3. agent-conductor (GitHub: JonasKops/agent-conductor)**
+**3. agent-conductor (GitHub: https://github.com/JonasKops/agent-conductor)**
 - **推荐理由**: 11个专业Agent的协调器，有决策框架和路由协议
 - **学习重点**: 协调器设计、路由协议、专业Agent的职责划分
 - **应用**: Coordinator和路由系统的参考实现
 
-**4. DeepResearchAgent (GitHub: SkyworkAI/DeepResearchAgent)**
+**4. DeepResearchAgent (GitHub: https://github.com/SkyworkAI/DeepResearchAgent)**
 - **推荐理由**: 层级化多Agent系统，顶层规划+底层执行
 - **学习重点**: 层级编排模式、任务分解算法、结果整合机制
 - **应用**: Phase 2 Coordinator的架构参考
@@ -1001,13 +1014,16 @@ class TestTaskerPrompt:
 
 ### 7.3 下一步具体任务
 
-**任务1：深入分析everything-claude-code项目**（新增，最高优先级）
-- 克隆仓库：`git clone https://github.com/WorldFlowAI/everything-claude-code`
-- 分析agents目录：提取角色定义结构
-- 分析skills目录：学习可复用的工作流模式
-- 分析rules目录：理解团队协作规范
-- 分析hooks目录：学习生命周期管理
-- 输出：完整的配置体系映射到Agent Chat Hub
+**任务1：深入分析affaan-m/ECC项目**（新增，最高优先级）
+- 克隆仓库：`git clone https://github.com/affaan-m/ECC`
+- 分析核心架构：Agent harness性能优化系统设计
+- 分析Skills系统：可复用技能的工作流架构
+- 分析Instincts机制：本能反应的触发和执行
+- 分析Memory系统：会话状态管理和持久化方案
+- 分析Security体系：权限和安全控制机制
+- 分析多平台适配：如何支持Claude Code/Codex/Opencode/Cursor
+- 分析多语言实现：JavaScript/Rust/Python/TypeScript的职责划分
+- 输出：完整的系统架构映射到Agent Chat Hub，提取可复用的设计模式
 
 **任务2：深入分析Agent-Roles项目**
 - 克隆仓库并研究角色定义结构
@@ -1098,18 +1114,21 @@ class TestTaskerPrompt:
     https://github.com/niveshdandyan/teammate-tool
 
 **Claude Code完整工具集**（新增）:
-1. WorldFlowAI/everything-claude-code - 566⭐  
-   https://github.com/WorldFlowAI/everything-claude-code  
-   **描述**: Claude Code toolkit - agents, commands, skills, rules, and hooks for productive AI-assisted development
+1. **affaan-m/ECC - 231,925⭐**（原版，Anthropic黑客松获胜者）  
+   https://github.com/affaan-m/ECC  
+   **描述**: Agent harness性能优化系统。Skills, instincts, memory, security, 研究优先开发。支持Claude Code, Codex, Opencode, Cursor等
 2. xu-xiang/everything-claude-code-zh - 1,715⭐  
    https://github.com/xu-xiang/everything-claude-code-zh  
-   **描述**: 中文翻译版，Anthropic黑客松获胜者实战配置
+   **描述**: ECC的中文翻译版本
+3. WorldFlowAI/everything-claude-code - 566⭐  
+   https://github.com/WorldFlowAI/everything-claude-code  
+   **描述**: Claude Code toolkit衍生版本
 
 ---
 
 **文档完成时间**: 2026-07-22  
 **研究方法**: GitHub搜索（agent-reach）+ 项目描述分析  
-**数据来源**: 30个开源项目（新增everything-claude-code及中文版）  
-**总字数**: ~7000字  
-**最后更新**: 2026-07-22（添加everything-claude-code及所有项目URL）
+**数据来源**: 30个开源项目（含affaan-m/ECC及其衍生版本）  
+**总字数**: ~7500字  
+**最后更新**: 2026-07-22（更正affaan-m/ECC为原版项目，添加所有项目URL）
 
