@@ -1,9 +1,7 @@
 {
-  "last_event_id": 200,
-  "status": "idle",
+  "last_event_id": 260,
+  "status": "discussion",
   "current_task": null,
   "active_agent": null,
-  "workflow_id": "claude-codex-gemini-collab",
-  "last_discussion_completed": "DISCUSS-PR最终审核-第八轮-响应CODEX第七轮4项阻塞问题-1784522764",
-  "last_updated": "2026-07-20T04:50:00.000Z"
+  "workflow_id": "claude-codex-gemini-collab"
 }
