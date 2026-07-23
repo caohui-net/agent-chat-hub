@@ -1,0 +1,142 @@
+- id: SEC-001
+  name: 所有对象访问必须验证权限
+  scope: security
+  condition: 实现对数据对象的访问（读取、修改、删除）
+  requirement: 必须验证当前用户对目标对象的访问权限，防止越权访问
+  severity: blocking
+  verification: 检查查询条件是否包含用户身份过滤（如tenant_id, user_id），添加跨租户访问负向测试
+  source: security-standard.md#authorization
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 查询条件包含用户过滤
+        code: |
+          // 正确：限制只能访问自己的数据
+          const documents = await db.query(
+            'SELECT * FROM documents WHERE user_id = ? AND id = ?',
+            [currentUser.id, documentId]
+          );
+    fail:
+      - case: 未验证权限直接查询
+        code: |
+          // 错误：攻击者可通过修改documentId访问他人文档
+          const documents = await db.query(
+            'SELECT * FROM documents WHERE id = ?',
+            [documentId]
+          );
+  tags:
+    - security
+    - authorization
+    - access-control
+
+- id: SEC-002
+  name: 敏感数据不得记录到日志
+  scope: security
+  condition: 记录日志或错误信息
+  requirement: 密码、token、信用卡号等敏感数据不得出现在日志中
+  severity: blocking
+  verification: 检查日志语句，确认不包含敏感字段；使用日志脱敏工具
+  source: security-standard.md#data-protection
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 日志中脱敏敏感信息
+        code: |
+          // 正确：脱敏处理
+          logger.info('User login', {
+            userId: user.id,
+            email: maskEmail(user.email),  // user@*****.com
+            ip: req.ip
+          });
+    fail:
+      - case: 日志中包含密码
+        code: |
+          // 错误：明文记录密码
+          logger.error('Login failed', {
+            username: req.body.username,
+            password: req.body.password  // 泄露密码
+          });
+  tags:
+    - security
+    - logging
+    - data-protection
+
+- id: SEC-003
+  name: 用户输入必须验证和清理
+  scope: security
+  condition: 处理用户提交的数据
+  requirement: 所有用户输入必须进行验证（类型、长度、格式）和清理（转义、过滤）
+  severity: blocking
+  verification: 检查输入验证逻辑，确认使用白名单而非黑名单；添加SQL注入、XSS负向测试
+  source: security-standard.md#input-validation
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 使用参数化查询
+        code: |
+          // 正确：参数化查询防止SQL注入
+          const users = await db.query(
+            'SELECT * FROM users WHERE email = ?',
+            [sanitize(email)]
+          );
+      - case: 验证输入格式
+        code: |
+          // 正确：验证邮箱格式
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            throw new ValidationError('Invalid email format');
+          }
+    fail:
+      - case: 直接拼接SQL
+        code: |
+          // 错误：SQL注入风险
+          const query = `SELECT * FROM users WHERE email='${email}'`;
+          await db.query(query);
+      - case: 未验证输入
+        code: |
+          // 错误：未验证长度，可能导致数据库错误或DoS
+          await db.query('INSERT INTO comments (text) VALUES (?)', [userInput]);
+  tags:
+    - security
+    - input-validation
+    - sql-injection
+    - xss
+
+- id: SEC-004
+  name: 密码和密钥不得硬编码
+  scope: security
+  condition: 配置数据库连接、API密钥、加密密钥等
+  requirement: 敏感配置必须从环境变量或密钥管理服务读取，不得硬编码在代码中
+  severity: blocking
+  verification: 代码审查检查是否有硬编码密钥；使用静态分析工具扫描
+  source: security-standard.md#secrets-management
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 从环境变量读取
+        code: |
+          // 正确：从环境变量读取
+          const dbPassword = process.env.DB_PASSWORD;
+          const apiKey = process.env.API_KEY;
+      - case: 从密钥管理服务读取
+        code: |
+          // 正确：从AWS Secrets Manager读取
+          const secret = await secretsManager.getSecretValue({
+            SecretId: 'prod/db/password'
+          });
+    fail:
+      - case: 硬编码密码
+        code: |
+          // 错误：密码硬编码
+          const dbConfig = {
+            host: 'db.example.com',
+            user: 'admin',
+            password: 'MySecretPassword123'  // 硬编码
+          };
+  tags:
+    - security
+    - secrets-management
+    - credentials

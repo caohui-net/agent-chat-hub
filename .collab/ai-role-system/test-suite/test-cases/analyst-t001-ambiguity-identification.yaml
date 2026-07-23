@@ -1,0 +1,238 @@
+# 测试用例: ANALYST-T001 - 需求澄清 - 模糊需求识别
+# 测试需求分析师识别模糊需求并提出澄清问题的能力
+
+test_case:
+  id: ANALYST-T001
+  name: 需求澄清 - 模糊需求识别
+  priority: P0
+  role: analyst
+  category: requirement_clarification
+
+  # 输入数据
+  input:
+    requirement: "用户希望系统能够更快地处理数据"
+    context: "电商订单处理系统，当前处理时间约5秒"
+    additional_info:
+      system_type: "订单处理系统"
+      current_performance: "5秒/订单"
+      user_complaint: "处理速度慢"
+
+  # 预期输出结构
+  expected_output_schema:
+    clarified_requirements:
+      type: array
+      items:
+        question: string
+        reason: string
+        category: string  # performance/scope/acceptance
+    acceptance_criteria:
+      type: array
+      items:
+        criterion: string
+        measurable: boolean
+        metric: string
+    open_questions:
+      type: array
+      items: string
+
+  # 标准答案（专家基线）
+  expert_baseline:
+    clarified_requirements:
+      - question: "期望的目标处理时间是多少？（如3秒、1秒、还是毫秒级）"
+        reason: "需要明确具体的性能指标，'更快'是主观描述"
+        category: "acceptance"
+
+      - question: "处理时间指的是哪个环节？（订单创建、支付处理、库存扣减、还是整个流程）"
+        reason: "需要明确优化范围，避免误解"
+        category: "scope"
+
+      - question: "当前5秒是平均值、中位数还是P99延迟？"
+        reason: "需要了解当前基线的统计意义"
+        category: "performance"
+
+      - question: "在什么负载情况下需要达到目标？（峰值QPS、并发用户数）"
+        reason: "性能目标需要明确负载条件"
+        category: "performance"
+
+      - question: "是否可以接受异步处理？（用户提交后立即返回，后台处理）"
+        reason: "技术方案选择依赖于此约束"
+        category: "scope"
+
+    acceptance_criteria:
+      - criterion: "订单处理时间P95不超过3秒（假设目标）"
+        measurable: true
+        metric: "P95延迟 <= 3秒"
+
+      - criterion: "在1000 QPS负载下保持目标性能"
+        measurable: true
+        metric: "QPS >= 1000 且 P95 <= 3秒"
+
+      - criterion: "不影响数据一致性"
+        measurable: true
+        metric: "订单状态同步准确率 = 100%"
+
+  # 评估标准
+  evaluation:
+    metrics:
+      question_quality:
+        method: weighted_scoring
+        criteria:
+          - name: specificity
+            weight: 0.4
+            pass_threshold: 0.8
+            scoring_guide:
+              1.0: "问题非常具体，可直接量化"
+              0.8: "问题具体，但需要进一步细化"
+              0.6: "问题较模糊"
+              0.4: "问题过于宽泛"
+
+          - name: relevance
+            weight: 0.3
+            pass_threshold: 0.8
+            scoring_guide:
+              1.0: "直接针对核心歧义"
+              0.8: "相关但非核心"
+              0.6: "关联较弱"
+
+          - name: actionability
+            weight: 0.3
+            pass_threshold: 0.8
+            scoring_guide:
+              1.0: "答案可直接指导实现"
+              0.8: "答案有指导作用"
+              0.6: "答案指导作用有限"
+
+      ambiguity_coverage:
+        method: recall_calculation
+        formula: "identified_ambiguities / total_ambiguities"
+        total_ambiguities: 5  # 专家识别的歧义数量
+        pass_threshold: 0.9
+        key_ambiguities:
+          - "目标性能值未量化"
+          - "优化范围不明确"
+          - "基线统计口径不清"
+          - "负载条件未说明"
+          - "是否允许异步"
+
+      criteria_quality:
+        method: manual_review
+        checklist:
+          - item: "每个标准可测试"
+            required: true
+          - item: "包含具体指标"
+            required: true
+          - item: "考虑负载条件"
+            required: true
+          - item: "考虑非功能性约束"
+            required: false
+
+    pass_conditions:
+      - condition: "question_quality >= 0.8"
+        severity: blocking
+      - condition: "ambiguity_coverage >= 0.9"
+        severity: blocking
+      - condition: "至少提出3个澄清问题"
+        severity: blocking
+      - condition: "验收标准可量化"
+        severity: blocking
+
+  # 测试执行
+  execution:
+    steps:
+      - step: 1
+        action: "加载analyst角色配置"
+        command: "load_role('analyst')"
+
+      - step: 2
+        action: "应用模型适配器"
+        command: "apply_adapter('claude-sonnet-5')"
+
+      - step: 3
+        action: "构造输入提示"
+        command: "render_prompt(role, input)"
+
+      - step: 4
+        action: "调用AI模型"
+        command: "invoke_model(prompt)"
+
+      - step: 5
+        action: "解析输出JSON"
+        command: "parse_output(response)"
+
+      - step: 6
+        action: "验证输出结构"
+        command: "validate_schema(output, expected_schema)"
+
+      - step: 7
+        action: "计算评估指标"
+        command: "calculate_metrics(output, expert_baseline)"
+
+      - step: 8
+        action: "判断通过/失败"
+        command: "check_pass_conditions(metrics)"
+
+    timeout: 60  # 秒
+    retry_on_failure: false
+
+  # 变体测试（可选）
+  variations:
+    - variation_id: "ANALYST-T001-V1"
+      name: "不同领域 - 支付系统"
+      input_override:
+        requirement: "用户希望支付更安全"
+        context: "在线支付系统，目前使用HTTP传输"
+      expected_key_questions:
+        - "安全指的是哪方面？（传输安全、数据存储、防欺诈）"
+        - "当前有哪些安全措施？"
+        - "需要符合哪些合规标准？"
+
+    - variation_id: "ANALYST-T001-V2"
+      name: "极度模糊需求"
+      input_override:
+        requirement: "系统需要更好"
+        context: "Web应用"
+      expected_behavior: "识别需求过于模糊，要求提供更多上下文"
+
+# 实际运行结果示例（供参考）
+sample_run:
+  input_used:
+    requirement: "用户希望系统能够更快地处理数据"
+    context: "电商订单处理系统，当前处理时间约5秒"
+
+  ai_output:
+    clarified_requirements:
+      - question: "期望的目标处理时间是多少秒？"
+        reason: "'更快'需要量化为具体数值"
+        category: "acceptance"
+      - question: "处理时间是指从订单提交到完成的总时间吗？"
+        reason: "需要明确时间的起止点"
+        category: "scope"
+      - question: "当前5秒是在什么负载条件下测得的？"
+        reason: "性能指标需要明确测试条件"
+        category: "performance"
+      - question: "是否可以采用异步处理方式？"
+        reason: "异步处理可能是优化方向之一"
+        category: "scope"
+
+    acceptance_criteria:
+      - criterion: "订单处理时间不超过3秒"
+        measurable: true
+        metric: "avg_processing_time <= 3s"
+      - criterion: "99%的订单在5秒内完成处理"
+        measurable: true
+        metric: "P99 <= 5s"
+
+  evaluation_results:
+    question_quality: 0.85
+    ambiguity_coverage: 0.8  # 4/5
+    criteria_quality: 0.9
+    overall: "PASS"
+    notes: "覆盖了主要歧义点，但遗漏了基线统计口径的问题"
+
+# 元数据
+metadata:
+  created: "2026-07-23"
+  author: "AI角色系统测试框架"
+  version: "1.0.0"
+  estimated_duration: "30秒"
+  model_recommendation: "claude-sonnet-5"

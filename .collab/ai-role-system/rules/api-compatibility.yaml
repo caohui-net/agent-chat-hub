@@ -1,0 +1,110 @@
+- id: API-001
+  name: 不得删除或重命名已有响应字段
+  scope: backend
+  condition: 修改公开HTTP API的响应结构
+  requirement: 已发布的API响应字段不得删除或重命名，只能添加新字段且必须为可选
+  severity: blocking
+  verification: 运行API契约测试（contract test），对比新旧响应schema
+  source: api-compatibility-standard.md#field-stability
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 添加新可选字段
+        code: |
+          // v1.0
+          interface UserResponse { id: string; name: string; }
+
+          // v1.1 - 正确：添加可选字段
+          interface UserResponse {
+            id: string;
+            name: string;
+            email?: string;  // 新增可选字段
+          }
+    fail:
+      - case: 删除已有字段
+        code: |
+          // v1.0
+          interface UserResponse { id: string; name: string; email: string; }
+
+          // v1.1 - 错误：删除email字段
+          interface UserResponse { id: string; name: string; }
+      - case: 重命名已有字段
+        code: |
+          // v1.0
+          interface UserResponse { user_name: string; }
+
+          // v1.1 - 错误：重命名为userName
+          interface UserResponse { userName: string; }
+  tags:
+    - api
+    - backward-compatibility
+
+- id: API-002
+  name: 新增响应字段必须有合理默认值
+  scope: backend
+  condition: 为已发布API添加新的必需字段
+  requirement: 新增字段应为可选，或提供默认值以保持旧客户端兼容
+  severity: blocking
+  verification: 检查新字段是否标记为optional，或是否有明确的default值
+  source: api-compatibility-standard.md#new-fields
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 新字段为可选
+        code: |
+          interface UserResponse {
+            id: string;
+            name: string;
+            role?: string;  // 可选字段
+          }
+      - case: 新字段有默认值
+        code: |
+          interface UserResponse {
+            id: string;
+            name: string;
+            status: string = "active";  // 有默认值
+          }
+    fail:
+      - case: 新必需字段无默认值
+        code: |
+          interface UserResponse {
+            id: string;
+            name: string;
+            department: string;  // 必需字段，旧客户端无法提供
+          }
+  tags:
+    - api
+    - backward-compatibility
+
+- id: API-003
+  name: HTTP状态码不得随意更改
+  scope: backend
+  condition: 修改API端点的HTTP状态码
+  requirement: 已建立的成功/失败响应状态码不得更改，除非有重大架构变更且经过评审
+  severity: warning
+  verification: 检查API文档和测试中的状态码断言是否变更
+  source: api-compatibility-standard.md#status-codes
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 保持现有状态码
+        code: |
+          // v1.0
+          return res.status(200).json(user);
+
+          // v1.1 - 正确：保持200
+          return res.status(200).json(user);
+    fail:
+      - case: 将成功响应从200改为201
+        code: |
+          // v1.0
+          return res.status(200).json(user);
+
+          // v1.1 - 错误：改变成功状态码
+          return res.status(201).json(user);
+  tags:
+    - api
+    - http

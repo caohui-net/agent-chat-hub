@@ -1,0 +1,608 @@
+# 评估指标配置
+# 定义用于评估AI角色输出质量的量化指标
+
+evaluation_metrics:
+  # 需求分析师评估指标
+  analyst_metrics:
+    question_quality:
+      description: 澄清问题的质量和针对性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: weighted_average
+        components:
+          - name: specificity
+            weight: 0.4
+            criteria: 问题是否具体明确，可直接回答
+          - name: relevance
+            weight: 0.3
+            criteria: 问题是否针对核心歧义
+          - name: actionability
+            weight: 0.3
+            criteria: 答案是否能直接指导实现
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    ambiguity_coverage:
+      description: 识别需求歧义的覆盖率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: ratio
+        formula: identified_ambiguities / total_ambiguities
+        baseline: expert_review
+      threshold:
+        min: 0.9
+        recommended: 1.0
+
+    boundary_coverage:
+      description: 边界条件识别的覆盖率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: checklist
+        required_items:
+          - input_validation
+          - edge_cases
+          - error_handling
+          - security_considerations
+        formula: identified_items / required_items
+      threshold:
+        min: 0.85
+        recommended: 1.0
+
+    criteria_clarity:
+      description: 验收标准的清晰度
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: manual_review
+        factors:
+          - unambiguous_language
+          - measurable_outcomes
+          - specific_conditions
+      threshold:
+        min: 0.9
+        recommended: 1.0
+
+    testability:
+      description: 验收标准的可测试性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: binary_check
+        criteria: 每个标准都有明确的测试方法
+      threshold:
+        min: 1.0
+        recommended: 1.0
+
+  # 软件架构师评估指标
+  architect_metrics:
+    solution_count:
+      description: 提供的技术方案数量
+      type: count
+      range: [0, null]
+      calculation:
+        method: count
+      threshold:
+        min: 2
+        recommended: 3
+
+    tradeoff_depth:
+      description: 权衡分析的深度
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: weighted_average
+        components:
+          - name: dimensions_covered
+            weight: 0.4
+            criteria: 覆盖性能、成本、复杂度、可维护性等维度
+          - name: analysis_depth
+            weight: 0.3
+            criteria: 每个维度有定量或定性分析
+          - name: recommendation_rationale
+            weight: 0.3
+            criteria: 推荐方案有充分理由
+      threshold:
+        min: 0.85
+        recommended: 0.95
+
+    technical_feasibility:
+      description: 技术方案的可行性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: expert_review
+        factors:
+          - 技术栈匹配度
+          - 团队能力匹配
+          - 时间预算合理性
+          - 依赖项可获得性
+      threshold:
+        min: 0.9
+        recommended: 1.0
+
+    cohesion:
+      description: 模块内聚性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: manual_review
+        criteria: 模块职责单一且相关
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    coupling:
+      description: 模块耦合度
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: dependency_analysis
+        formula: external_dependencies / total_operations
+      threshold:
+        max: 0.3
+        recommended: 0.2
+
+    interface_clarity:
+      description: 接口定义的清晰度
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: checklist
+        required_items:
+          - input_types_defined
+          - output_types_defined
+          - error_cases_documented
+          - contracts_specified
+        formula: present_items / required_items
+      threshold:
+        min: 0.9
+        recommended: 1.0
+
+    risk_coverage:
+      description: 技术风险识别的覆盖率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: expert_comparison
+        baseline: 专家识别的风险清单
+      threshold:
+        min: 0.85
+        recommended: 0.95
+
+    mitigation_feasibility:
+      description: 风险缓解措施的可行性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: manual_review
+        criteria: 缓解措施具体可执行
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+  # 实现工程师评估指标
+  developer_metrics:
+    code_correctness:
+      description: 代码功能正确性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: test_pass_rate
+        formula: passed_tests / total_tests
+      threshold:
+        min: 1.0
+        recommended: 1.0
+
+    security_compliance:
+      description: 安全规则遵守度
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: rule_violation_check
+        rules:
+          - SEC-001  # 权限验证
+          - SEC-002  # 日志脱敏
+          - SEC-003  # 输入验证
+          - SEC-004  # 密钥管理
+        formula: 1 - (violations / total_checks)
+      threshold:
+        min: 1.0
+        recommended: 1.0
+
+    test_coverage:
+      description: 测试覆盖率
+      type: ratio
+      range: [0.0, 1.0]
+      calculation:
+        method: coverage_tool
+        metric: line_coverage
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    vulnerability_eliminated:
+      description: 漏洞是否已消除
+      type: binary
+      range: [0, 1]
+      calculation:
+        method: security_scan
+      threshold:
+        min: 1
+        recommended: 1
+
+    code_duplication:
+      description: 代码重复率
+      type: ratio
+      range: [0.0, 1.0]
+      calculation:
+        method: duplication_detection
+        tool: jscpd
+      threshold:
+        max: 0.1
+        recommended: 0.05
+
+    cyclomatic_complexity:
+      description: 圈复杂度
+      type: number
+      range: [1, null]
+      calculation:
+        method: complexity_analysis
+        tool: eslint-complexity
+      threshold:
+        max: 15
+        recommended: 10
+
+  # 代码审查员评估指标
+  reviewer_metrics:
+    security_issue_detection:
+      description: 安全问题检测率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: recall
+        formula: detected_security_issues / total_security_issues
+        baseline: expert_review
+      threshold:
+        min: 1.0
+        recommended: 1.0
+
+    false_positive_rate:
+      description: 误报率
+      type: ratio
+      range: [0.0, 1.0]
+      calculation:
+        method: precision_inverse
+        formula: false_positives / total_flagged_issues
+      threshold:
+        max: 0.1
+        recommended: 0.05
+
+    compatibility_issue_detection:
+      description: 兼容性问题检测率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: recall
+        formula: detected_compatibility_issues / total_compatibility_issues
+      threshold:
+        min: 1.0
+        recommended: 1.0
+
+    suggestion_quality:
+      description: 改进建议的质量
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: manual_review
+        criteria: 建议具体、可执行、有价值
+      threshold:
+        min: 0.7
+        recommended: 0.85
+
+    review_precision:
+      description: 审查精确度（减少误报）
+      type: ratio
+      range: [0.0, 1.0]
+      calculation:
+        method: precision
+        formula: true_positives / (true_positives + false_positives)
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    review_recall:
+      description: 审查召回率（减少漏报）
+      type: ratio
+      range: [0.0, 1.0]
+      calculation:
+        method: recall
+        formula: true_positives / (true_positives + false_negatives)
+      threshold:
+        min: 0.85
+        recommended: 0.95
+
+  # QA工程师评估指标
+  qa_metrics:
+    scenario_coverage:
+      description: 测试场景覆盖率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: checklist
+        required_scenarios:
+          - happy_path
+          - error_path
+          - boundary_conditions
+          - edge_cases
+        formula: covered_scenarios / required_scenarios
+      threshold:
+        min: 0.9
+        recommended: 1.0
+
+    edge_case_coverage:
+      description: 边界用例覆盖率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: expert_comparison
+        baseline: 专家识别的边界用例清单
+      threshold:
+        min: 0.85
+        recommended: 0.95
+
+    test_case_quality:
+      description: 测试用例质量
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: weighted_average
+        components:
+          - name: clarity
+            weight: 0.3
+            criteria: 步骤清晰明确
+          - name: reproducibility
+            weight: 0.3
+            criteria: 可重复执行
+          - name: assertion_quality
+            weight: 0.4
+            criteria: 断言具体可验证
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    root_cause_accuracy:
+      description: 根因分析准确性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: expert_review
+        criteria: 识别的根因是否正确
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    gap_identification:
+      description: 测试缺口识别能力
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: comparison
+        baseline: 实际缺失的测试场景
+      threshold:
+        min: 0.85
+        recommended: 0.95
+
+  # DevOps工程师评估指标
+  devops_metrics:
+    pipeline_completeness:
+      description: CI/CD流水线完整性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: checklist
+        required_stages:
+          - code_checkout
+          - dependency_install
+          - build
+          - test
+          - security_scan
+          - artifact_build
+          - deployment
+        formula: present_stages / required_stages
+      threshold:
+        min: 0.9
+        recommended: 1.0
+
+    best_practices:
+      description: 最佳实践遵守度
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: checklist
+        items:
+          - cache_dependencies
+          - parallel_jobs
+          - fail_fast
+          - notification_on_failure
+          - environment_isolation
+        formula: followed_practices / total_practices
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    critical_metrics_covered:
+      description: 关键指标覆盖率
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: checklist
+        required_metrics:
+          - response_time
+          - error_rate
+          - throughput
+          - resource_utilization
+        formula: covered_metrics / required_metrics
+      threshold:
+        min: 1.0
+        recommended: 1.0
+
+    alert_threshold_reasonableness:
+      description: 告警阈值合理性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: manual_review
+        criteria: 阈值基于历史数据或行业标准
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+    plan_completeness:
+      description: 恢复计划完整性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: checklist
+        required_components:
+          - detection_steps
+          - isolation_steps
+          - recovery_steps
+          - verification_steps
+          - communication_plan
+        formula: present_components / required_components
+      threshold:
+        min: 0.85
+        recommended: 1.0
+
+    rto_feasibility:
+      description: RTO（恢复时间目标）可行性
+      type: score
+      range: [0.0, 1.0]
+      calculation:
+        method: manual_review
+        criteria: 预估时间与SLA要求匹配
+      threshold:
+        min: 0.8
+        recommended: 0.9
+
+# 综合评估指标
+aggregate_metrics:
+  role_performance_score:
+    description: 角色综合表现得分
+    type: score
+    range: [0.0, 1.0]
+    calculation:
+      method: weighted_average
+      weights:
+        P0_tasks: 0.6
+        P1_tasks: 0.3
+        P2_tasks: 0.1
+      formula: |
+        (sum(P0_scores * 0.6) + sum(P1_scores * 0.3) + sum(P2_scores * 0.1)) / total_tasks
+
+  system_quality_score:
+    description: 系统整体质量得分
+    type: score
+    range: [0.0, 1.0]
+    calculation:
+      method: weighted_average
+      weights:
+        analyst: 0.1
+        architect: 0.2
+        developer: 0.3
+        reviewer: 0.2
+        qa: 0.15
+        devops: 0.05
+      formula: sum(role_scores * weights)
+
+  blocking_issue_rate:
+    description: 阻塞性问题率
+    type: ratio
+    range: [0.0, 1.0]
+    calculation:
+      method: ratio
+      formula: tasks_with_blocking_issues / total_tasks
+    threshold:
+      max: 0.1
+      recommended: 0.05
+
+# 验证规则
+validation_rules:
+  # P0任务必须全部通过
+  P0_tasks_must_pass:
+    description: 所有P0优先级任务必须通过
+    rule: all(P0_task.result == 'PASS')
+    severity: blocking
+    action_on_failure: 系统不可发布
+
+  # 安全规则零违反
+  security_zero_violations:
+    description: 安全相关规则不得有任何违反
+    rule: count(security_violations) == 0
+    severity: blocking
+    action_on_failure: 必须修复所有安全问题
+
+  # 最低覆盖率要求
+  minimum_coverage:
+    description: 代码覆盖率不得低于80%
+    rule: test_coverage >= 0.8
+    severity: blocking
+    action_on_failure: 补充测试用例
+
+  # 审查召回率要求
+  reviewer_recall_requirement:
+    description: 审查员必须识别至少85%的问题
+    rule: review_recall >= 0.85
+    severity: blocking
+    action_on_failure: 调整审查策略
+
+  # 综合质量门槛
+  quality_gate:
+    description: 系统整体质量得分不得低于0.85
+    rule: system_quality_score >= 0.85
+    severity: warning
+    action_on_failure: 评估是否需要改进
+
+# 评估流程
+evaluation_process:
+  steps:
+    - step: 1
+      name: 执行测试任务
+      description: 运行test-suite中定义的所有测试任务
+
+    - step: 2
+      name: 收集输出结果
+      description: 获取AI角色的输出（JSON格式）
+
+    - step: 3
+      name: 计算基础指标
+      description: 根据metric定义计算各项指标得分
+
+    - step: 4
+      name: 应用验证规则
+      description: 检查是否满足验证规则
+
+    - step: 5
+      name: 计算综合得分
+      description: 计算角色和系统综合得分
+
+    - step: 6
+      name: 生成评估报告
+      description: 输出详细评估报告和改进建议
+
+  automation:
+    tool: pytest + custom evaluators
+    report_format: markdown + json
+    ci_integration: true
+
+# 元数据
+metadata:
+  version: "1.0.0"
+  created: "2026-07-23"
+  description: "AI角色系统评估指标配置 - Phase 1 MVP"
+  metrics_count: 36
+  roles_covered: 6

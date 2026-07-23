@@ -1,0 +1,363 @@
+# 模型路由矩阵
+# 定义每个角色在不同场景下推荐使用的模型
+
+routing_matrix:
+  # 需求分析师 (Requirements Analyst)
+  analyst:
+    primary:
+      model: claude-sonnet-5
+      reason: 长上下文理解能力强，适合需求澄清和歧义识别
+      cost: medium
+      capabilities:
+        - long_context
+        - reasoning_depth
+        - structured_output
+    fallback:
+      - model: claude-opus-4.8
+        triggers:
+          - type: complexity_high
+            condition:
+              metric: ambiguity_score
+              operator: ">"
+              threshold: 0.7
+          - type: requirement_count_large
+            condition:
+              metric: requirement_items
+              operator: ">"
+              threshold: 20
+        logic: OR
+      - model: gpt-5.3-codex
+        triggers:
+          - type: cost_limit_reached
+            condition:
+              metric: daily_spent_ratio
+              operator: ">"
+              threshold: 0.8
+        logic: single
+
+  # 软件架构师 (Software Architect)
+  architect:
+    primary:
+      model: claude-opus-4.8
+      reason: 推理深度最高，适合技术方案权衡和架构设计
+      cost: high
+      capabilities:
+        - reasoning_depth
+        - technical_analysis
+        - structured_output
+    fallback:
+      - model: claude-sonnet-5
+        triggers:
+          - type: design_scope_small
+            condition:
+              metric: affected_modules
+              operator: "<="
+              threshold: 3
+          - type: cost_threshold_exceeded
+            condition:
+              metric: daily_spent_ratio
+              operator: ">"
+              threshold: 0.7
+        logic: OR
+      - model: gpt-5.3-codex
+        triggers:
+          - type: cost_limit_reached
+            condition:
+              metric: daily_spent_ratio
+              operator: ">"
+              threshold: 0.9
+        logic: single
+
+  # 实现工程师 (Implementation Engineer)
+  developer:
+    primary:
+      model: gpt-5.3-codex
+      reason: 代码生成能力最强，成本最低，性价比最高
+      cost: low
+      capabilities:
+        - code_generation
+        - test_generation
+        - repository_operations
+    fallback:
+      - model: claude-sonnet-5
+        triggers:
+          - type: code_complexity_high
+            condition:
+              metric: cyclomatic_complexity
+              operator: ">"
+              threshold: 15
+          - type: context_size_large
+            condition:
+              metric: estimated_input_tokens
+              operator: ">"
+              threshold: 50000
+        logic: OR
+      - model: claude-opus-4.8
+        triggers:
+          - type: critical_system_change
+            condition:
+              metric: risk_level
+              operator: "=="
+              threshold: "critical"
+          - type: security_sensitive
+            condition:
+              metric: security_impact
+              operator: "=="
+              threshold: "high"
+        logic: OR
+
+  # 代码审查员 (Code Reviewer)
+  reviewer:
+    primary:
+      model: claude-sonnet-5
+      reason: 平衡推理能力和成本，适合标准代码审查
+      cost: medium
+      capabilities:
+        - code_understanding
+        - reasoning_depth
+        - structured_output
+    fallback:
+      - model: claude-opus-4.8
+        triggers:
+          - type: change_scope_large
+            condition:
+              metric: changed_lines
+              operator: ">"
+              threshold: 500
+          - type: critical_system_change
+            condition:
+              metric: risk_level
+              operator: "=="
+              threshold: "critical"
+        logic: OR
+      - model: gpt-5.3-codex
+        triggers:
+          - type: simple_review
+            condition:
+              metric: changed_lines
+              operator: "<="
+              threshold: 50
+          - type: cost_threshold_exceeded
+            condition:
+              metric: daily_spent_ratio
+              operator: ">"
+              threshold: 0.8
+        logic: OR
+
+  # QA工程师 (QA Engineer)
+  qa:
+    primary:
+      model: gpt-5.3-codex
+      reason: 测试生成能力强，成本低
+      cost: low
+      capabilities:
+        - test_generation
+        - code_generation
+        - structured_output
+    fallback:
+      - model: claude-sonnet-5
+        triggers:
+          - type: test_complexity_high
+            condition:
+              metric: test_scenario_count
+              operator: ">"
+              threshold: 20
+          - type: edge_case_analysis_needed
+            condition:
+              metric: boundary_conditions
+              operator: ">"
+              threshold: 10
+        logic: OR
+      - model: claude-opus-4.8
+        triggers:
+          - type: critical_feature_testing
+            condition:
+              metric: risk_level
+              operator: "=="
+              threshold: "critical"
+        logic: single
+
+  # DevOps工程师 (DevOps Engineer)
+  devops:
+    primary:
+      model: gpt-5.3-codex
+      reason: 脚本生成和配置能力强，成本低
+      cost: low
+      capabilities:
+        - code_generation
+        - shell_operations
+        - configuration_management
+    fallback:
+      - model: claude-sonnet-5
+        triggers:
+          - type: infrastructure_complexity_high
+            condition:
+              metric: service_count
+              operator: ">"
+              threshold: 10
+          - type: production_deployment
+            condition:
+              metric: environment
+              operator: "=="
+              threshold: "production"
+        logic: OR
+      - model: claude-opus-4.8
+        triggers:
+          - type: disaster_recovery
+            condition:
+              metric: operation_type
+              operator: "=="
+              threshold: "disaster_recovery"
+          - type: security_incident
+            condition:
+              metric: incident_severity
+              operator: "=="
+              threshold: "critical"
+        logic: OR
+
+# 特殊场景路由规则
+special_scenarios:
+  # 多模态任务（截图分析、视频分析等）
+  multimodal:
+    primary:
+      model: gemini-3.1-pro
+      reason: 唯一支持多模态输入的模型
+      cost: medium
+      capabilities:
+        - multimodal
+        - image_analysis
+        - video_analysis
+    applicable_roles:
+      - analyst
+      - developer
+      - qa
+    trigger_conditions:
+      - type: input_contains_image
+        condition:
+          metric: has_image_input
+          operator: "=="
+          threshold: true
+      - type: input_contains_video
+        condition:
+          metric: has_video_input
+          operator: "=="
+          threshold: true
+    logic: OR
+
+  # UI/前端开发任务
+  ui_development:
+    primary:
+      model: gemini-3.1-pro
+      reason: 视觉理解能力强，适合UI还原
+      cost: medium
+      capabilities:
+        - image_analysis
+        - code_generation
+    applicable_roles:
+      - developer
+    trigger_conditions:
+      - type: task_type_ui
+        condition:
+          metric: task_category
+          operator: "=="
+          threshold: "ui_implementation"
+      - type: has_design_mockup
+        condition:
+          metric: has_image_input
+          operator: "=="
+          threshold: true
+    logic: AND
+
+  # 紧急响应（生产故障）
+  emergency_response:
+    primary:
+      model: claude-opus-4.8
+      reason: 最高推理能力，不考虑成本
+      cost: high
+      capabilities:
+        - reasoning_depth
+        - code_understanding
+        - rapid_analysis
+    applicable_roles:
+      - developer
+      - devops
+      - architect
+    trigger_conditions:
+      - type: production_incident
+        condition:
+          metric: incident_severity
+          operator: ">="
+          threshold: "high"
+      - type: system_down
+        condition:
+          metric: system_status
+          operator: "=="
+          threshold: "down"
+    logic: OR
+
+# 成本优化规则
+cost_optimization:
+  # 每日预算阈值（基于累计消耗比例）
+  budget_thresholds:
+    - ratio: 0.7
+      action: prefer_lower_cost_models
+      description: 消耗达70%时优先使用低成本模型
+    - ratio: 0.85
+      action: restrict_high_cost_models
+      description: 消耗达85%时限制高成本模型
+    - ratio: 0.95
+      action: emergency_mode
+      description: 消耗达95%时仅使用最低成本模型
+
+  # 批量任务成本优化
+  batch_optimization:
+    threshold: 10  # 任务数量阈值
+    strategy: prefer_codex
+    reason: 批量任务优先使用成本最低的Codex模型
+
+# 模型切换策略
+switching_strategy:
+  # 升级触发（从低成本模型升级到高成本模型）
+  upgrade_triggers:
+    - condition: retry_count_exceeded
+      metric: retry_count
+      operator: ">"
+      threshold: 2
+      action: upgrade_to_next_tier
+    - condition: quality_insufficient
+      metric: output_quality_score
+      operator: "<"
+      threshold: 0.6
+      action: upgrade_to_highest_tier
+
+  # 降级触发（从高成本模型降级到低成本模型）
+  downgrade_triggers:
+    - condition: task_simplified
+      metric: task_complexity_score
+      operator: "<"
+      threshold: 0.3
+      action: downgrade_to_lower_tier
+    - condition: budget_constrained
+      metric: daily_spent_ratio
+      operator: ">"
+      threshold: 0.8
+      action: downgrade_to_lowest_tier
+
+# 元数据
+metadata:
+  version: "1.0.0"
+  created: "2026-07-23"
+  description: "AI角色系统模型路由矩阵 - Phase 1 MVP"
+  models_included:
+    - id: claude-opus-4.8
+      tier: premium
+      cost_level: high
+    - id: claude-sonnet-5
+      tier: standard
+      cost_level: medium
+    - id: gpt-5.3-codex
+      tier: economy
+      cost_level: low
+    - id: gemini-3.1-pro
+      tier: specialized
+      cost_level: medium

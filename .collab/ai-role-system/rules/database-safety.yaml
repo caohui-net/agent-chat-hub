@@ -1,0 +1,98 @@
+- id: DB-001
+  name: Migration必须支持滚动发布
+  scope: database
+  condition: 编写数据库schema变更migration
+  requirement: Migration必须兼容新旧版本代码同时运行，避免停机部署
+  severity: blocking
+  verification: 检查migration脚本，确认可分阶段执行且每阶段都兼容运行中的代码
+  source: database-migration-guide.md#rolling-deployment
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 分阶段添加非空列
+        code: |
+          -- Phase 1: 添加可空列
+          ALTER TABLE users ADD COLUMN status VARCHAR(20);
+
+          -- 部署新代码（写入status）
+
+          -- Phase 2: 填充默认值
+          UPDATE users SET status='active' WHERE status IS NULL;
+
+          -- Phase 3: 添加非空约束
+          ALTER TABLE users ALTER COLUMN status SET NOT NULL;
+    fail:
+      - case: 直接添加非空列
+        code: |
+          -- 错误：新代码未部署前，旧代码无法写入该列
+          ALTER TABLE users ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'active';
+  tags:
+    - database
+    - migration
+    - zero-downtime
+
+- id: DB-002
+  name: 不在单次事务中重写大表
+  scope: database
+  condition: 需要更新大量数据行
+  requirement: 大表更新必须分批执行，避免长时间锁表和事务日志膨胀
+  severity: blocking
+  verification: 检查UPDATE/DELETE语句是否有LIMIT限制或分批逻辑
+  source: database-best-practices.md#batch-updates
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: 分批更新
+        code: |
+          -- 正确：分批更新，每批10000行
+          DECLARE @batch_size INT = 10000;
+          WHILE EXISTS (SELECT 1 FROM users WHERE status IS NULL LIMIT 1)
+          BEGIN
+            UPDATE users SET status='active'
+            WHERE status IS NULL
+            LIMIT @batch_size;
+
+            -- 延迟避免压力
+            WAITFOR DELAY '00:00:01';
+          END
+    fail:
+      - case: 单次更新全表
+        code: |
+          -- 错误：百万行数据一次性更新，锁表时间长
+          UPDATE users SET status='active' WHERE status IS NULL;
+  tags:
+    - database
+    - performance
+    - locking
+
+- id: DB-003
+  name: 添加索引前评估锁影响
+  scope: database
+  condition: 为现有表添加索引
+  requirement: 大表添加索引前必须评估锁影响，优先使用CONCURRENTLY或在线DDL
+  severity: warning
+  verification: 检查CREATE INDEX语句是否包含CONCURRENTLY选项（PostgreSQL）或使用在线DDL（MySQL）
+  source: database-indexing-guide.md#online-index-creation
+  owner: developer
+  reviewer: reviewer
+  examples:
+    pass:
+      - case: PostgreSQL并发创建索引
+        code: |
+          -- 正确：使用CONCURRENTLY避免锁表
+          CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
+      - case: MySQL在线DDL
+        code: |
+          -- 正确：使用ALGORITHM=INPLACE避免锁表
+          CREATE INDEX idx_users_email ON users(email) ALGORITHM=INPLACE;
+    fail:
+      - case: 普通索引创建
+        code: |
+          -- 错误：大表上创建索引会长时间锁表
+          CREATE INDEX idx_users_email ON users(email);
+  tags:
+    - database
+    - indexing
+    - locking

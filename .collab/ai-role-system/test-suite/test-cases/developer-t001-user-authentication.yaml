@@ -1,0 +1,353 @@
+# 测试用例: DEVELOPER-T001 - 功能实现 - 用户认证
+# 测试实现工程师完成用户认证功能的能力
+
+test_case:
+  id: DEVELOPER-T001
+  name: 功能实现 - 用户认证
+  priority: P0
+  role: developer
+  category: feature_implementation
+
+  # 输入数据
+  input:
+    requirements:
+      - "用户可以通过邮箱和密码注册"
+      - "密码必须加密存储"
+      - "登录成功返回JWT token"
+      - "密码至少8位，包含字母和数字"
+
+    tech_stack:
+      language: "Node.js"
+      framework: "Express"
+      libraries:
+        - "bcrypt (密码加密)"
+        - "jsonwebtoken (JWT生成)"
+      database: "PostgreSQL"
+
+    existing_code:
+      files:
+        - path: "src/app.js"
+          purpose: "Express应用主文件"
+        - path: "src/db.js"
+          purpose: "数据库连接"
+        - path: "src/routes/index.js"
+          purpose: "路由注册"
+
+    constraints:
+      - "遵循SEC-003规则（输入验证）"
+      - "遵循SEC-004规则（不硬编码密钥）"
+      - "测试覆盖率>80%"
+
+  # 预期输出结构
+  expected_output_schema:
+    changed_files:
+      type: array
+      items:
+        path: string
+        change_type: string  # created/modified
+        summary: string
+
+    implementation_summary:
+      type: string
+      description: "实现说明"
+
+    verification_results:
+      tests_passed: boolean
+      test_count: integer
+      coverage: number
+      rule_violations: array
+
+    acceptance_status:
+      type: object
+      properties:
+        requirement_1: boolean
+        requirement_2: boolean
+        requirement_3: boolean
+        requirement_4: boolean
+
+  # 标准答案（专家基线）
+  expert_baseline:
+    expected_files:
+      - path: "src/models/User.js"
+        change_type: "created"
+        content_requirements:
+          - "User模型定义"
+          - "email和password字段"
+
+      - path: "src/routes/auth.js"
+        change_type: "created"
+        content_requirements:
+          - "POST /register路由"
+          - "POST /login路由"
+          - "输入验证中间件"
+
+      - path: "src/controllers/authController.js"
+        change_type: "created"
+        content_requirements:
+          - "register函数"
+          - "login函数"
+          - "使用bcrypt.hash加密密码"
+          - "使用jwt.sign生成token"
+          - "密码强度验证"
+
+      - path: "tests/auth.test.js"
+        change_type: "created"
+        content_requirements:
+          - "注册成功测试"
+          - "登录成功测试"
+          - "密码错误测试"
+          - "重复邮箱测试"
+          - "密码强度测试"
+
+    security_requirements:
+      - rule: "SEC-003"
+        check: "输入验证（邮箱格式、密码强度）"
+        must_have:
+          - "邮箱格式验证正则"
+          - "密码长度检查"
+          - "密码字符类型检查"
+
+      - rule: "SEC-004"
+        check: "不硬编码JWT密钥"
+        must_have:
+          - "JWT_SECRET从环境变量读取"
+          - "process.env.JWT_SECRET"
+
+      - rule: "SEC-002"
+        check: "不记录敏感信息"
+        must_not_have:
+          - "logger.*password"
+          - "console.log.*password"
+
+    test_requirements:
+      - rule: "TEST-001"
+        check: "关键路径有测试"
+        must_have_tests:
+          - "注册成功"
+          - "登录成功"
+          - "密码错误"
+
+      - rule: "TEST-002"
+        check: "边界和异常测试"
+        must_have_tests:
+          - "重复邮箱注册"
+          - "无效邮箱格式"
+          - "弱密码"
+          - "空输入"
+
+  # 评估标准
+  evaluation:
+    metrics:
+      code_correctness:
+        method: test_execution
+        pass_threshold: 1.0
+        checks:
+          - "所有单元测试通过"
+          - "集成测试通过"
+          - "功能符合需求"
+
+      security_compliance:
+        method: rule_checking
+        pass_threshold: 1.0
+        rules:
+          - id: "SEC-003"
+            check: "输入验证"
+            verification: "检查代码是否验证邮箱和密码格式"
+
+          - id: "SEC-004"
+            check: "密钥管理"
+            verification: "检查JWT_SECRET是否从环境变量读取"
+
+          - id: "SEC-002"
+            check: "日志安全"
+            verification: "检查日志中是否包含密码"
+
+        violations_allowed: 0
+
+      test_coverage:
+        method: coverage_tool
+        tool: "nyc"
+        pass_threshold: 0.8
+        coverage_type: "line_coverage"
+
+      code_quality:
+        method: static_analysis
+        checks:
+          - name: "无明显漏洞"
+            tool: "eslint-security"
+          - name: "复杂度适中"
+            metric: "cyclomatic_complexity <= 10"
+
+    pass_conditions:
+      - condition: "code_correctness == 1.0"
+        severity: blocking
+      - condition: "security_compliance == 1.0"
+        severity: blocking
+      - condition: "test_coverage >= 0.8"
+        severity: blocking
+      - condition: "所有需求验收通过"
+        severity: blocking
+
+  # 测试执行
+  execution:
+    steps:
+      - step: 1
+        action: "准备测试环境"
+        commands:
+          - "创建临时git worktree"
+          - "初始化Node.js项目"
+          - "安装依赖"
+
+      - step: 2
+        action: "加载developer角色配置"
+        command: "load_role('developer')"
+
+      - step: 3
+        action: "应用模型适配器"
+        command: "apply_adapter('gpt-5.3-codex')"  # Codex擅长代码生成
+
+      - step: 4
+        action: "注入原子规则"
+        command: "inject_rules(['SEC-003', 'SEC-004', 'TEST-001'])"
+
+      - step: 5
+        action: "构造输入提示"
+        command: "render_prompt(role, input, rules)"
+
+      - step: 6
+        action: "调用AI模型"
+        command: "invoke_model(prompt)"
+
+      - step: 7
+        action: "解析输出并写入文件"
+        command: "apply_code_changes(output)"
+
+      - step: 8
+        action: "运行测试"
+        command: "npm test"
+
+      - step: 9
+        action: "检查覆盖率"
+        command: "npm run coverage"
+
+      - step: 10
+        action: "验证安全规则"
+        command: "check_security_rules(changed_files, rules)"
+
+      - step: 11
+        action: "判断通过/失败"
+        command: "evaluate_results(test_results, coverage, rule_violations)"
+
+    timeout: 120  # 秒
+    retry_on_failure: false
+
+  # 失败场景检测
+  failure_scenarios:
+    - scenario: "密码明文存储"
+      detection:
+        pattern: "password.*VALUES.*\\("
+        anti_pattern: "bcrypt"
+      severity: blocking
+      error_message: "违反SEC-004：密码未加密"
+
+    - scenario: "硬编码JWT密钥"
+      detection:
+        pattern: "jwt.sign.*['\"]\\w{10,}['\"]"
+        anti_pattern: "process.env"
+      severity: blocking
+      error_message: "违反SEC-004：JWT密钥硬编码"
+
+    - scenario: "缺少输入验证"
+      detection:
+        anti_pattern: "email.*test|validator|regex"
+      severity: blocking
+      error_message: "违反SEC-003：缺少输入验证"
+
+    - scenario: "测试覆盖率不足"
+      detection:
+        coverage: "< 0.8"
+      severity: blocking
+      error_message: "测试覆盖率低于80%"
+
+  # 变体测试
+  variations:
+    - variation_id: "DEVELOPER-T001-V1"
+      name: "不同技术栈 - Python/Flask"
+      input_override:
+        tech_stack:
+          language: "Python"
+          framework: "Flask"
+          libraries:
+            - "werkzeug.security (密码加密)"
+            - "PyJWT (JWT生成)"
+      expected_differences:
+        - "使用werkzeug.security.generate_password_hash"
+        - "使用PyJWT库"
+
+    - variation_id: "DEVELOPER-T001-V2"
+      name: "额外需求 - 邮箱验证"
+      input_override:
+        requirements:
+          - "用户可以通过邮箱和密码注册"
+          - "密码必须加密存储"
+          - "登录成功返回JWT token"
+          - "注册后发送验证邮件"
+      expected_additional_files:
+        - "src/services/emailService.js"
+
+# 实际运行结果示例
+sample_run:
+  ai_output:
+    changed_files:
+      - path: "src/models/User.js"
+        change_type: "created"
+        summary: "User模型定义，包含email和hashedPassword字段"
+
+      - path: "src/routes/auth.js"
+        change_type: "created"
+        summary: "认证路由，包含/register和/login端点"
+
+      - path: "src/controllers/authController.js"
+        change_type: "created"
+        summary: "认证控制器，使用bcrypt加密密码，jwt生成token"
+
+      - path: "tests/auth.test.js"
+        change_type: "created"
+        summary: "认证功能测试，覆盖正常和异常路径"
+
+    implementation_summary: |
+      实现了用户注册和登录功能：
+      - 注册时验证邮箱格式和密码强度
+      - 使用bcrypt加密密码（salt rounds: 10）
+      - 登录成功返回JWT token（24小时有效期）
+      - JWT_SECRET从环境变量读取
+      - 测试覆盖率85%
+
+    verification_results:
+      tests_passed: true
+      test_count: 8
+      coverage: 0.85
+      rule_violations: []
+
+    acceptance_status:
+      requirement_1: true  # 邮箱密码注册
+      requirement_2: true  # 密码加密存储
+      requirement_3: true  # 返回JWT
+      requirement_4: true  # 密码强度验证
+
+  evaluation_results:
+    code_correctness: 1.0
+    security_compliance: 1.0
+    test_coverage: 0.85
+    code_quality: 0.9
+    overall: "PASS"
+    notes: "实现完整，安全规则全部遵守，测试覆盖率达标"
+
+# 元数据
+metadata:
+  created: "2026-07-23"
+  author: "AI角色系统测试框架"
+  version: "1.0.0"
+  estimated_duration: "90秒"
+  model_recommendation: "gpt-5.3-codex"
+  complexity: "medium"

@@ -1,0 +1,526 @@
+# 测试任务定义
+# 定义用于验证AI角色系统各个角色能力的测试任务
+
+test_tasks:
+  # 需求分析师测试任务
+  analyst_tasks:
+    - id: ANALYST-T001
+      name: 需求澄清 - 模糊需求识别
+      priority: P0
+      description: 给定一个模糊的功能需求，识别歧义点并提出澄清问题
+      input:
+        requirement: "用户希望系统能够更快地处理数据"
+        context: "电商订单处理系统，当前处理时间约5秒"
+      expected_output_schema:
+        clarified_requirements:
+          - question: string
+            reason: string
+        acceptance_criteria:
+          - criterion: string
+            measurable: boolean
+      evaluation_criteria:
+        - metric: question_quality
+          min_score: 0.8
+        - metric: ambiguity_coverage
+          min_score: 0.9
+      pass_conditions:
+        - 至少识别3个歧义点
+        - 提出的问题具体可执行
+        - 验收标准可量化
+
+    - id: ANALYST-T002
+      name: 边界条件识别
+      priority: P0
+      description: 分析需求并识别边界条件和异常场景
+      input:
+        requirement: "用户可以上传头像图片"
+        context: "社交应用用户资料功能"
+      expected_output_schema:
+        boundary_conditions:
+          - condition: string
+            handling: string
+        edge_cases:
+          - scenario: string
+            expected_behavior: string
+      evaluation_criteria:
+        - metric: boundary_coverage
+          min_score: 0.85
+        - metric: security_consideration
+          min_score: 0.9
+      pass_conditions:
+        - 识别文件大小限制
+        - 识别文件类型限制
+        - 考虑安全风险（恶意文件）
+
+    - id: ANALYST-T003
+      name: 验收标准制定
+      priority: P1
+      description: 为给定需求制定清晰可验证的验收标准
+      input:
+        requirement: "实现用户登录功能"
+        context: "Web应用，支持邮箱密码登录"
+      expected_output_schema:
+        acceptance_criteria:
+          - criterion: string
+            test_method: string
+            expected_result: string
+      evaluation_criteria:
+        - metric: criteria_clarity
+          min_score: 0.9
+        - metric: testability
+          min_score: 1.0
+      pass_conditions:
+        - 每个标准可测试
+        - 覆盖正常和异常路径
+        - 包含性能和安全要求
+
+  # 软件架构师测试任务
+  architect_tasks:
+    - id: ARCHITECT-T001
+      name: 技术方案设计 - 多方案权衡
+      priority: P0
+      description: 为给定问题设计至少2个技术方案并进行权衡分析
+      input:
+        problem: "系统需要支持实时消息推送，预计10万在线用户"
+        constraints:
+          - budget: medium
+          - team_skill: "Node.js, Python"
+          - timeline: "2个月"
+      expected_output_schema:
+        recommended_solution:
+          name: string
+          architecture: string
+          rationale: string
+        alternative_solutions:
+          - name: string
+            pros: array
+            cons: array
+        tradeoff_analysis:
+          dimensions:
+            - dimension: string
+              comparison: string
+      evaluation_criteria:
+        - metric: solution_count
+          min_value: 2
+        - metric: tradeoff_depth
+          min_score: 0.85
+        - metric: technical_feasibility
+          min_score: 0.9
+      pass_conditions:
+        - 至少2个可行方案
+        - 权衡分析覆盖性能/成本/复杂度
+        - 推荐方案有充分理由
+
+    - id: ARCHITECT-T002
+      name: 模块划分和接口设计
+      priority: P0
+      description: 为新功能设计模块划分和接口定义
+      input:
+        feature: "支付系统"
+        requirements:
+          - "支持多种支付方式（支付宝、微信、信用卡）"
+          - "需要记录支付日志"
+          - "支持退款"
+      expected_output_schema:
+        modules:
+          - name: string
+            responsibility: string
+            dependencies: array
+        interfaces:
+          - name: string
+            methods: array
+            contracts: object
+      evaluation_criteria:
+        - metric: cohesion
+          min_score: 0.8
+        - metric: coupling
+          max_score: 0.3
+        - metric: interface_clarity
+          min_score: 0.9
+      pass_conditions:
+        - 模块职责单一清晰
+        - 接口定义完整（输入/输出/异常）
+        - 依赖关系合理
+
+    - id: ARCHITECT-T003
+      name: 技术风险识别
+      priority: P1
+      description: 识别技术方案的潜在风险并提供缓解措施
+      input:
+        solution: "使用Redis作为消息队列"
+        context: "订单处理系统，峰值1000 QPS"
+      expected_output_schema:
+        technical_risks:
+          - risk: string
+            impact: string
+            probability: string
+            mitigation: string
+      evaluation_criteria:
+        - metric: risk_coverage
+          min_score: 0.85
+        - metric: mitigation_feasibility
+          min_score: 0.8
+      pass_conditions:
+        - 识别关键风险（数据丢失、性能瓶颈）
+        - 提供可行缓解方案
+
+  # 实现工程师测试任务
+  developer_tasks:
+    - id: DEVELOPER-T001
+      name: 功能实现 - 用户认证
+      priority: P0
+      description: 实现用户注册和登录功能，包括密码加密
+      input:
+        requirements:
+          - "用户可以通过邮箱和密码注册"
+          - "密码必须加密存储"
+          - "登录成功返回JWT token"
+        tech_stack: "Node.js, Express, bcrypt, jsonwebtoken"
+      expected_output_schema:
+        changed_files:
+          - path: string
+            change_type: string
+        implementation_summary: string
+        verification_results:
+          tests_passed: boolean
+          coverage: number
+      evaluation_criteria:
+        - metric: code_correctness
+          min_score: 1.0
+        - metric: security_compliance
+          min_score: 1.0
+        - metric: test_coverage
+          min_value: 0.8
+      pass_conditions:
+        - 密码使用bcrypt加密
+        - JWT签名验证正确
+        - 单元测试通过
+        - 无SEC规则违反
+
+    - id: DEVELOPER-T002
+      name: Bug修复 - SQL注入漏洞
+      priority: P0
+      description: 修复代码中的SQL注入漏洞
+      input:
+        vulnerable_code: |
+          const query = `SELECT * FROM users WHERE email='${email}'`;
+          db.query(query);
+        requirements:
+          - "修复SQL注入漏洞"
+          - "保持功能不变"
+          - "添加测试验证修复"
+      expected_output_schema:
+        changed_files: array
+        fix_summary: string
+        verification_results:
+          vulnerability_fixed: boolean
+          tests_added: boolean
+      evaluation_criteria:
+        - metric: vulnerability_eliminated
+          min_score: 1.0
+        - metric: test_coverage
+          min_score: 0.9
+      pass_conditions:
+        - 使用参数化查询
+        - 添加负向测试
+        - 无SEC-003规则违反
+
+    - id: DEVELOPER-T003
+      name: 重构 - 提取公共逻辑
+      priority: P1
+      description: 识别重复代码并提取为公共函数
+      input:
+        code_files:
+          - file1: "重复的用户验证逻辑"
+          - file2: "重复的用户验证逻辑"
+        requirements:
+          - "提取公共函数"
+          - "保持原有功能不变"
+          - "测试覆盖"
+      expected_output_schema:
+        changed_files: array
+        refactoring_summary: string
+        verification_results:
+          tests_passed: boolean
+          no_regression: boolean
+      evaluation_criteria:
+        - metric: code_duplication
+          max_score: 0.1
+        - metric: test_coverage
+          min_value: 0.8
+      pass_conditions:
+        - 消除重复代码
+        - 所有测试通过
+        - 无功能回归
+
+  # 代码审查员测试任务
+  reviewer_tasks:
+    - id: REVIEWER-T001
+      name: 安全审查 - 权限验证
+      priority: P0
+      description: 审查代码是否正确验证用户权限
+      input:
+        code_change: |
+          app.delete('/api/documents/:id', async (req, res) => {
+            const doc = await db.query('SELECT * FROM documents WHERE id = ?', [req.params.id]);
+            await db.query('DELETE FROM documents WHERE id = ?', [req.params.id]);
+            res.json({ success: true });
+          });
+      expected_output_schema:
+        decision: string  # APPROVE | REJECT | REQUEST_CHANGES
+        blocking_issues:
+          - issue: string
+            rule_id: string
+            severity: string
+        suggestions: array
+      evaluation_criteria:
+        - metric: security_issue_detection
+          min_score: 1.0
+        - metric: false_positive_rate
+          max_score: 0.1
+      pass_conditions:
+        - 识别缺少权限验证（SEC-001）
+        - decision为REJECT或REQUEST_CHANGES
+        - 提供修复建议
+
+    - id: REVIEWER-T002
+      name: API兼容性审查
+      priority: P0
+      description: 审查API变更是否破坏向后兼容性
+      input:
+        code_change: |
+          // 原接口
+          interface UserResponse {
+            id: string;
+            name: string;
+            email: string;
+          }
+          // 新接口
+          interface UserResponse {
+            id: string;
+            name: string;
+            // email字段被删除
+          }
+      expected_output_schema:
+        decision: string
+        blocking_issues: array
+      evaluation_criteria:
+        - metric: compatibility_issue_detection
+          min_score: 1.0
+      pass_conditions:
+        - 识别删除email字段（API-001）
+        - decision为REJECT
+        - 引用API-001规则
+
+    - id: REVIEWER-T003
+      name: 代码质量审查
+      priority: P1
+      description: 审查代码的可维护性和最佳实践
+      input:
+        code_change: |
+          function processData(data) {
+            let result = [];
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].status === 'active') {
+                result.push(data[i]);
+              }
+            }
+            return result;
+          }
+      expected_output_schema:
+        decision: string
+        suggestions:
+          - suggestion: string
+            priority: string
+      evaluation_criteria:
+        - metric: suggestion_quality
+          min_score: 0.7
+      pass_conditions:
+        - 提供改进建议（如使用filter）
+        - decision可以是APPROVE（非阻塞性问题）
+
+  # QA工程师测试任务
+  qa_tasks:
+    - id: QA-T001
+      name: 测试用例设计 - 登录功能
+      priority: P0
+      description: 为登录功能设计完整的测试用例
+      input:
+        feature: "用户登录"
+        requirements:
+          - "支持邮箱密码登录"
+          - "密码错误3次锁定账户"
+          - "返回JWT token"
+      expected_output_schema:
+        test_plan:
+          scope: string
+          strategy: string
+        test_cases:
+          - id: string
+            scenario: string
+            steps: array
+            expected_result: string
+            priority: string
+      evaluation_criteria:
+        - metric: scenario_coverage
+          min_score: 0.9
+        - metric: edge_case_coverage
+          min_score: 0.85
+      pass_conditions:
+        - 覆盖正常路径
+        - 覆盖异常路径（错误密码、锁定）
+        - 覆盖边界条件（空输入、特殊字符）
+
+    - id: QA-T002
+      name: 缺陷分析与验证
+      priority: P0
+      description: 分析bug报告并设计验证方案
+      input:
+        bug_report:
+          title: "支付金额显示错误"
+          description: "用户支付100元，但订单显示99.99元"
+          steps_to_reproduce:
+            - "创建订单"
+            - "选择支付"
+            - "查看订单详情"
+      expected_output_schema:
+        root_cause_analysis: string
+        test_cases:
+          - scenario: string
+            expected_result: string
+        regression_tests: array
+      evaluation_criteria:
+        - metric: root_cause_accuracy
+          min_score: 0.8
+        - metric: test_coverage
+          min_score: 0.9
+      pass_conditions:
+        - 识别可能的精度问题
+        - 设计验证测试
+        - 添加回归测试防止复发
+
+    - id: QA-T003
+      name: 测试覆盖率分析
+      priority: P1
+      description: 分析现有测试覆盖率并识别缺失场景
+      input:
+        coverage_report:
+          line_coverage: 0.75
+          branch_coverage: 0.60
+          uncovered_files:
+            - "payment-processor.js"
+            - "refund-handler.js"
+      expected_output_schema:
+        coverage_gaps:
+          - file: string
+            missing_scenarios: array
+        test_plan:
+          priority_tests: array
+      evaluation_criteria:
+        - metric: gap_identification
+          min_score: 0.85
+      pass_conditions:
+        - 识别关键未覆盖路径
+        - 按优先级排序补充计划
+
+  # DevOps工程师测试任务
+  devops_tasks:
+    - id: DEVOPS-T001
+      name: CI/CD配置 - Node.js应用
+      priority: P0
+      description: 为Node.js应用配置CI/CD流水线
+      input:
+        project_type: "Node.js web application"
+        requirements:
+          - "代码提交触发构建"
+          - "运行测试"
+          - "构建Docker镜像"
+          - "部署到测试环境"
+      expected_output_schema:
+        pipeline_config:
+          stages: array
+          jobs: array
+        deployment_plan: string
+      evaluation_criteria:
+        - metric: pipeline_completeness
+          min_score: 0.9
+        - metric: best_practices
+          min_score: 0.8
+      pass_conditions:
+        - 包含测试、构建、部署阶段
+        - 配置正确（语法、依赖）
+        - 包含失败通知
+
+    - id: DEVOPS-T002
+      name: 监控告警配置
+      priority: P0
+      description: 为生产服务配置监控和告警
+      input:
+        service: "API服务"
+        metrics:
+          - "响应时间"
+          - "错误率"
+          - "CPU使用率"
+      expected_output_schema:
+        monitoring_setup:
+          metrics: array
+          dashboards: array
+        alert_rules:
+          - name: string
+            condition: string
+            severity: string
+            notification: string
+      evaluation_criteria:
+        - metric: critical_metrics_covered
+          min_score: 1.0
+        - metric: alert_threshold_reasonableness
+          min_score: 0.8
+      pass_conditions:
+        - 覆盖关键指标
+        - 告警阈值合理
+        - 配置通知渠道
+
+    - id: DEVOPS-T003
+      name: 灾难恢复方案
+      priority: P1
+      description: 设计服务故障的恢复方案
+      input:
+        scenario: "数据库主节点故障"
+        service: "订单处理系统"
+        sla: "99.9% 可用性"
+      expected_output_schema:
+        rollback_plan:
+          steps: array
+          estimated_time: string
+        recovery_procedures:
+          - scenario: string
+            steps: array
+      evaluation_criteria:
+        - metric: plan_completeness
+          min_score: 0.85
+        - metric: rto_feasibility
+          min_score: 0.8
+      pass_conditions:
+        - 明确恢复步骤
+        - 预估恢复时间合理
+        - 包含验证步骤
+
+# 测试优先级定义
+priority_definitions:
+  P0:
+    description: 核心功能测试，必须通过
+    failure_impact: 阻塞发布
+  P1:
+    description: 重要功能测试，强烈建议通过
+    failure_impact: 需要评估风险
+  P2:
+    description: 补充测试，可选
+    failure_impact: 记录但不阻塞
+
+# 元数据
+metadata:
+  version: "1.0.0"
+  created: "2026-07-23"
+  description: "AI角色系统测试任务定义 - Phase 1 MVP"
+  total_tasks: 18
+  roles_covered: 6

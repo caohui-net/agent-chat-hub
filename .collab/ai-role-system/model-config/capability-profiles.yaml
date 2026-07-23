@@ -1,0 +1,445 @@
+# 模型能力配置文件
+# 定义每个模型的详细能力、限制和最佳使用场景
+
+models:
+  # Claude Opus 4.8 - 旗舰模型
+  claude-opus-4.8:
+    vendor: Anthropic
+    model_id: claude-opus-4-8
+    tier: premium
+    release_date: "2026-01"
+
+    pricing:
+      input: 5.00   # USD per 1M tokens
+      output: 25.00 # USD per 1M tokens
+      cost_level: high
+
+    performance:
+      swe_bench_score: 88.6
+      reasoning_depth: 10  # 1-10 scale
+      code_quality: 9
+      speed: 7  # 1-10 scale, 10=fastest
+
+    capabilities:
+      long_context:
+        supported: true
+        max_tokens: 200000
+        context_window: 200000
+      reasoning:
+        depth: very_high
+        multi_step: true
+        abstract_thinking: true
+      code:
+        generation: high
+        understanding: very_high
+        refactoring: very_high
+        debugging: very_high
+      structured_output:
+        json: true
+        schema_validation: true
+        consistency: very_high
+      multimodal:
+        supported: false
+
+    tools:
+      - Read
+      - Write
+      - Edit
+      - Bash
+      - Agent
+      - TaskCreate
+      - EnterPlanMode
+
+    strengths:
+      - 最高推理深度，适合复杂技术决策
+      - 架构设计和技术方案权衡
+      - 代码理解和审查
+      - 长上下文处理
+      - 高质量结构化输出
+
+    weaknesses:
+      - 成本最高
+      - 速度相对较慢
+      - 不支持多模态
+
+    best_for:
+      roles:
+        - architect
+        - reviewer
+      scenarios:
+        - 复杂架构设计
+        - 关键系统变更审查
+        - 生产故障诊断
+        - 技术方案深度权衡
+      task_complexity: high_to_critical
+
+    not_recommended_for:
+      - 简单代码生成（过度使用成本）
+      - 批量重复任务
+      - UI设计还原（无多模态能力）
+
+  # Claude Sonnet 5 - 标准模型
+  claude-sonnet-5:
+    vendor: Anthropic
+    model_id: claude-sonnet-5
+    tier: standard
+    release_date: "2026-01"
+
+    pricing:
+      input: 3.00
+      output: 15.00
+      cost_level: medium
+
+    performance:
+      swe_bench_score: 85.2
+      reasoning_depth: 8
+      code_quality: 8
+      speed: 8
+
+    capabilities:
+      long_context:
+        supported: true
+        max_tokens: 200000
+        context_window: 200000
+      reasoning:
+        depth: high
+        multi_step: true
+        abstract_thinking: true
+      code:
+        generation: high
+        understanding: high
+        refactoring: high
+        debugging: high
+      structured_output:
+        json: true
+        schema_validation: true
+        consistency: high
+      multimodal:
+        supported: false
+
+    tools:
+      - Read
+      - Write
+      - Edit
+      - Bash
+      - Agent
+      - TaskCreate
+      - EnterPlanMode
+
+    strengths:
+      - 性价比最优（推理能力 vs 成本）
+      - 适合大多数标准工程任务
+      - 长上下文处理
+      - 速度较快
+
+    weaknesses:
+      - 推理深度略低于Opus
+      - 不支持多模态
+
+    best_for:
+      roles:
+        - analyst
+        - reviewer
+        - developer
+      scenarios:
+        - 需求澄清和分析
+        - 标准代码审查
+        - 中等复杂度开发
+        - 测试方案设计
+      task_complexity: low_to_high
+
+    not_recommended_for:
+      - 最复杂的架构决策（用Opus）
+      - 简单重复任务（用Codex更省钱）
+      - UI设计还原（无多模态）
+
+  # GPT-5.3-Codex - 代码专家
+  gpt-5.3-codex:
+    vendor: OpenAI
+    model_id: gpt-5.3-codex
+    tier: economy
+    release_date: "2026-01"
+
+    pricing:
+      input: 1.75
+      output: 14.00
+      cost_level: low
+
+    performance:
+      swe_bench_score: 82.1
+      reasoning_depth: 7
+      code_quality: 8
+      speed: 9
+
+    capabilities:
+      long_context:
+        supported: true
+        max_tokens: 128000
+        context_window: 128000
+      reasoning:
+        depth: medium_high
+        multi_step: true
+        abstract_thinking: moderate
+      code:
+        generation: very_high
+        understanding: high
+        refactoring: high
+        debugging: high
+        test_generation: very_high
+      structured_output:
+        json: true
+        schema_validation: true
+        consistency: high
+      multimodal:
+        supported: false
+
+    tools:
+      - repository_read
+      - repository_write
+      - shell
+      - file_search
+      - test_runner
+
+    strengths:
+      - 代码生成能力最强
+      - 测试生成优秀
+      - 成本最低
+      - 速度快
+      - 最佳性价比（代码任务）
+
+    weaknesses:
+      - 推理深度低于Claude系列
+      - 不适合复杂架构设计
+      - 不支持多模态
+
+    best_for:
+      roles:
+        - developer
+        - qa
+        - devops
+      scenarios:
+        - 功能实现和代码生成
+        - 测试用例编写
+        - 脚本和配置生成
+        - 批量代码任务
+      task_complexity: low_to_medium
+
+    not_recommended_for:
+      - 复杂架构设计
+      - 深度技术权衡
+      - 需求澄清（理解能力较弱）
+      - UI设计还原
+
+  # Gemini 3.1 Pro - 多模态专家
+  gemini-3.1-pro:
+    vendor: Google
+    model_id: gemini-3.1-pro
+    tier: specialized
+    release_date: "2026-01"
+
+    pricing:
+      input: 2.50
+      output: 12.50
+      cost_level: medium
+
+    performance:
+      swe_bench_score: 80.6
+      reasoning_depth: 7
+      code_quality: 7
+      speed: 8
+
+    capabilities:
+      long_context:
+        supported: true
+        max_tokens: 100000
+        context_window: 100000
+      reasoning:
+        depth: medium
+        multi_step: true
+        abstract_thinking: moderate
+      code:
+        generation: medium_high
+        understanding: medium_high
+        refactoring: medium
+        debugging: medium
+      structured_output:
+        json: true
+        schema_validation: true
+        consistency: medium_high
+      multimodal:
+        supported: true
+        image_input: true
+        video_input: true
+        audio_input: false
+        visual_understanding: very_high
+
+    tools:
+      - file_read
+      - file_write
+      - image_analysis
+      - video_analysis
+      - shell_execute
+      - document_extraction
+
+    strengths:
+      - 唯一支持多模态的模型
+      - 图像和视频理解能力强
+      - 适合UI/UX开发任务
+      - 文档提取能力强
+
+    weaknesses:
+      - 代码能力低于专业代码模型
+      - 推理深度一般
+      - 工具集有限
+
+    best_for:
+      roles:
+        - developer (UI tasks)
+        - analyst (multimodal analysis)
+      scenarios:
+        - UI设计还原和实现
+        - 截图分析和bug复现
+        - 视频内容分析
+        - 文档和图表提取
+        - 设计稿转代码
+      task_complexity: low_to_medium
+      task_type: multimodal
+
+    not_recommended_for:
+      - 纯代码任务（用Codex或Claude）
+      - 复杂架构设计
+      - 后端逻辑实现
+      - 没有视觉输入的任务
+
+# 能力比较矩阵
+capability_comparison:
+  reasoning_depth:
+    rank:
+      1: claude-opus-4.8
+      2: claude-sonnet-5
+      3: gpt-5.3-codex
+      4: gemini-3.1-pro
+
+  code_generation:
+    rank:
+      1: gpt-5.3-codex
+      2: claude-opus-4.8
+      3: claude-sonnet-5
+      4: gemini-3.1-pro
+
+  code_understanding:
+    rank:
+      1: claude-opus-4.8
+      2: claude-sonnet-5
+      3: gpt-5.3-codex
+      4: gemini-3.1-pro
+
+  cost_efficiency:
+    rank:
+      1: gpt-5.3-codex      # $1.75/$14
+      2: gemini-3.1-pro     # $2.5/$12.5
+      3: claude-sonnet-5    # $3/$15
+      4: claude-opus-4.8    # $5/$25
+
+  speed:
+    rank:
+      1: gpt-5.3-codex
+      2: claude-sonnet-5
+      3: gemini-3.1-pro
+      4: claude-opus-4.8
+
+  multimodal:
+    rank:
+      1: gemini-3.1-pro     # 唯一支持
+      2: null
+      3: null
+      4: null
+
+# 任务复杂度定义
+task_complexity_levels:
+  trivial:
+    description: 简单重复性任务
+    examples:
+      - 修改配置文件
+      - 添加日志语句
+      - 简单函数实现
+    recommended_models:
+      - gpt-5.3-codex
+
+  low:
+    description: 标准功能实现
+    examples:
+      - CRUD接口实现
+      - 单元测试编写
+      - 脚本编写
+    recommended_models:
+      - gpt-5.3-codex
+      - claude-sonnet-5
+
+  medium:
+    description: 需要一定设计的任务
+    examples:
+      - 多模块功能开发
+      - 集成测试设计
+      - 中等复杂度重构
+    recommended_models:
+      - claude-sonnet-5
+      - gpt-5.3-codex
+
+  high:
+    description: 复杂技术任务
+    examples:
+      - 架构调整
+      - 性能优化
+      - 安全加固
+    recommended_models:
+      - claude-opus-4.8
+      - claude-sonnet-5
+
+  critical:
+    description: 关键系统变更
+    examples:
+      - 核心架构重构
+      - 生产故障修复
+      - 安全漏洞修复
+    recommended_models:
+      - claude-opus-4.8
+
+# 使用指南
+usage_guidelines:
+  model_selection_flow:
+    - step: 1
+      question: 任务是否需要多模态能力（图像/视频）？
+      yes: 使用gemini-3.1-pro
+      no: 继续下一步
+
+    - step: 2
+      question: 任务复杂度是否为critical或high？
+      yes: 使用claude-opus-4.8
+      no: 继续下一步
+
+    - step: 3
+      question: 任务类型是否为纯代码生成/测试编写？
+      yes: 使用gpt-5.3-codex
+      no: 继续下一步
+
+    - step: 4
+      question: 是否需要长上下文理解或深度推理？
+      yes: 使用claude-sonnet-5
+      no: 使用gpt-5.3-codex
+
+  cost_optimization_tips:
+    - 批量简单任务优先用Codex
+    - 标准任务优先用Sonnet
+    - 仅在必要时使用Opus
+    - 有视觉输入才用Gemini
+    - 监控每日成本消耗比例
+    - 达到预算阈值时切换到低成本模型
+
+# 元数据
+metadata:
+  version: "1.0.0"
+  created: "2026-07-23"
+  description: "AI角色系统模型能力配置文件 - Phase 1 MVP"
+  models_count: 4
+  last_updated: "2026-07-23"
