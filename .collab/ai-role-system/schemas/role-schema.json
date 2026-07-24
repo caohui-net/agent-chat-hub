@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/role-schema.json",
+  "title": "AI Role Configuration Schema",
+  "description": "Schema for AI software engineering role configuration files",
+  "type": "object",
+  "required": ["role", "scope", "inputs", "workflow", "output_contract", "constraints", "completion_criteria"],
+  "properties": {
+    "role": {
+      "type": "object",
+      "required": ["id", "name", "version", "mission"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$",
+          "description": "Unique role identifier (kebab-case)"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 50,
+          "description": "Human-readable role name"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+          "description": "Semantic version (e.g., 1.0 or 1.0.0)"
+        },
+        "mission": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 200,
+          "description": "One-sentence core mission statement"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "required": ["included", "excluded"],
+      "properties": {
+        "included": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "description": "List of responsibilities (what to do)"
+        },
+        "excluded": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "description": "List of boundaries (what NOT to do)"
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "description": "Required input artifacts"
+        },
+        "optional": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Optional input artifacts"
+        }
+      }
+    },
+    "workflow": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step"],
+        "properties": {
+          "step": {
+            "type": "string",
+            "description": "Workflow step description"
+          },
+          "verification": {
+            "type": "string",
+            "description": "Optional verification method for this step"
+          }
+        }
+      },
+      "minItems": 1,
+      "description": "Ordered list of workflow steps"
+    },
+    "output_contract": {
+      "type": "object",
+      "required": ["format", "schema"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["json", "yaml", "markdown"],
+          "description": "Output format"
+        },
+        "schema": {
+          "type": "object",
+          "description": "Output structure definition (JSON Schema or custom)"
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "description": "List of constraints the role must follow"
+    },
+    "completion_criteria": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "description": "Criteria for task completion"
+    },
+    "quality_gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gate", "threshold"],
+        "properties": {
+          "gate": {
+            "type": "string",
+            "description": "Quality gate name"
+          },
+          "threshold": {
+            "type": "string",
+            "description": "Threshold value or condition"
+          }
+        }
+      },
+      "description": "Optional quality gates"
+    },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "upstream": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Roles that must complete before this role"
+        },
+        "downstream": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Roles that depend on this role's output"
+        }
+      },
+      "description": "Optional role dependencies"
+    }
+  }
+}

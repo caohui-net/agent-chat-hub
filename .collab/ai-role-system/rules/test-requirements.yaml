@@ -1,0 +1,149 @@
+- id: TEST-001
+  name: 关键路径必须有自动化测试
+  scope: testing
+  condition: 实现新功能或修改核心业务逻辑
+  requirement: 每个关键业务路径必须有对应的自动化测试，确保功能正确性可验证
+  severity: blocking
+  verification: 检查测试覆盖率报告，确认关键路径有测试；运行测试验证通过
+  source: testing-standard.md#coverage
+  owner: developer
+  reviewer: qa
+  examples:
+    pass:
+      - case: 用户注册流程有完整测试
+        code: |
+          // 正确：关键路径有测试
+          describe('User Registration', () => {
+            it('should create user with valid data', async () => {
+              const result = await registerUser({
+                email: 'test@example.com',
+                password: 'SecurePass123'
+              });
+              expect(result.success).toBe(true);
+              expect(result.user.email).toBe('test@example.com');
+            });
+
+            it('should reject duplicate email', async () => {
+              await registerUser({ email: 'dup@example.com', password: 'pass' });
+              await expect(
+                registerUser({ email: 'dup@example.com', password: 'pass' })
+              ).rejects.toThrow('Email already exists');
+            });
+          });
+    fail:
+      - case: 关键功能无测试
+        code: |
+          // 错误：实现了支付逻辑但没有测试
+          async function processPayment(orderId, amount) {
+            // ... 支付逻辑
+          }
+          // 缺少测试用例
+  tags:
+    - testing
+    - coverage
+    - quality
+
+- id: TEST-002
+  name: 边界条件和异常必须有负向测试
+  scope: testing
+  condition: 实现数据验证、权限检查或异常处理逻辑
+  requirement: 必须包含边界值、空值、异常输入的负向测试用例
+  severity: blocking
+  verification: 检查测试代码，确认包含边界和异常场景；运行负向测试验证正确抛出错误
+  source: testing-standard.md#negative-tests
+  owner: developer
+  reviewer: qa
+  examples:
+    pass:
+      - case: 包含边界和异常测试
+        code: |
+          // 正确：覆盖边界和异常
+          describe('setAge', () => {
+            it('should accept valid age', () => {
+              expect(setAge(25)).toBe(25);
+            });
+
+            it('should reject negative age', () => {
+              expect(() => setAge(-1)).toThrow('Age must be positive');
+            });
+
+            it('should reject age over 150', () => {
+              expect(() => setAge(200)).toThrow('Age unrealistic');
+            });
+
+            it('should reject non-integer', () => {
+              expect(() => setAge(25.5)).toThrow('Age must be integer');
+            });
+
+            it('should reject null', () => {
+              expect(() => setAge(null)).toThrow('Age required');
+            });
+          });
+    fail:
+      - case: 只测试正常路径
+        code: |
+          // 错误：缺少边界和异常测试
+          describe('setAge', () => {
+            it('should accept valid age', () => {
+              expect(setAge(25)).toBe(25);
+            });
+            // 缺少负向测试
+          });
+  tags:
+    - testing
+    - edge-cases
+    - error-handling
+
+- id: TEST-003
+  name: 测试必须独立且可重复执行
+  scope: testing
+  condition: 编写自动化测试
+  requirement: 测试用例之间不得有依赖关系，任意顺序执行结果一致
+  severity: blocking
+  verification: 随机顺序运行测试，确认通过率不变；检查测试间是否共享状态
+  source: testing-standard.md#test-isolation
+  owner: developer
+  reviewer: qa
+  examples:
+    pass:
+      - case: 每个测试独立准备数据
+        code: |
+          // 正确：每个测试独立
+          describe('User API', () => {
+            beforeEach(async () => {
+              // 每个测试前清理数据
+              await db.users.deleteMany({});
+            });
+
+            it('test 1: create user', async () => {
+              const user = await createUser({ name: 'Alice' });
+              expect(user.name).toBe('Alice');
+            });
+
+            it('test 2: update user', async () => {
+              // 独立创建测试数据
+              const user = await createUser({ name: 'Bob' });
+              await updateUser(user.id, { name: 'Charlie' });
+              const updated = await getUser(user.id);
+              expect(updated.name).toBe('Charlie');
+            });
+          });
+    fail:
+      - case: 测试间共享状态
+        code: |
+          // 错误：test 2 依赖 test 1 的数据
+          let userId;
+
+          it('test 1: create user', async () => {
+            const user = await createUser({ name: 'Alice' });
+            userId = user.id;  // 共享状态
+          });
+
+          it('test 2: update user', async () => {
+            // 依赖 test 1 设置的 userId
+            await updateUser(userId, { name: 'Bob' });
+          });
+  tags:
+    - testing
+    - isolation
+    - flaky-tests

@@ -2,9 +2,9 @@
   "project_name": "Agent Chat Hub",
   "description": "多模型Agent聊天系统 - 个人用户与多个AI模型建立的Agent进行沟通和交互",
   "version": "0.1.0",
-  "current_phase": "项目完成 - 所有阶段100%完成",
-  "phase_description": "Phase 1、Phase 2、Phase 3全部完成！Agent Chat Hub MVP开发完成。",
-  "last_updated": "2026-07-18T08:30:00.000Z",
+  "current_phase": "项目完成 - 所有阶段100%完成（含Phase 2.1强化）",
+  "phase_description": "Phase 1、Phase 2（含2.1并发测试强化）、Phase 3全部完成！Agent Chat Hub MVP开发完成。",
+  "last_updated": "2026-07-20T09:10:00.000Z",
   "tech_stack": {
     "language": "Python 3.14+",
     "ui": {
@@ -65,7 +65,7 @@
       "status": "completed",
       "target_weeks": "Week 3-4",
       "progress": "100%",
-      "completed_date": "2026-07-18",
+      "completed_date": "2026-07-20",
       "tasks": [
         "✅ Task #11: AgentExecutor异步化（并发API调用）",
         "✅ Task #12: 高级TUI组件（Agent面板、状态栏、快捷键）",
@@ -84,8 +84,13 @@
         "src/tui/dialogs.py - 配置对话框",
         "tests/test_tui.py - TUI基础测试",
         "tests/test_message_bus.py - MessageBus单元测试（9个测试）",
-        "tests/test_integration_phase2.py - Phase 2集成测试",
-        "benchmarks/benchmark_phase2.py - 性能基准测试"
+        "tests/test_integration_phase2.py - Phase 2集成测试（13个测试）",
+        "benchmarks/benchmark_phase2.py - 性能基准测试",
+        "Phase 2.1强化（2026-07-20）：",
+        "- 新增7个并发响应测试（预算限制、去重、取消、排序）",
+        "- 修复ResponseCoordinator排序一致性问题",
+        "- 全部13个Phase 2集成测试达到100%通过率",
+        "- Git commit 90bf3dd"
       ]
     },
     "phase_3": {

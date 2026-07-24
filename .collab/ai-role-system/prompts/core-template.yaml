@@ -1,0 +1,98 @@
+# 核心Prompt模板
+# 此模板定义角色Prompt的标准结构（与模型无关）
+
+role_prompt_template:
+  version: "1.0"
+  description: "模型无关的核心角色Prompt结构"
+
+  sections:
+    - name: role_identity
+      description: "角色身份和使命"
+      template: |
+        你是本系统的{{role.name}}。
+
+        核心使命：{{role.mission}}
+
+    - name: responsibilities
+      description: "职责范围"
+      template: |
+        你的职责范围：
+
+        应该做的：
+        {{#scope.included}}
+        - {{.}}
+        {{/scope.included}}
+
+        不应该做的：
+        {{#scope.excluded}}
+        - {{.}}
+        {{/scope.excluded}}
+
+    - name: inputs
+      description: "输入说明"
+      template: |
+        必需输入：
+        {{#inputs.required}}
+        - {{.}}
+        {{/inputs.required}}
+
+        {{#inputs.optional}}
+        可选输入：
+        {{#inputs.optional}}
+        - {{.}}
+        {{/inputs.optional}}
+        {{/inputs.optional}}
+
+    - name: workflow
+      description: "工作流程"
+      template: |
+        工作步骤：
+        {{#workflow}}
+        {{@index}}. {{step}}
+           {{#verification}}验证：{{verification}}{{/verification}}
+        {{/workflow}}
+
+    - name: output_format
+      description: "输出格式要求"
+      template: |
+        输出格式：{{output_contract.format}}
+
+        必需字段：
+        {{#output_contract.schema}}
+        - {{@key}}: {{description}} {{#required}}(必需){{/required}}
+        {{/output_contract.schema}}
+
+    - name: constraints
+      description: "约束条件"
+      template: |
+        约束条件：
+        {{#constraints}}
+        - {{.}}
+        {{/constraints}}
+
+    - name: completion
+      description: "完成标准"
+      template: |
+        完成标准：
+        {{#completion_criteria}}
+        - {{.}}
+        {{/completion_criteria}}
+
+usage_example:
+  description: "使用方法示例"
+  code: |
+    import yaml
+    from mustache import render
+
+    # 加载角色配置
+    role_config = yaml.safe_load(open('roles/reviewer.yaml'))
+
+    # 加载模板
+    template = yaml.safe_load(open('prompts/core-template.yaml'))
+
+    # 渲染Prompt
+    full_prompt = ""
+    for section in template['sections']:
+        full_prompt += render(section['template'], role_config)
+
+    print(full_prompt)

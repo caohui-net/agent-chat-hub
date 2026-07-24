@@ -33,7 +33,7 @@ class AgentExecutor:
     """
 
     # 支持的provider列表（执行层拦截）
-    SUPPORTED_PROVIDERS = ["anthropic", "openai"]
+    SUPPORTED_PROVIDERS = ["anthropic", "openai", "gemini-http"]
 
     def __init__(
         self,
@@ -116,7 +116,8 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
-        api_key = self.config_manager.get_api_key(model_config.api_key_name)
+        # 优先使用配置文件中的api_key，否则从keyring读取
+        api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
             raise AgentExecutionError(f"API密钥未设置: {model_config.api_key_name}")
 
@@ -159,7 +160,18 @@ class AgentExecutor:
                 )
                 await self._publish_usage(model_config.model_id, token_usage)
 
-            return data["content"][0]["text"]
+            # 提取响应内容（支持Extended Thinking格式）
+            # Extended Thinking: content数组可能包含多个元素，需要找到type="text"的元素
+            content_blocks = data.get("content", [])
+            for block in content_blocks:
+                if block.get("type") == "text" and "text" in block:
+                    return block["text"]
+
+            # Fallback: 如果没有找到text类型，尝试使用第一个元素（标准格式）
+            if content_blocks and "text" in content_blocks[0]:
+                return content_blocks[0]["text"]
+
+            raise AgentExecutionError("API响应格式异常：未找到text内容")
 
         except httpx.HTTPStatusError as e:
             logger.error("anthropic_api_error", status=e.response.status_code, body=e.response.text)
@@ -188,7 +200,8 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
-        api_key = self.config_manager.get_api_key(model_config.api_key_name)
+        # 优先使用配置文件中的api_key，否则从keyring读取
+        api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
             raise AgentExecutionError(f"API密钥未设置: {model_config.api_key_name}")
 
@@ -214,7 +227,7 @@ class AgentExecutor:
 
         try:
             response = await self.http_client.post(
-                f"{model_config.base_url}/v1/chat/completions",
+                f"{model_config.base_url}/chat/completions",
                 headers=headers,
                 json=payload,
             )
@@ -241,6 +254,103 @@ class AgentExecutor:
             # P3-005: 保留Exception兜底 - API调用可能出现多种异常(网络、JSON解析等)
             logger.error("openai_call_failed", error=str(e))
             raise AgentExecutionError(f"调用OpenAI失败: {e}")
+
+    async def _call_gemini_http(
+        self,
+        model_config: ModelConfig,
+        messages: List[Dict[str, str]],
+        system_prompt: Optional[str] = None
+    ) -> str:
+        """通过HTTP API调用Gemini（改进版）
+
+        Args:
+            model_config: 模型配置
+            messages: API格式的消息列表（完整历史）
+            system_prompt: 系统提示词
+
+        Returns:
+            模型响应内容
+
+        Raises:
+            AgentExecutionError: API调用失败
+        """
+        try:
+            # 获取API密钥
+            api_key = model_config.api_key or self.config_manager.get_api_key(
+                model_config.api_key_name
+            )
+            if not api_key:
+                raise AgentExecutionError(f"API密钥未设置: {model_config.api_key_name}")
+
+            # 转换消息格式：OpenAI格式 → Gemini格式
+            contents = []
+            for msg in messages:
+                role = "model" if msg["role"] == "assistant" else "user"
+                contents.append({
+                    "role": role,
+                    "parts": [{"text": msg["content"]}]
+                })
+
+            # 构造请求URL
+            url = f"{model_config.base_url}/v1beta/models/{model_config.model_id}:generateContent"
+
+            # 构造请求头
+            headers = {
+                "Content-Type": "application/json",
+                "x-goog-api-key": api_key,
+            }
+
+            # 构造请求体
+            payload = {
+                "contents": contents,
+                "generationConfig": {
+                    "temperature": model_config.temperature,
+                    "maxOutputTokens": model_config.max_tokens,
+                }
+            }
+
+            # 添加系统指令（如果有）
+            if system_prompt:
+                payload["systemInstruction"] = {
+                    "parts": [{"text": system_prompt}]
+                }
+
+            logger.info("gemini_http_request",
+                       url=url,
+                       message_count=len(messages))
+
+            # 发送请求
+            response = await self.http_client.post(
+                url,
+                headers=headers,
+                json=payload,
+                timeout=120.0
+            )
+            response.raise_for_status()
+
+            # 解析响应
+            data = response.json()
+
+            if "candidates" not in data or not data["candidates"]:
+                raise AgentExecutionError("Gemini API返回空响应")
+
+            candidate = data["candidates"][0]
+            if "content" not in candidate or "parts" not in candidate["content"]:
+                raise AgentExecutionError("Gemini API响应格式错误")
+
+            response_text = candidate["content"]["parts"][0]["text"]
+
+            logger.info("gemini_http_success", response_length=len(response_text))
+            return response_text
+
+        except httpx.HTTPStatusError as e:
+            logger.error("gemini_http_error",
+                        status=e.response.status_code,
+                        detail=e.response.text)
+            raise AgentExecutionError(f"Gemini API调用失败: {e.response.status_code}")
+        except Exception as e:
+            logger.error("gemini_http_failed", error=str(e))
+            raise AgentExecutionError(f"调用Gemini HTTP API失败: {e}")
 
     async def execute(
         self,
@@ -290,8 +400,14 @@ class AgentExecutor:
                 api_messages,
                 agent_config.system_prompt
             )
-        else:  # openai
+        elif model_config.provider == "openai":
             return await self._call_openai(
+                model_config,
+                api_messages,
+                agent_config.system_prompt
+            )
+        elif model_config.provider == "gemini-http":
+            return await self._call_gemini_http(
                 model_config,
                 api_messages,
                 agent_config.system_prompt

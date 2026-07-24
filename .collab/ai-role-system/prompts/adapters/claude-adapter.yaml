@@ -1,0 +1,84 @@
+adapter:
+  model_family: claude
+  version: "1.0"
+  description: "Claude模型（Opus 4.8, Sonnet 5）适配器配置"
+
+capabilities:
+  repository_access: true
+  shell_execution: true
+  multimodal: false
+  long_context: true
+  reasoning_depth: high
+  planning: true
+
+tools:
+  - tool_name: Read
+    required: true
+    permission: read
+    description: "读取文件内容"
+
+  - tool_name: Write
+    required: false
+    permission: write
+    description: "创建新文件"
+
+  - tool_name: Edit
+    required: true
+    permission: write
+    description: "编辑现有文件"
+
+  - tool_name: Bash
+    required: false
+    permission: execute
+    description: "执行Shell命令"
+
+  - tool_name: Agent
+    required: false
+    permission: spawn
+    description: "生成子Agent处理子任务"
+
+execution_policy:
+  - policy: "修改文件前必须先Read"
+    enforcement: strict
+
+  - policy: "使用Edit而非Write覆盖现有文件"
+    enforcement: strict
+
+  - policy: "避免一次输出过大内容，使用分段输出"
+    enforcement: strict
+
+  - policy: "修改后运行验证命令（如测试）"
+    enforcement: advisory
+
+  - policy: "生产环境操作需要人工确认"
+    enforcement: strict
+
+output_format:
+  preference: "markdown"
+  structure:
+    - "清晰的标题和章节"
+    - "代码块使用语法高亮"
+    - "关键信息使用列表或表格"
+  examples:
+    - "## 审查结论\n\n**决策**: REJECT\n\n### 阻塞问题\n\n1. **SQL注入风险** (P0)\n   - 文件: `src/auth.ts:84`\n   - 问题: 用户输入直接拼接到SQL查询\n   - 修复: 使用参数化查询"
+
+model_specific_notes:
+  - "Claude擅长深度推理和长文档分析"
+  - "适合需求分析、架构设计、代码审查等角色"
+  - "输出可能较长，注意控制输出长度"
+  - "使用thinking标签进行推理时，思考过程清晰"
+
+cost_optimization:
+  - "使用Sonnet 5处理标准任务（$3/$15）"
+  - "仅在架构决策等关键场景使用Opus 4.8（$5/$25）"
+  - "利用prompt caching减少重复输入成本"
+  - "长上下文场景下优势明显，但注意token消耗"
+
+recommended_roles:
+  primary:
+    - analyst
+    - architect
+    - reviewer
+  fallback:
+    - developer
+    - qa

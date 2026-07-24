@@ -1,0 +1,350 @@
+# 成本阈值和预算控制配置
+# 定义成本监控指标、预算限制和触发策略
+
+# 每日预算配置
+daily_budget:
+  default_limit: 100.00  # USD per day
+  warning_threshold: 0.7  # 70% - 开始警告
+  critical_threshold: 0.85  # 85% - 限制高成本模型
+  emergency_threshold: 0.95  # 95% - 仅使用最低成本模型
+
+  # 按角色分配预算比例
+  role_allocation:
+    developer: 0.40    # 40% - 最多使用
+    reviewer: 0.20     # 20%
+    qa: 0.15           # 15%
+    architect: 0.15    # 15%
+    analyst: 0.05      # 5%
+    devops: 0.05       # 5%
+
+# 成本监控指标
+cost_metrics:
+  # 累计消耗比例
+  daily_spent_ratio:
+    description: 当日累计消耗占预算的比例
+    formula: total_spent_today / daily_budget_limit
+    tracking: real_time
+    actions:
+      - threshold: 0.5
+        action: log_milestone
+        message: "已消耗50%预算"
+      - threshold: 0.7
+        action: trigger_warning
+        message: "预算警戒：已消耗70%"
+      - threshold: 0.85
+        action: restrict_high_cost_models
+        message: "预算紧张：限制Opus使用"
+      - threshold: 0.95
+        action: emergency_mode
+        message: "预算告急：仅使用Codex"
+
+  # 单次任务成本
+  task_cost:
+    description: 单个任务的预估成本
+    formula: (estimated_input_tokens * input_price + estimated_output_tokens * output_price) / 1_000_000
+    tracking: pre_execution
+    actions:
+      - threshold: 5.00
+        action: require_approval
+        message: "高成本任务（>$5），需要人工确认"
+      - threshold: 10.00
+        action: reject
+        message: "成本过高（>$10），拒绝执行"
+
+  # 平均任务成本
+  average_task_cost:
+    description: 滚动平均任务成本
+    formula: sum(last_100_tasks_cost) / 100
+    tracking: periodic
+    actions:
+      - threshold: 2.00
+        action: review_model_selection
+        message: "平均成本偏高，检查模型选择策略"
+
+# 模型级别成本控制
+model_cost_controls:
+  claude-opus-4.8:
+    max_daily_calls: 20
+    max_tokens_per_call: 100000
+    require_justification: true
+    justification_criteria:
+      - critical_system_change
+      - production_incident
+      - complex_architecture_decision
+    fallback_triggers:
+      - type: daily_call_limit_exceeded
+        condition:
+          metric: opus_daily_calls
+          operator: ">="
+          threshold: 20
+      - type: daily_budget_high
+        condition:
+          metric: daily_spent_ratio
+          operator: ">"
+          threshold: 0.85
+    fallback_model: claude-sonnet-5
+
+  claude-sonnet-5:
+    max_daily_calls: 100
+    max_tokens_per_call: 150000
+    require_justification: false
+    fallback_triggers:
+      - type: daily_call_limit_exceeded
+        condition:
+          metric: sonnet_daily_calls
+          operator: ">="
+          threshold: 100
+      - type: daily_budget_critical
+        condition:
+          metric: daily_spent_ratio
+          operator: ">"
+          threshold: 0.95
+    fallback_model: gpt-5.3-codex
+
+  gpt-5.3-codex:
+    max_daily_calls: 500
+    max_tokens_per_call: 100000
+    require_justification: false
+    fallback_triggers:
+      - type: daily_call_limit_exceeded
+        condition:
+          metric: codex_daily_calls
+          operator: ">="
+          threshold: 500
+    fallback_model: null  # 无降级选项
+
+  gemini-3.1-pro:
+    max_daily_calls: 50
+    max_tokens_per_call: 80000
+    require_justification: false
+    fallback_triggers:
+      - type: daily_call_limit_exceeded
+        condition:
+          metric: gemini_daily_calls
+          operator: ">="
+          threshold: 50
+      - type: no_multimodal_input
+        condition:
+          metric: has_image_or_video
+          operator: "=="
+          threshold: false
+    fallback_model: claude-sonnet-5
+
+# 成本优化策略
+optimization_strategies:
+  # 批量任务优化
+  batch_tasks:
+    trigger:
+      type: task_batch_detected
+      condition:
+        metric: pending_task_count
+        operator: ">"
+        threshold: 10
+    strategy:
+      name: prefer_codex_for_batch
+      description: 批量任务优先使用最低成本的Codex模型
+      model: gpt-5.3-codex
+      expected_saving: 0.6  # 相比Sonnet节省60%
+
+  # 上下文压缩
+  context_compression:
+    trigger:
+      type: context_size_large
+      condition:
+        metric: estimated_input_tokens
+        operator: ">"
+        threshold: 50000
+    strategy:
+      name: compress_context
+      description: 压缩上下文以降低token消耗
+      methods:
+        - remove_redundant_content
+        - summarize_old_messages
+        - extract_key_information
+      expected_saving: 0.3  # 节省30% tokens
+
+  # 模型降级
+  model_downgrade:
+    trigger:
+      type: budget_constrained
+      condition:
+        metric: daily_spent_ratio
+        operator: ">"
+        threshold: 0.8
+    strategy:
+      name: downgrade_models
+      description: 预算紧张时降级到低成本模型
+      downgrades:
+        - from: claude-opus-4.8
+          to: claude-sonnet-5
+          when: non_critical_tasks
+        - from: claude-sonnet-5
+          to: gpt-5.3-codex
+          when: code_generation_tasks
+      expected_saving: 0.4  # 节省40%
+
+  # 缓存利用
+  cache_utilization:
+    trigger:
+      type: repeated_context
+      condition:
+        metric: context_similarity
+        operator: ">"
+        threshold: 0.8
+    strategy:
+      name: use_prompt_cache
+      description: 利用提示缓存降低重复token成本
+      cache_ttl: 300  # 5分钟
+      expected_saving: 0.5  # 节省50% (cached tokens)
+
+# 预算告警规则
+budget_alerts:
+  # 警告级别
+  warning:
+    threshold: 0.7
+    frequency: once_per_threshold
+    channels:
+      - log
+      - metric
+    message: "预算警戒：已消耗70%，当前 ${spent}/${limit}"
+    actions:
+      - log_current_usage
+      - suggest_optimization
+
+  # 严重级别
+  critical:
+    threshold: 0.85
+    frequency: every_5_percent
+    channels:
+      - log
+      - metric
+      - notification
+    message: "预算严重：已消耗85%，当前 ${spent}/${limit}"
+    actions:
+      - restrict_high_cost_models
+      - force_model_downgrade
+      - require_task_approval
+
+  # 紧急级别
+  emergency:
+    threshold: 0.95
+    frequency: continuous
+    channels:
+      - log
+      - metric
+      - notification
+      - alert
+    message: "预算告急：已消耗95%，当前 ${spent}/${limit}"
+    actions:
+      - enable_emergency_mode
+      - use_only_codex
+      - reject_non_critical_tasks
+
+# 成本报告
+cost_reporting:
+  # 实时监控
+  real_time:
+    enabled: true
+    metrics:
+      - current_spent
+      - budget_remaining
+      - spent_ratio
+      - model_usage_count
+      - average_task_cost
+    update_interval: 60  # 秒
+
+  # 每日报告
+  daily_summary:
+    enabled: true
+    schedule: "00:00"  # 每日0点
+    content:
+      - total_spent
+      - budget_utilization
+      - model_breakdown
+      - role_breakdown
+      - top_expensive_tasks
+      - optimization_suggestions
+    format: yaml
+
+  # 每周报告
+  weekly_summary:
+    enabled: true
+    schedule: "MON 09:00"
+    content:
+      - weekly_total_spent
+      - daily_trend
+      - model_efficiency
+      - cost_per_role
+      - anomaly_detection
+      - budget_forecast
+    format: markdown
+
+# 异常检测
+anomaly_detection:
+  # 成本异常
+  cost_spike:
+    trigger:
+      type: cost_spike_detected
+      condition:
+        metric: current_hour_cost
+        operator: ">"
+        threshold_multiplier: 3.0  # 超过平均值3倍
+    actions:
+      - send_alert
+      - log_anomaly
+      - investigate_cause
+
+  # 模型使用异常
+  model_overuse:
+    trigger:
+      type: model_call_spike
+      condition:
+        metric: model_calls_per_hour
+        operator: ">"
+        threshold_multiplier: 5.0
+    actions:
+      - send_alert
+      - check_for_loop
+      - rate_limit
+
+# 成本估算
+cost_estimation:
+  # 任务成本预估
+  task_estimation:
+    method: token_based
+    factors:
+      - input_context_size
+      - expected_output_length
+      - model_pricing
+      - complexity_multiplier
+    accuracy_target: 0.9  # 90%准确率
+
+  # 角色成本预估
+  role_estimation:
+    analyst:
+      avg_tokens_per_task: 30000
+      avg_cost_per_task: 0.90  # Sonnet: $0.09 input + $0.45 output
+    architect:
+      avg_tokens_per_task: 50000
+      avg_cost_per_task: 2.50  # Opus: $0.25 input + $1.25 output
+    developer:
+      avg_tokens_per_task: 40000
+      avg_cost_per_task: 0.70  # Codex: $0.07 input + $0.56 output
+    reviewer:
+      avg_tokens_per_task: 35000
+      avg_cost_per_task: 1.05  # Sonnet: $0.105 input + $0.525 output
+    qa:
+      avg_tokens_per_task: 25000
+      avg_cost_per_task: 0.44  # Codex: $0.044 input + $0.35 output
+    devops:
+      avg_tokens_per_task: 20000
+      avg_cost_per_task: 0.35  # Codex: $0.035 input + $0.28 output
+
+# 元数据
+metadata:
+  version: "1.0.0"
+  created: "2026-07-23"
+  description: "AI角色系统成本阈值配置 - Phase 1 MVP"
+  currency: USD
+  default_daily_budget: 100.00
+  models_covered: 4

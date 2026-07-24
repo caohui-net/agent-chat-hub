@@ -60,3 +60,9 @@ config/*.secret.yaml
 # References (大型参考项目)
 references/*/node_modules/
 references/*/.git/
+# .collab运行状态文件（协作系统运行时数据）
+.collab/events.jsonl
+.collab/memory_bridge_cursor
+.collab/state.json
+.collab/streams/
+.collab/tasks/

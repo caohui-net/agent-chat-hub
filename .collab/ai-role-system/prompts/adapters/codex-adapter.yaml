@@ -1,0 +1,92 @@
+adapter:
+  model_family: codex
+  version: "1.0"
+  description: "GPT-5.3-Codex模型适配器配置"
+
+capabilities:
+  repository_access: true
+  shell_execution: true
+  multimodal: false
+  long_context: true
+  reasoning_depth: medium
+  code_generation: high
+  test_generation: high
+  tool_execution: high
+
+tools:
+  - tool_name: repository_read
+    required: true
+    permission: read
+    description: "读取仓库文件"
+
+  - tool_name: repository_write
+    required: true
+    permission: write
+    description: "修改仓库文件"
+
+  - tool_name: shell
+    required: true
+    permission: execute
+    description: "执行Shell命令（测试、构建等）"
+
+  - tool_name: file_search
+    required: true
+    permission: read
+    description: "搜索文件和代码"
+
+execution_policy:
+  - policy: "修改前先读取相关文件"
+    enforcement: strict
+
+  - policy: "修改后运行目标测试"
+    enforcement: strict
+
+  - policy: "禁止访问生产凭据"
+    enforcement: strict
+
+  - policy: "限定允许修改的目录范围"
+    enforcement: advisory
+
+  - policy: "避免顺手重构无关代码"
+    enforcement: advisory
+
+output_format:
+  preference: "json"
+  structure:
+    - "使用结构化JSON格式"
+    - "代码变更列表明确"
+    - "测试结果包含具体数据"
+  examples:
+    - |
+      {
+        "changed_files": [
+          {"file": "src/auth.ts", "changes": "添加密码加密逻辑"}
+        ],
+        "implementation_summary": "使用bcrypt库实现密码哈希",
+        "verification_results": {
+          "tests_passed": 15,
+          "tests_failed": 0,
+          "coverage": "92%"
+        }
+      }
+
+model_specific_notes:
+  - "Codex专为编程任务优化"
+  - "适合实现工程师、测试工程师、DevOps等角色"
+  - "仓库操作和工具执行能力强"
+  - "输出相对简洁，聚焦于代码和命令"
+
+cost_optimization:
+  - "性价比高（$1.75/$14），适合大量代码生成任务"
+  - "测试生成速度快，成本低"
+  - "适合需要频繁仓库操作的任务"
+  - "批量任务可使用Batch API进一步降低成本"
+
+recommended_roles:
+  primary:
+    - developer
+    - qa
+    - devops
+    - reviewer
+  fallback:
+    - architect

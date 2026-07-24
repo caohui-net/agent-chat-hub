@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/output-contract-schema.json",
+  "title": "Output Contract Schema",
+  "description": "Schema for role output contract definitions",
+  "type": "object",
+  "required": ["format", "fields"],
+  "properties": {
+    "format": {
+      "type": "string",
+      "enum": ["json", "yaml", "markdown", "structured_text"],
+      "description": "Output format type"
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type", "description"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["string", "number", "boolean", "array", "object"],
+            "description": "Field data type"
+          },
+          "description": {
+            "type": "string",
+            "description": "Field purpose and content"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this field is required"
+          },
+          "validation": {
+            "type": "object",
+            "properties": {
+              "pattern": {"type": "string"},
+              "min": {"type": "number"},
+              "max": {"type": "number"},
+              "enum": {"type": "array"}
+            },
+            "description": "Optional validation rules"
+          }
+        }
+      },
+      "description": "Output field definitions"
+    },
+    "examples": {
+      "type": "array",
+      "items": {"type": "object"},
+      "description": "Example outputs"
+    }
+  }
+}

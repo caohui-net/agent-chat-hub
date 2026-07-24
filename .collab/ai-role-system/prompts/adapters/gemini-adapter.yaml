@@ -1,0 +1,115 @@
+adapter:
+  model_family: gemini
+  version: "1.0"
+  description: "Gemini 3.1 Pro / 3.5 Flash模型适配器配置"
+
+capabilities:
+  repository_access: true
+  shell_execution: true
+  multimodal: true
+  long_context: true
+  reasoning_depth: medium
+  visual_understanding: high
+  document_analysis: high
+
+tools:
+  - tool_name: file_read
+    required: true
+    permission: read
+    description: "读取文本和多模态文件"
+
+  - tool_name: file_write
+    required: true
+    permission: write
+    description: "创建和修改文件"
+
+  - tool_name: image_analysis
+    required: false
+    permission: read
+    description: "分析图片、截图、设计稿"
+
+  - tool_name: shell_execute
+    required: false
+    permission: execute
+    description: "执行命令"
+
+execution_policy:
+  - policy: "将视觉观察与推断分开标注"
+    enforcement: strict
+
+  - policy: "从截图推断的尺寸需验证"
+    enforcement: advisory
+
+  - policy: "输出组件树和响应式行为"
+    enforcement: advisory
+
+  - policy: "多模态输入优先使用视觉分析"
+    enforcement: advisory
+
+  - policy: "UI生成后通过浏览器测试验证"
+    enforcement: strict
+
+output_format:
+  preference: "markdown"
+  structure:
+    - "视觉分析与推断明确区分"
+    - "组件树结构清晰"
+    - "代码示例包含响应式布局"
+  examples:
+    - |
+      ## 视觉分析
+
+      **观察到的元素**：
+      - 顶部导航栏（高度约60px）
+      - 左侧边栏（宽度约250px）
+      - 主内容区域（flex布局）
+
+      **推断的交互**（需验证）：
+      - 移动端可能折叠侧边栏
+      - 顶部菜单可能有下拉动画
+
+      ## 组件树
+
+      ```
+      App
+      ├── Header
+      │   ├── Logo
+      │   └── Navigation
+      ├── Sidebar
+      │   └── MenuItems
+      └── MainContent
+          └── ContentArea
+      ```
+
+model_specific_notes:
+  - "Gemini擅长多模态分析（截图、设计稿、视频）"
+  - "适合需要视觉理解的UI实现任务"
+  - "长上下文能力强，可处理大量异构资料"
+  - "Google技术生态（Android、Firebase等）支持好"
+
+cost_optimization:
+  - "Gemini 3.5 Flash性价比高（$1.5/$9）"
+  - "多模态输入场景下成本优势明显"
+  - "大规模资料整理任务可用Flash版本"
+  - "关键决策使用3.1 Pro版本（$2.5/$12.5）"
+
+recommended_roles:
+  primary:
+    - developer (UI相关任务)
+    - analyst (多模态需求分析)
+  fallback:
+    - qa (视觉回归测试)
+    - reviewer (设计稿合规检查)
+
+multimodal_usage:
+  screenshot_analysis: |
+    输入：设计稿截图 + 需求描述
+    输出：组件列表 + 布局方案 + 响应式策略
+
+  video_analysis: |
+    输入：交互演示视频
+    输出：交互流程 + 状态转换 + 动画效果描述
+
+  document_extraction: |
+    输入：PDF文档 + 提取要求
+    输出：结构化数据 + 表格提取 + 关键信息摘要

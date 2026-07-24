@@ -46,6 +46,24 @@ class ChatApp(App):
         padding: 1;
     }
 
+    #file_panel {
+        width: 35;
+        layout: vertical;
+        border: solid $success;
+    }
+
+    #file_list_container {
+        height: 2fr;
+        border: solid $success;
+        padding: 1;
+    }
+
+    #file_operations {
+        height: 1fr;
+        border: solid $success;
+        padding: 1;
+    }
+
     #status_bar {
         dock: bottom;
         height: 3;
@@ -82,18 +100,30 @@ class ChatApp(App):
         """构建UI组件"""
         yield Header()
 
-        # 主容器：水平布局（Agent面板 + 对话区）
+        # 主容器：水平布局（Agent面板 + 对话区 + 文件面板）
         with Horizontal(id="main_container"):
-            # Agent面板
+            # 左侧：Agent面板
             with Vertical(id="agent_panel"):
                 yield Static("📋 Agents", classes="panel-title")
                 yield DataTable(id="agent_table")
 
-            # 对话显示区
+            # 中间：对话显示区
             yield ScrollableContainer(
                 Static("", id="chat_display"),
                 id="chat_container"
             )
+
+            # 右侧：文件面板
+            with Vertical(id="file_panel"):
+                # 上部：文件列表
+                with ScrollableContainer(id="file_list_container"):
+                    yield Static("📁 文件列表", classes="panel-title")
+                    yield DataTable(id="file_table")
+
+                # 下部：文件操作区
+                with Vertical(id="file_operations"):
+                    yield Static("🔧 文件操作", classes="panel-title")
+                    yield Static("拖拽文件到此上传\n或使用快捷键操作", id="file_ops_hint")
 
         # 状态栏
         yield Label("", id="status_bar")
@@ -113,6 +143,12 @@ class ChatApp(App):
         table = self.query_one("#agent_table", DataTable)
         table.add_columns("Agent", "状态", "优先级")
         self.refresh_agent_panel()
+
+        # 初始化文件表格
+        file_table = self.query_one("#file_table", DataTable)
+        file_table.add_columns("文件名", "大小", "类型")
+        # 默认显示提示信息
+        file_table.add_row("暂无文件", "-", "-")
 
         # 更新状态栏
         self.update_status_bar()

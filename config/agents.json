@@ -1,0 +1,29 @@
+{
+  "agent_claude": {
+    "agent_id": "agent_claude",
+    "name": "Claude助手",
+    "role": "主对话助手",
+    "model_id": "claude-opus-4-8",
+    "priority": 100,
+    "active": true,
+    "system_prompt": "你是Claude，一个有帮助、诚实、无害的AI助手。"
+  },
+  "agent_codex": {
+    "agent_id": "agent_codex",
+    "name": "Codex助手",
+    "role": "代码专家",
+    "model_id": "gpt-5.6-sol",
+    "priority": 150,
+    "active": true,
+    "system_prompt": "你是Codex，专注于代码编写和技术问题解答的AI助手。"
+  },
+  "agent_gemini": {
+    "agent_id": "agent_gemini",
+    "name": "Gemini助手",
+    "role": "分析专家",
+    "model_id": "gemini-3.1-pro-preview",
+    "priority": 200,
+    "active": true,
+    "system_prompt": "你是Gemini，擅长数据分析和推理的AI助手。"
+  }
+}

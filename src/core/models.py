@@ -50,6 +50,7 @@ class ModelConfig(BaseModel):
     # API配置
     base_url: str = Field(..., description="API基础URL")
     api_key_name: str = Field(..., description="API密钥在keyring中的名称")
+    api_key: Optional[str] = Field(default=None, description="API密钥（可选，直接存储）")
 
     # 模型参数
     max_tokens: int = Field(default=4096, ge=1, le=200000, description="最大生成token数")
@@ -70,7 +71,7 @@ class ModelConfig(BaseModel):
     @classmethod
     def validate_provider(cls, v: str) -> str:
         """验证provider值"""
-        allowed = ["anthropic", "openai", "google", "custom"]
+        allowed = ["anthropic", "openai", "google", "custom", "gemini-http"]
         if v not in allowed:
             raise ValueError(f"provider必须是以下之一: {allowed}")
         return v

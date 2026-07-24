@@ -20,18 +20,21 @@ agents:
   claude:
     enabled: true
     base_url: "https://code.newcli.com/claude/aws"
+    api_key: "sk-ant-oat01-2rnNEeb_OZBU2FWaZ1tupPikN9eVoKG9zzziUjOEaKmA2Yl2h2_X-bkhUVhqZKeeZ5TGF2Je4r9ui2N-D6mxdd3uWm1rgAA"
     model: "claude-opus-4-8"
     timeout: 30
 
   codex:
     enabled: true
-    base_url: "https://dm-fox.rjj.cc/codex/v1"
+    base_url: "https://code.newcli.com/codex/v1"
+    api_key: "sk-ant-oat01-2rnNEeb_OZBU2FWaZ1tupPikN9eVoKG9zzziUjOEaKmA2Yl2h2_X-bkhUVhqZKeeZ5TGF2Je4r9ui2N-D6mxdd3uWm1rgAA"
     model: "gpt-5.6-sol"
     timeout: 30
 
   gemini:
     enabled: true
     base_url: "https://code.newcli.com/gemini"
+    api_key: "sk-ant-oat01-2rnNEeb_OZBU2FWaZ1tupPikN9eVoKG9zzziUjOEaKmA2Yl2h2_X-bkhUVhqZKeeZ5TGF2Je4r9ui2N-D6mxdd3uWm1rgAA"
     model: "gemini-3.1-pro"
     timeout: 30
 
