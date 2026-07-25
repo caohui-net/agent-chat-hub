@@ -90,6 +90,10 @@ class AgentConfig(BaseModel):
     name: str = Field(..., description="Agent显示名称")
     role: str = Field(..., description="Agent角色描述，如 '技术助手', '代码审查'")
 
+    # 角色系统集成（新增）
+    role_type: Optional[str] = Field(default=None, description="角色类型，如 'analyst', 'developer'等，对应AI角色系统的标准角色")
+    role_config: Optional[Dict[str, Any]] = Field(default=None, description="从AI角色系统加载的完整角色配置")
+
     # 模型关联
     model_id: str = Field(..., description="关联的模型ID，对应ModelConfig.model_id")
 
