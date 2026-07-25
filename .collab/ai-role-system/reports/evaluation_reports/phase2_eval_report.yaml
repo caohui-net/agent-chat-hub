@@ -1,0 +1,3489 @@
+results:
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: ANALYST-T001
+  task_name: 需求澄清 - 模糊需求识别
+  timestamp: '2026-07-25T23:25:46.308988'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: ANALYST-T002
+  task_name: 边界条件识别
+  timestamp: '2026-07-25T23:25:46.309031'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: ANALYST-T003
+  task_name: 验收标准制定
+  timestamp: '2026-07-25T23:25:46.309056'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: ARCHITECT-T001
+  task_name: 技术方案设计 - 多方案权衡
+  timestamp: '2026-07-25T23:25:46.309083'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: ARCHITECT-T002
+  task_name: 模块划分和接口设计
+  timestamp: '2026-07-25T23:25:46.309106'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: ARCHITECT-T003
+  task_name: 技术风险识别
+  timestamp: '2026-07-25T23:25:46.309137'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: DEVELOPER-T001
+  task_name: 功能实现 - 用户认证
+  timestamp: '2026-07-25T23:25:46.309159'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: DEVELOPER-T002
+  task_name: Bug修复 - SQL注入漏洞
+  timestamp: '2026-07-25T23:25:46.309181'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: DEVELOPER-T003
+  task_name: 重构 - 提取公共逻辑
+  timestamp: '2026-07-25T23:25:46.309209'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: REVIEWER-T001
+  task_name: 安全审查 - 权限验证
+  timestamp: '2026-07-25T23:25:46.309229'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: REVIEWER-T002
+  task_name: API兼容性审查
+  timestamp: '2026-07-25T23:25:46.309251'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: REVIEWER-T003
+  task_name: 代码质量审查
+  timestamp: '2026-07-25T23:25:46.309272'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: QA-T001
+  task_name: 测试用例设计 - 登录功能
+  timestamp: '2026-07-25T23:25:46.309293'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: QA-T002
+  task_name: 缺陷分析与验证
+  timestamp: '2026-07-25T23:25:46.309314'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: QA-T003
+  task_name: 测试覆盖率分析
+  timestamp: '2026-07-25T23:25:46.309333'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: DEVOPS-T001
+  task_name: CI/CD配置 - Node.js应用
+  timestamp: '2026-07-25T23:25:46.309354'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: DEVOPS-T002
+  task_name: 监控告警配置
+  timestamp: '2026-07-25T23:25:46.309374'
+- category_scores:
+    analyst: 0.9
+    architect: 0.9000000000000001
+    developer: 0.9
+    devops: 0.9
+    qa: 0.9
+    reviewer: 0.9
+  metric_scores:
+  - category: analyst
+    metric_id: question_quality
+    metric_name: 澄清问题的质量和针对性
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: ambiguity_coverage
+    metric_name: 识别需求歧义的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: boundary_coverage
+    metric_name: 边界条件识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: criteria_clarity
+    metric_name: 验收标准的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: analyst
+    metric_id: testability
+    metric_name: 验收标准的可测试性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: solution_count
+    metric_name: 提供的技术方案数量
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: tradeoff_depth
+    metric_name: 权衡分析的深度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: technical_feasibility
+    metric_name: 技术方案的可行性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: cohesion
+    metric_name: 模块内聚性
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: coupling
+    metric_name: 模块耦合度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: interface_clarity
+    metric_name: 接口定义的清晰度
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: risk_coverage
+    metric_name: 技术风险识别的覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: architect
+    metric_id: mitigation_feasibility
+    metric_name: 风险缓解措施的可行性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_correctness
+    metric_name: 代码功能正确性
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: security_compliance
+    metric_name: 安全规则遵守度
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: test_coverage
+    metric_name: 测试覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: vulnerability_eliminated
+    metric_name: 漏洞是否已消除
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: code_duplication
+    metric_name: 代码重复率
+    score: 0.9
+    weight: 1.0
+  - category: developer
+    metric_id: cyclomatic_complexity
+    metric_name: 圈复杂度
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: security_issue_detection
+    metric_name: 安全问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: false_positive_rate
+    metric_name: 误报率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: compatibility_issue_detection
+    metric_name: 兼容性问题检测率
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: suggestion_quality
+    metric_name: 改进建议的质量
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_precision
+    metric_name: 审查精确度（减少误报）
+    score: 0.9
+    weight: 1.0
+  - category: reviewer
+    metric_id: review_recall
+    metric_name: 审查召回率（减少漏报）
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: scenario_coverage
+    metric_name: 测试场景覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: edge_case_coverage
+    metric_name: 边界用例覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: test_case_quality
+    metric_name: 测试用例质量
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: root_cause_accuracy
+    metric_name: 根因分析准确性
+    score: 0.9
+    weight: 1.0
+  - category: qa
+    metric_id: gap_identification
+    metric_name: 测试缺口识别能力
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: pipeline_completeness
+    metric_name: CI/CD流水线完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: best_practices
+    metric_name: 最佳实践遵守度
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: critical_metrics_covered
+    metric_name: 关键指标覆盖率
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: alert_threshold_reasonableness
+    metric_name: 告警阈值合理性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: plan_completeness
+    metric_name: 恢复计划完整性
+    score: 0.9
+    weight: 1.0
+  - category: devops
+    metric_id: rto_feasibility
+    metric_name: RTO（恢复时间目标）可行性
+    score: 0.9
+    weight: 1.0
+  overall_score: 0.8999999999999999
+  pass_status: true
+  task_id: DEVOPS-T003
+  task_name: 灾难恢复方案
+  timestamp: '2026-07-25T23:25:46.309393'
+summary:
+  average_score: '0.900'
+  category_averages:
+    analyst: '0.900'
+    architect: '0.900'
+    developer: '0.900'
+    devops: '0.900'
+    qa: '0.900'
+    reviewer: '0.900'
+  failed: 0
+  pass_rate: 100.0%
+  passed: 18
+  total_tasks: 18
+timestamp: '2026-07-25T23:25:46.309574'

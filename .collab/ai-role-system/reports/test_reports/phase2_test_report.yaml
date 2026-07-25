@@ -1,0 +1,244 @@
+results:
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 0.01008
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: ANALYST-T001
+  task_name: 需求澄清 - 模糊需求识别
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 4.4e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: ANALYST-T002
+  task_name: 边界条件识别
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.6e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: ANALYST-T003
+  task_name: 验收标准制定
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.2e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: ARCHITECT-T001
+  task_name: 技术方案设计 - 多方案权衡
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.2e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: ARCHITECT-T002
+  task_name: 模块划分和接口设计
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.2e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: ARCHITECT-T003
+  task_name: 技术风险识别
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.1e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: DEVELOPER-T001
+  task_name: 功能实现 - 用户认证
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.0e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: DEVELOPER-T002
+  task_name: Bug修复 - SQL注入漏洞
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.0e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: DEVELOPER-T003
+  task_name: 重构 - 提取公共逻辑
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.3e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: REVIEWER-T001
+  task_name: 安全审查 - 权限验证
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 2.6e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: REVIEWER-T002
+  task_name: API兼容性审查
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.6e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: REVIEWER-T003
+  task_name: 代码质量审查
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.3e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: QA-T001
+  task_name: 测试用例设计 - 登录功能
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.1e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: QA-T002
+  task_name: 缺陷分析与验证
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.1e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: QA-T003
+  task_name: 测试覆盖率分析
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.0e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: DEVOPS-T001
+  task_name: CI/CD配置 - Node.js应用
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.2e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: DEVOPS-T002
+  task_name: 监控告警配置
+- details:
+    blocking_violations: 0
+    complexity: medium
+    roles_used: []
+    routing_confidence: 0.7
+  duration: 1.1e-05
+  error_message: null
+  estimated_cost: 0.15
+  selected_model: claude-opus-4.8
+  status: success
+  steps_completed: 0
+  task_id: DEVOPS-T003
+  task_name: 灾难恢复方案
+summary:
+  error: 0
+  failed: 0
+  success: 18
+  success_rate: 100.0%
+  total_cost: $2.7000
+  total_duration: 0.01s
+  total_tasks: 18
+timestamp: '2026-07-25T23:25:46.303750'
