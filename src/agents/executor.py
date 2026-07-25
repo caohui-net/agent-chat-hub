@@ -5,6 +5,8 @@ from typing import List, Optional, Dict, Any, TYPE_CHECKING
 import httpx
 import structlog
 import uuid
+import sys
+from pathlib import Path
 
 from src.core.models import AgentConfig, ModelConfig, Message, TokenUsage, AgentMessage
 from src.core.config import ConfigManager
@@ -12,6 +14,20 @@ from src.core.exceptions import UnsupportedProviderError
 
 if TYPE_CHECKING:
     from src.agents.message_bus import MessageBus
+
+# AI角色系统ModelRouter集成（可选）
+try:
+    # 添加AI角色系统路径到sys.path
+    ai_role_system_path = Path(__file__).parent.parent.parent / ".collab" / "ai-role-system"
+    if ai_role_system_path.exists() and str(ai_role_system_path) not in sys.path:
+        sys.path.insert(0, str(ai_role_system_path))
+
+    from core.model_router import ModelRouter, TaskComplexity
+    MODEL_ROUTER_AVAILABLE = True
+except ImportError:
+    MODEL_ROUTER_AVAILABLE = False
+    ModelRouter = None
+    TaskComplexity = None
 
 logger = structlog.get_logger()
 
@@ -49,6 +65,12 @@ class AgentExecutor:
         self.config_manager = config_manager
         self.message_bus = message_bus
         self.http_client = httpx.AsyncClient(timeout=120.0)
+
+        # 初始化ModelRouter（AI角色系统集成）
+        if MODEL_ROUTER_AVAILABLE:
+            self.model_router = ModelRouter()
+        else:
+            self.model_router = None
 
     async def aclose(self):
         """异步关闭HTTP客户端"""
@@ -370,9 +392,47 @@ class AgentExecutor:
             AgentExecutionError: 执行失败
         """
         # 获取模型配置
-        model_config = self.config_manager.get_model(agent_config.model_id)
+        # 尝试使用AI角色系统ModelRouter进行智能路由
+        selected_model_id = agent_config.model_id  # 默认使用配置的模型
+
+        if self.model_router and agent_config.role_config:
+            try:
+                # 从role_config提取路由参数
+                task_type = agent_config.role_config.get('task_type', 'general')
+                complexity_str = agent_config.role_config.get('complexity', 'medium')
+
+                # 转换complexity字符串为枚举
+                complexity_map = {
+                    'low': TaskComplexity.LOW,
+                    'medium': TaskComplexity.MEDIUM,
+                    'high': TaskComplexity.HIGH
+                }
+                complexity = complexity_map.get(complexity_str, TaskComplexity.MEDIUM)
+
+                # 执行路由决策
+                decision = self.model_router.route(
+                    task_type=task_type,
+                    complexity=complexity,
+                    context_size=len(messages) * 500  # 粗略估算
+                )
+
+                selected_model_id = decision.selected_model
+                logger.info(
+                    "model_router_decision",
+                    original_model=agent_config.model_id,
+                    selected_model=selected_model_id,
+                    reason=decision.reason
+                )
+            except Exception as e:
+                logger.warning(
+                    "model_router_failed",
+                    error=str(e),
+                    fallback_to=agent_config.model_id
+                )
+
+        model_config = self.config_manager.get_model(selected_model_id)
         if not model_config:
-            raise AgentExecutionError(f"模型配置不存在: {agent_config.model_id}")
+            raise AgentExecutionError(f"模型配置不存在: {selected_model_id}")
 
         # 检查provider支持（执行层拦截）
         if model_config.provider not in self.SUPPORTED_PROVIDERS:

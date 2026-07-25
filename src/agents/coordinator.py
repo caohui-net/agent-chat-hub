@@ -13,8 +13,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional, List, Set, Tuple
 from time import time
+import logging
 
 from src.core.models import AgentConfig, Message
+from src.agents.rule_checker import RuleChecker
+
+logger = logging.getLogger(__name__)
 
 
 class StopReason(Enum):
@@ -81,6 +85,7 @@ class ResponseCoordinator:
         """
         self.budget_limits = budget_limits or BudgetLimits()
         self.current_round: Optional[RoundState] = None
+        self.rule_checker = RuleChecker()  # AI角色系统规则检查器
 
     def start_round(self, session_id: str, round_num: int) -> None:
         """开始新的一轮对话
@@ -290,6 +295,19 @@ class ResponseCoordinator:
             # 所有agents都已调用过，标记轮次完成
             self.current_round.stop_reason = StopReason.ROUND_COMPLETE
             return ([], StopReason.ROUND_COMPLETE)
+
+        # AI角色系统规则检查
+        if non_duplicate:
+            violations = self.rule_checker.check_agent_selection(
+                session_id=self.current_round.session_id,
+                selected_agents=[agent.agent_id for agent in non_duplicate],
+                context={
+                    'round_num': self.current_round.round_num,
+                    'total_calls': self.current_round.total_calls
+                }
+            )
+            if violations:
+                logger.warning(f"AI角色系统规则检查发现违规: {violations}")
 
         return (non_duplicate, None)
 
