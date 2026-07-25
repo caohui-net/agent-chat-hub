@@ -40,13 +40,20 @@ agent-chat-hub/
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. 创建虚拟环境
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 2. 安装依赖
 
 ```bash
 pip install -e .
 ```
 
-### 2. 初始化配置
+### 3. 初始化配置
 
 首次使用需要配置模型和agent：
 
@@ -59,9 +66,16 @@ python init_config.py
 - 输入API密钥（安全存储到系统密钥环）
 - 创建第一个agent
 
-### 3. 启动应用
+### 4. 启动应用
 
+**方式1: 使用启动脚本（推荐）**
 ```bash
+./start.sh
+```
+
+**方式2: 手动启动**
+```bash
+source venv/bin/activate
 python main.py
 ```
 
