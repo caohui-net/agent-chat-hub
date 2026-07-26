@@ -168,17 +168,28 @@ class ChatApp(App):
         chat_display.update(content)
 
     def refresh_agent_panel(self) -> None:
-        """刷新Agent面板显示"""
+        """刷新Agent面板显示（增强：显示角色类型）"""
         table = self.query_one("#agent_table", DataTable)
         table.clear()
+
+        # 定义列（如果还没定义）
+        if not table.columns:
+            table.add_column("名称", width=12)
+            table.add_column("角色", width=15)
+            table.add_column("状态", width=8)
 
         agents = self.session_manager.config_manager.list_agents()
         for agent in agents:
             status = "✓ 活跃" if agent.active else "✗ 禁用"
+            # 显示角色类型，coordinator特别标注
+            role_display = agent.role
+            if hasattr(agent, 'role_type') and agent.role_type == 'coordinator':
+                role_display = f"🎯 {agent.role}"
+
             table.add_row(
                 agent.name,
-                status,
-                str(agent.priority)
+                role_display,
+                status
             )
 
     def update_status_bar(self) -> None:
