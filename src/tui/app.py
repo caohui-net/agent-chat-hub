@@ -5,7 +5,7 @@ from typing import Optional
 from pathlib import Path
 from textual.app import App, ComposeResult
 from textual.containers import Container, ScrollableContainer, Horizontal, Vertical
-from textual.widgets import Header, Footer, Input, Static, DataTable, Label, Button
+from textual.widgets import Header, Footer, Input, Static, DataTable, Label, Button, TextArea
 from textual.binding import Binding
 from textual import work
 
@@ -146,9 +146,9 @@ class ChatApp(App):
                 yield Static("📋 Agents", classes="panel-title")
                 yield DataTable(id="agent_table")
 
-            # 中间：对话显示区
+            # 中间：对话显示区（TextArea支持文本选择）
             yield ScrollableContainer(
-                Static("", id="chat_display"),
+                TextArea("", read_only=True, show_line_numbers=False, id="chat_display"),
                 id="chat_container"
             )
 
@@ -208,13 +208,13 @@ class ChatApp(App):
         await self.session_manager.executor.aclose()
 
     def update_display(self, content: str) -> None:
-        """更新聊天显示区域
+        """更新聊天显示区域（TextArea支持文本选择）
 
         Args:
             content: 要显示的内容
         """
-        chat_display = self.query_one("#chat_display", Static)
-        chat_display.update(content)
+        chat_display = self.query_one("#chat_display", TextArea)
+        chat_display.load_text(content)
 
     def refresh_agent_panel(self) -> None:
         """刷新Agent面板显示（增强：显示角色类型）"""
