@@ -194,6 +194,66 @@ class SessionManager:
                     response_length=len(response)
                 )
 
+        # 检查agent响应中的@mentions，触发协作（最多2轮）
+        max_collab_rounds = 2
+        collab_round = 0
+
+        while collab_round < max_collab_rounds:
+            # 解析所有agent响应中的@mentions
+            collab_mentions = []
+            for agent_config, response, error in results:
+                if response:
+                    agent_mentions = parse_mentions(response)
+                    collab_mentions.extend(agent_mentions)
+
+            # 去重
+            collab_mentions = list(set(collab_mentions))
+
+            if not collab_mentions:
+                break  # 没有@mentions，结束协作
+
+            collab_round += 1
+            logger.info("agent_collaboration", round=collab_round, mentions=collab_mentions)
+
+            # 选择被@的agents
+            collab_agents, _ = self.coordinator.select_agents(available_agents, mentions=collab_mentions)
+
+            if not collab_agents:
+                break
+
+            # 调用被@的agents
+            collab_results = await asyncio.gather(*[call_agent(agent) for agent in collab_agents])
+
+            # 处理协作响应
+            for agent_config, response, error in collab_results:
+                if error:
+                    error_msg = f"Agent {agent_config.name} 协作失败: {error}"
+                    logger.error("agent_collab_failed", agent_id=agent_config.agent_id, error=str(error))
+                    responses.append(f"[{agent_config.name}] ❌ {error_msg}")
+                else:
+                    estimated_tokens = len(response)
+                    self.coordinator.record_call(
+                        agent_config.agent_id,
+                        tokens_used=estimated_tokens
+                    )
+
+                    self.add_message(
+                        role="assistant",
+                        content=response,
+                        agent_id=agent_config.agent_id
+                    )
+
+                    responses.append(f"[{agent_config.name}]\n{response}")
+
+                    logger.info(
+                        "agent_collab_responded",
+                        agent_id=agent_config.agent_id,
+                        response_length=len(response)
+                    )
+
+            # 更新results为当前轮的结果，用于下一轮检测
+            results = collab_results
+
         # 标记轮次完成
         self.coordinator.mark_round_complete()
 
