@@ -1,7 +1,9 @@
 """核心数据模型 - 使用Pydantic进行数据验证"""
 
+from __future__ import annotations
+
 import time
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from dataclasses import dataclass
 
