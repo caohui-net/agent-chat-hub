@@ -33,11 +33,12 @@ def config_manager(temp_config_dir):
     )
     cm.add_model(model)
 
-    # 添加测试Agent
+    # 添加测试Agent（coordinator角色，符合新的路由规则）
     agent1 = AgentConfig(
         agent_id="agent_1",
         name="Agent 1",
         role="测试助手1",
+        role_type="coordinator",  # 设置为coordinator角色
         model_id="test-model",
         priority=100,
         active=True
@@ -46,6 +47,7 @@ def config_manager(temp_config_dir):
         agent_id="agent_2",
         name="Agent 2",
         role="测试助手2",
+        role_type="coordinator",  # 设置为coordinator角色
         model_id="test-model",
         priority=90,
         active=True
@@ -215,11 +217,12 @@ def test_config_persistence(temp_config_dir):
 
 def test_multiple_agents_concurrent_response(config_manager, coordinator):
     """测试多Agent并发响应场景 - Phase 2.1"""
-    # 创建3个不同优先级的agents
+    # 创建3个不同优先级的agents（coordinator角色）
     agent1 = AgentConfig(
         agent_id="concurrent_agent_1",
         name="Concurrent Agent 1",
         role="助手1",
+        role_type="coordinator",  # coordinator角色
         model_id="test-model",
         priority=100,
         active=True
@@ -228,6 +231,7 @@ def test_multiple_agents_concurrent_response(config_manager, coordinator):
         agent_id="concurrent_agent_2",
         name="Concurrent Agent 2",
         role="助手2",
+        role_type="coordinator",  # coordinator角色
         model_id="test-model",
         priority=150,
         active=True
@@ -236,6 +240,7 @@ def test_multiple_agents_concurrent_response(config_manager, coordinator):
         agent_id="concurrent_agent_3",
         name="Concurrent Agent 3",
         role="助手3",
+        role_type="coordinator",  # coordinator角色
         model_id="test-model",
         priority=200,
         active=True
@@ -285,12 +290,13 @@ def test_budget_max_agents_with_multiple():
         )
     )
 
-    # 创建5个agents（优先级递增）
+    # 创建5个agents（优先级递增，coordinator角色）
     agents = [
         AgentConfig(
             agent_id=f"budget_agent_{i}",
             name=f"Budget Agent {i}",
             role=f"助手{i}",
+            role_type="coordinator",  # coordinator角色
             model_id="test-model",
             priority=100 + i * 50,
             active=True
@@ -515,18 +521,18 @@ def test_agent_priority_sorting_concurrent():
         )
     )
 
-    # 创建5个agents，故意打乱priority和agent_id顺序
+    # 创建5个agents，故意打乱priority和agent_id顺序（coordinator角色）
     agents = [
         AgentConfig(agent_id="agent_c", name="Agent C", role="助手C",
-                   model_id="test-model", priority=100, active=True),
+                   role_type="coordinator", model_id="test-model", priority=100, active=True),
         AgentConfig(agent_id="agent_a", name="Agent A", role="助手A",
-                   model_id="test-model", priority=100, active=True),
+                   role_type="coordinator", model_id="test-model", priority=100, active=True),
         AgentConfig(agent_id="agent_d", name="Agent D", role="助手D",
-                   model_id="test-model", priority=150, active=True),
+                   role_type="coordinator", model_id="test-model", priority=150, active=True),
         AgentConfig(agent_id="agent_b", name="Agent B", role="助手B",
-                   model_id="test-model", priority=150, active=True),
+                   role_type="coordinator", model_id="test-model", priority=150, active=True),
         AgentConfig(agent_id="agent_e", name="Agent E", role="助手E",
-                   model_id="test-model", priority=200, active=True),
+                   role_type="coordinator", model_id="test-model", priority=200, active=True),
     ]
 
     # 启动轮次

@@ -27,12 +27,18 @@ def coordinator():
 
 @pytest.fixture
 def sample_agents():
-    """创建测试用的agents"""
+    """创建测试用的agents
+
+    注意：包含3个coordinator角色的agents，符合新的路由规则：
+    - 无@mentions时，只返回coordinator角色
+    - 有@mentions时，返回被@的agents
+    """
     return [
         AgentConfig(
             agent_id="agent_c",
             name="Agent C",
             role="assistant",
+            role_type="coordinator",  # coordinator角色
             model_id="model1",
             priority=200,
             active=True
@@ -41,6 +47,7 @@ def sample_agents():
             agent_id="agent_a",
             name="Agent A",
             role="assistant",
+            role_type="coordinator",  # coordinator角色
             model_id="model1",
             priority=100,
             active=True
@@ -49,6 +56,7 @@ def sample_agents():
             agent_id="agent_b",
             name="Agent B",
             role="assistant",
+            role_type="coordinator",  # coordinator角色
             model_id="model1",
             priority=100,
             active=True
@@ -57,6 +65,7 @@ def sample_agents():
             agent_id="agent_d",
             name="Agent D (Inactive)",
             role="assistant",
+            role_type="coordinator",  # coordinator角色（但inactive）
             model_id="model1",
             priority=50,
             active=False  # 不活跃
