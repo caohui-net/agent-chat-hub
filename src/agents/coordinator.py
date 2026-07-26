@@ -259,19 +259,21 @@ class ResponseCoordinator:
 
     def select_agents(
         self,
-        available_agents: List[AgentConfig]
+        available_agents: List[AgentConfig],
+        mentions: Optional[List[str]] = None
     ) -> Tuple[List[AgentConfig], Optional[StopReason]]:
         """选择本轮应该调用的agents（整合所有规则）
 
         执行流程：
         1. 检查停止条件（Rule 6）
-        2. 资格判定（Rule 1）
+        2. 资格判定（Rule 1，含@mention过滤）
         3. 排序（Rule 2）
         4. 去重过滤（Rule 3）
         5. 应用预算限制（Rule 5）
 
         Args:
             available_agents: 可用的agent配置列表
+            mentions: @提及的agent_id列表
 
         Returns:
             (selected_agents, stop_reason) 元组
@@ -283,8 +285,8 @@ class ResponseCoordinator:
         if should_stop:
             return ([], stop_reason)
 
-        # Rule 1: 资格判定
-        qualified = self.qualify_agents(available_agents)
+        # Rule 1: 资格判定（含@mention过滤）
+        qualified = self.qualify_agents(available_agents, mentions=mentions)
         if not qualified:
             self.current_round.stop_reason = StopReason.NO_AGENTS
             return ([], StopReason.NO_AGENTS)
