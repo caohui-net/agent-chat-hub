@@ -13,6 +13,7 @@ from src.core.config import ConfigManager
 from src.agents.coordinator import ResponseCoordinator
 from src.agents.executor import AgentExecutor
 from src.agents.message_bus import MessageBus
+from src.core.mention_parser import parse_mentions
 
 logger = structlog.get_logger()
 
@@ -119,6 +120,9 @@ class SessionManager:
         if not self.current_session:
             raise ValueError("没有活动会话")
 
+        # 解析@mentions
+        mentions = parse_mentions(user_input)
+
         # 添加用户消息
         self.add_message(role="user", content=user_input)
 
@@ -135,8 +139,8 @@ class SessionManager:
             logger.warning("no_active_agents")
             return ["错误：没有可用的agent"]
 
-        # 使用协调器选择agents
-        selected_agents, stop_reason = self.coordinator.select_agents(available_agents)
+        # 使用协调器选择agents（传递mentions）
+        selected_agents, stop_reason = self.coordinator.select_agents(available_agents, mentions=mentions)
 
         if stop_reason:
             logger.info("round_stopped", reason=stop_reason.value)
