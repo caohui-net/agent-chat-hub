@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **TUI File Operations**: Complete file management functionality ([#3])
+  - FileStorageManager with hybrid architecture (workspace + session isolation)
+  - PathInputScreen and ConfirmScreen modal dialogs
+  - Async file upload/download/delete handlers with @work decorator
+  - File list panel with real-time refresh
+  - Comprehensive usage documentation (docs/FILE_OPERATIONS.md)
+  - Unit tests and integration verification scripts
 - GitHub Actions workflow for automated pytest execution ([#1])
 - Token usage tracking via MessageBus events (P1-001)
 - Message queue capacity limit (1000 messages) to prevent memory overflow (P2-004)
