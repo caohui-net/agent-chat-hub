@@ -2,9 +2,9 @@
   "project_name": "Agent Chat Hub",
   "description": "多模型Agent聊天系统 - 个人用户与多个AI模型建立的Agent进行沟通和交互",
   "version": "0.1.0",
-  "current_phase": "功能增强 - 文件操作功能已完成",
-  "phase_description": "Phase 1-3全部完成。新增：TUI文件操作（上传/下载/删除）功能。",
-  "last_updated": "2026-07-26T06:50:00.000Z",
+  "current_phase": "功能增强 - TUI体验优化已完成",
+  "phase_description": "Phase 1-3全部完成。新增功能：TUI文件操作、TUI文本复制粘贴、项目清理。",
+  "last_updated": "2026-07-26T11:47:20.320Z",
   "tech_stack": {
     "language": "Python 3.14+",
     "ui": {
@@ -119,9 +119,37 @@
         "docs/plugins/plugin-development-guide.md - 插件开发指南",
         "tests/test_plugin_loader.py - 插件加载器测试"
       ]
+    },
+    "enhancement_tui_copy": {
+      "name": "TUI体验优化 - 文本复制功能",
+      "status": "completed",
+      "completed_date": "2026-07-26",
+      "tasks": [
+        "✅ 实现ClipboardService（OSC 52 + 平台工具回退）",
+        "✅ 修改退出快捷键（Ctrl+C → Ctrl+Q，避免冲突）",
+        "✅ 添加复制快捷键（Ctrl+Shift+C）",
+        "✅ 更新README文档（修正复制操作说明）",
+        "✅ 编写测试脚本（test_clipboard.py）",
+        "✅ 编写用户测试指南（TEST_GUIDE.md）",
+        "✅ 项目清理（删除临时文件、讨论历史、Python缓存，释放~641KB）"
+      ],
+      "deliverables": [
+        "src/tui/clipboard_service.py - 剪贴板服务（OSC 52策略 + 平台回退）",
+        "src/tui/app.py - 更新退出键和复制键绑定",
+        "tests/test_clipboard.py - 剪贴板功能测试（4个测试场景）",
+        "TEST_GUIDE.md - 用户测试指南（5个测试场景 + FAQ）",
+        "README.md - 更新复制粘贴说明",
+        "项目清理：删除40个文件，9597行代码（commit e2a3703）"
+      ],
+      "commits": [
+        "e08b521 - feat: 优化TUI文本选择体验",
+        "7ffebea - feat: 实现TUI复制粘贴功能完整方案",
+        "56c9524 - test: 添加ClipboardService测试脚本和用户测试指南",
+        "e2a3703 - chore: 清理项目临时文件和讨论历史"
+      ]
     }
   },
-  "next_focus": "项目已完成！后续可进行：性能优化、更多示例插件、文档完善、部署指南",
+  "next_focus": "项目核心功能已完成！后续方向：1) 性能优化和压力测试 2) 更多示例插件开发 3) 文档完善和部署指南 4) 用户反馈收集",
   "blockers": [],
   "decisions": [
     {
