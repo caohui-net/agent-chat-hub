@@ -14,18 +14,22 @@ from src.tui.config_screen import ConfigScreen
 from src.tui.plugin_screen import PluginScreen
 from src.tui.input_screen import PathInputScreen, ConfirmScreen
 from src.core.file_storage import FileStorageManager
+from src.tui.clipboard_service import get_clipboard_service
 
 
 class ChatApp(App):
     """Agent Chat Hub TUI应用"""
 
+    ENABLE_COMMAND_PALETTE = False  # 禁用命令面板避免冲突
+
     # 快捷键绑定
     BINDINGS = [
+        Binding("ctrl+q", "quit", "退出", show=True),
+        Binding("ctrl+shift+c", "copy_message", "复制消息", show=True),
         Binding("ctrl+t", "toggle_agent", "切换Agent", show=True),
         Binding("ctrl+r", "refresh_agents", "刷新Agent列表", show=True),
         Binding("ctrl+g", "open_config", "配置管理", show=True),
         Binding("ctrl+p", "open_plugins", "插件管理", show=True),
-        Binding("ctrl+q", "quit", "退出", show=True),
     ]
 
     CSS = """
@@ -170,7 +174,7 @@ class ChatApp(App):
         yield Label("", id="status_bar")
 
         # 输入框
-        yield Input(placeholder="输入消息... (Ctrl+C 退出)", id="input_box")
+        yield Input(placeholder="输入消息... (Ctrl+Q 退出)", id="input_box")
 
         yield Footer()
 
@@ -345,6 +349,34 @@ class ChatApp(App):
         # 打开插件管理界面
         plugin_screen = PluginScreen(self.plugin_registry, self.plugin_loader)
         self.push_screen(plugin_screen)
+
+    def action_copy_message(self) -> None:
+        """复制聊天显示区的全部内容到剪贴板"""
+        try:
+            # 获取聊天显示区的内容
+            chat_display = self.query_one("#chat_display", TextArea)
+            content = chat_display.text
+
+            if not content or not content.strip():
+                self.notify("没有内容可复制", severity="warning", timeout=3)
+                return
+
+            # 使用剪贴板服务复制
+            clipboard = get_clipboard_service()
+            success, message = clipboard.copy(content)
+
+            if success:
+                self.notify(message, severity="information", timeout=3)
+            else:
+                # 失败时显示降级提示（多行消息）
+                self.notify(
+                    message,
+                    severity="warning",
+                    timeout=8  # 降级提示需要更长时间阅读
+                )
+
+        except Exception as e:
+            self.notify(f"复制失败: {str(e)}", severity="error", timeout=5)
 
     async def on_input_submitted(self, event: Input.Submitted) -> None:
         """处理用户输入（异步，支持并发agent调用）

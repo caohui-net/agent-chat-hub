@@ -82,8 +82,38 @@ python main.py
 ### 4. 使用界面
 
 - 在底部输入框输入消息，按回车发送
-- `Ctrl+C`: 退出应用
-- `Ctrl+N`: 创建新会话
+
+**复制聊天文本**：
+- **通用方式**：按住`Shift`键并用鼠标拖拽选择文本，随后使用终端的复制快捷键
+  - Linux/Windows Terminal：通常为`Ctrl+Shift+C`
+  - macOS Terminal/iTerm2：通常为`Cmd+C`
+  - 具体快捷键取决于所使用的终端模拟器
+
+**粘贴到输入框**：
+- Linux/Windows Terminal：通常为`Ctrl+Shift+V`
+- macOS Terminal/iTerm2：通常为`Cmd+V`
+- 也可使用终端右键粘贴
+
+**快捷键**：
+- `Ctrl+Q`: 退出应用
+- `Ctrl+T`: 切换Agent
+- `Ctrl+R`: 刷新Agent列表
+- `Ctrl+G`: 配置管理
+- `Ctrl+P`: 插件管理
+
+## 部署指南
+
+需要在生产环境部署？请查看详细的部署文档：
+
+📖 **[部署指南 (DEPLOYMENT.md)](DEPLOYMENT.md)**
+
+包含：
+- 系统要求和环境检查
+- 标准部署步骤
+- 配置管理和API密钥
+- 运行管理和后台运行
+- 数据备份和更新升级
+- 安全建议和故障排查
 
 ## 配置文件
 
