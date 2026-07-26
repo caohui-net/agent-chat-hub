@@ -4,7 +4,7 @@ TUI应用 - 基于Textual的终端界面（增强版：Agent面板+状态栏）
 from typing import Optional
 from textual.app import App, ComposeResult
 from textual.containers import Container, ScrollableContainer, Horizontal, Vertical
-from textual.widgets import Header, Footer, Input, Static, DataTable, Label
+from textual.widgets import Header, Footer, Input, Static, DataTable, Label, Button
 from textual.binding import Binding
 
 from src.agents.session import SessionManager
@@ -123,7 +123,9 @@ class ChatApp(App):
                 # 下部：文件操作区
                 with Vertical(id="file_operations"):
                     yield Static("🔧 文件操作", classes="panel-title")
-                    yield Static("拖拽文件到此上传\n或使用快捷键操作", id="file_ops_hint")
+                    yield Button("📤 上传文件", id="upload_btn", variant="primary")
+                    yield Button("📥 下载选中", id="download_btn")
+                    yield Button("🗑️ 删除选中", id="delete_btn", variant="error")
 
         # 状态栏
         yield Label("", id="status_bar")
@@ -290,6 +292,17 @@ class ChatApp(App):
 
         except Exception as e:
             self.update_display(f"错误: {e}")
+
+    def on_button_pressed(self, event) -> None:
+        """处理按钮点击事件"""
+        button_id = event.button.id
+
+        if button_id == "upload_btn":
+            self.update_display("📤 文件上传功能：请将文件拖拽到终端或使用系统文件对话框")
+        elif button_id == "download_btn":
+            self.update_display("📥 文件下载功能：请先选择文件列表中的文件")
+        elif button_id == "delete_btn":
+            self.update_display("🗑️ 文件删除功能：请先选择文件列表中的文件")
 
     def action_new_session(self) -> None:
         """创建新会话"""
