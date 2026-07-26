@@ -192,18 +192,21 @@ class ResponseCoordinator:
     def qualify_agents(
         self,
         available_agents: List[AgentConfig],
-        max_agents: Optional[int] = None
+        max_agents: Optional[int] = None,
+        mentions: Optional[List[str]] = None
     ) -> List[AgentConfig]:
         """Rule 1: Qualification - 资格判定
 
         确定性路由规则：
         1. 仅选择active=True的agents
-        2. 最多选择max_agents个（默认使用budget限制）
-        3. 不依赖agent自报资格，完全基于配置
+        2. 如果有@mentions，仅选择被@的agents
+        3. 最多选择max_agents个（默认使用budget限制）
+        4. 不依赖agent自报资格，完全基于配置
 
         Args:
             available_agents: 可用的agent配置列表
             max_agents: 最大agent数，默认使用预算限制
+            mentions: @提及的agent_id列表
 
         Returns:
             合格的agent列表
@@ -212,6 +215,10 @@ class ResponseCoordinator:
 
         # 过滤active agents
         qualified = [a for a in available_agents if a.active]
+
+        # @mention过滤：如果有@mentions，只保留被@的agents
+        if mentions:
+            qualified = [a for a in qualified if a.agent_id in mentions or a.name in mentions]
 
         # 按priority升序排序，相同priority按agent_id字典序（与sort_agents保持一致）
         qualified_sorted = sorted(qualified, key=lambda a: (a.priority, a.agent_id))

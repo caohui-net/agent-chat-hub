@@ -129,6 +129,7 @@ class Message(BaseModel):
     # 元数据
     agent_id: Optional[str] = Field(default=None, description="发送此消息的Agent ID（若为Agent消息）")
     timestamp: float = Field(default_factory=_current_timestamp, description="消息时间戳")
+    mentions: List[str] = Field(default_factory=list, description="@提及的agent_id列表，用于@mention路由")
 
     @field_validator("role")
     @classmethod

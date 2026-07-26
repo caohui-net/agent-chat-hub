@@ -1,0 +1,42 @@
+{
+  "task_id": "DISCUSS-\u89d2\u8272\u7cfb\u7edf\u6280\u672f\u65b9\u6848\u8bc4\u5ba1-1784705226",
+  "topic": "\u89d2\u8272\u7cfb\u7edf\u6280\u672f\u65b9\u6848\u8bc4\u5ba1",
+  "status": "pending",
+  "created_at": "2026-07-22T07:27:06.486937+00:00",
+  "updated_at": "2026-07-22T07:27:06.500870+00:00",
+  "completed_at": null,
+  "limits": {
+    "max_rounds": 3,
+    "hard_max_rounds": 10
+  },
+  "rounds": [],
+  "final_consensus": {
+    "reached": false,
+    "decision": null,
+    "blocking_issues": [],
+    "round_number": null
+  },
+  "failures": [],
+  "retry_attempts": [],
+  "artifacts": {
+    "directory": ".collab/artifacts/",
+    "files": []
+  },
+  "participants": [
+    "codex",
+    "gemini"
+  ],
+  "agentmemory": {
+    "recall_attempted": true,
+    "recall_enabled": false,
+    "recall_projects": [
+      "session-init",
+      "cross-project",
+      "global"
+    ],
+    "related_consensus": [],
+    "expired_consensus": [],
+    "potential_conflicts": [],
+    "recall_error": "iii-sdk is not installed"
+  }
+}

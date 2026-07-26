@@ -1,0 +1,42 @@
+{
+  "task_id": "DISCUSS-AI\u8f6f\u4ef6\u5de5\u7a0b\u89d2\u8272\u9884\u8bbe\u65b9\u6848-1-\u5e94\u9884\u8bbe\u54ea\u4e9b\u89d2\u8272-1784708641",
+  "topic": "AI\u8f6f\u4ef6\u5de5\u7a0b\u89d2\u8272\u9884\u8bbe\u65b9\u6848\uff1a1.\u5e94\u9884\u8bbe\u54ea\u4e9b\u89d2\u8272\uff1f2.\u89d2\u8272prompt\u5982\u4f55\u7cbe\u786e\u63d0\u53d6\uff1f3.\u89d2\u8272\u4e0eClaude/Codex/Gemini\u5982\u4f55\u5339\u914d\uff1f",
+  "status": "pending",
+  "created_at": "2026-07-22T08:24:01.841487+00:00",
+  "updated_at": "2026-07-22T08:24:01.852647+00:00",
+  "completed_at": null,
+  "limits": {
+    "max_rounds": 3,
+    "hard_max_rounds": 10
+  },
+  "rounds": [],
+  "final_consensus": {
+    "reached": false,
+    "decision": null,
+    "blocking_issues": [],
+    "round_number": null
+  },
+  "failures": [],
+  "retry_attempts": [],
+  "artifacts": {
+    "directory": ".collab/artifacts/",
+    "files": []
+  },
+  "participants": [
+    "codex",
+    "gemini"
+  ],
+  "agentmemory": {
+    "recall_attempted": true,
+    "recall_enabled": false,
+    "recall_projects": [
+      "session-init",
+      "cross-project",
+      "global"
+    ],
+    "related_consensus": [],
+    "expired_consensus": [],
+    "potential_conflicts": [],
+    "recall_error": "iii-sdk is not installed"
+  }
+}
