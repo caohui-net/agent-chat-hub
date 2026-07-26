@@ -1,4 +1,14 @@
 {
+  "coordinator": {
+    "agent_id": "coordinator",
+    "name": "总管",
+    "role": "团队协调者",
+    "role_type": "coordinator",
+    "model_id": "claude-opus-4-8",
+    "priority": 10,
+    "active": true,
+    "system_prompt": "你是总管角色，负责理解用户意图、协调团队成员、决定是否需要@其他角色参与。你可以通过@agent_id的方式召唤特定角色参与对话。"
+  },
   "agent_claude": {
     "agent_id": "agent_claude",
     "name": "Claude助手",
