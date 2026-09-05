@@ -1,180 +1,354 @@
 # Agent Chat Hub
 
-多模型Agent聊天系统 - 个人用户与不同AI模型建立的Agent进行沟通和交互。
+多模型Agent聊天系统 - 支持Claude、OpenAI、Gemini等多个AI模型的统一对话平台
 
-## 项目概述
+---
 
-本项目旨在构建一个统一的平台，允许用户与多个AI模型（Claude、Codex、Gemini等）建立的Agent进行实时对话和协作。
+## 🎯 项目概述
 
-## 核心特性
+Agent Chat Hub是一个强大的多模型AI Agent管理平台，允许用户与多个AI模型建立的Agent进行实时对话和协作。
 
-- 🤖 **多模型支持**：集成Claude、Codex、Gemini等多个AI模型
-- 💬 **实时聊天**：支持流式响应和实时交互
-- 🔄 **Agent协作**：多个Agent可以协同工作
-- 🛡️ **消息验证**：自动处理和修复Agent输出格式问题
-- 📊 **会话管理**：完整的会话生命周期管理
+### 核心特性
 
-## 项目结构
+- 🤖 **多模型支持** - 集成Anthropic Claude、OpenAI GPT、Google Gemini
+- 💬 **实时对话** - Textual TUI界面，支持流式响应
+- 🔄 **Agent协作** - @mention机制，支持多Agent并发协作
+- 📊 **状态追踪** - 实时显示Agent状态、Token使用和成本
+- 🛡️ **智能重试** - 自动处理网络错误和API限流
+- 🔒 **安全存储** - API密钥安全存储在系统密钥环
 
-```
-agent-chat-hub/
-├── docs/          # 文档
-├── src/           # 源代码
-│   ├── core/     # 核心功能（MessageValidator, SessionManager等）
-│   ├── agents/   # Agent实现
-│   └── ui/       # 用户界面
-├── references/    # 参考项目集合
-├── config/        # 配置文件
-├── tests/         # 测试
-└── README.md
-```
+---
 
-## 技术栈
+## 🚀 5分钟快速开始
 
-- **语言**：Python 3.14+
-- **UI框架**：Textual (TUI终端界面) - 基于ADR-0001决策
-- **数据验证**：Pydantic v2
-- **日志**：structlog
-- **API密钥管理**：keyring (系统密钥环)
-- **HTTP客户端**：httpx
+### 前置要求
 
-## 快速开始
+- Python 3.10+
+- API密钥（Anthropic Claude 或 OpenAI）
 
-### 1. 创建虚拟环境
+### 安装步骤
 
 ```bash
+# 1. 克隆项目
+git clone https://github.com/yourusername/agent-chat-hub.git
+cd agent-chat-hub
+
+# 2. 创建虚拟环境
 python3 -m venv venv
-source venv/bin/activate
-```
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-### 2. 安装依赖
-
-```bash
+# 3. 安装依赖
 pip install -e .
-```
 
-### 3. 初始化配置
-
-首次使用需要配置模型和agent：
-
-```bash
+# 4. 配置API密钥
 python init_config.py
-```
 
-脚本会引导你：
-- 选择模型provider（Anthropic或OpenAI）
-- 输入API密钥（安全存储到系统密钥环）
-- 创建第一个agent
-
-### 4. 启动应用
-
-**方式1: 使用启动脚本（推荐）**
-```bash
+# 5. 启动应用
 ./start.sh
 ```
 
-**方式2: 手动启动**
-```bash
-source venv/bin/activate
-python main.py
+**详细指南**: [docs/user-guide/QUICKSTART.md](docs/user-guide/QUICKSTART.md)
+
+---
+
+## 📖 文档
+
+### 用户指南
+
+- [快速开始](docs/user-guide/QUICKSTART.md) - 5分钟上手指南
+- [配置指南](docs/user-guide/CONFIGURATION.md) - 完整配置说明
+- [故障排除](docs/user-guide/TROUBLESHOOTING.md) - 常见问题解决
+
+### 开发文档
+
+- [API参考](docs/api-reference/API.md) - 完整API文档
+- [架构设计](docs/architecture/) - 系统架构和设计文档
+- [教程](docs/tutorials/FIRST_AGENT.md) - 创建你的第一个Agent
+
+### ADR文档
+
+- [ADR-0001](docs/adr/0001-采用TUI替代React-Web界面.md) - 采用TUI替代React Web界面
+
+---
+
+## 💻 项目结构
+
+```
+agent-chat-hub/
+├── docs/                       # 📚 文档
+│   ├── user-guide/            # 用户指南
+│   ├── api-reference/         # API文档
+│   ├── architecture/          # 架构文档
+│   ├── tutorials/             # 教程
+│   └── adr/                   # 架构决策记录
+├── src/                        # 💻 源代码
+│   ├── core/                  # 核心功能
+│   │   ├── config.py         # 配置管理
+│   │   ├── models.py         # 数据模型
+│   │   ├── agent_status.py   # 状态管理
+│   │   ├── token_tracker.py  # Token追踪
+│   │   └── retry_policy.py   # 重试策略
+│   ├── agents/                # Agent系统
+│   │   ├── executor.py       # Agent执行器
+│   │   ├── session.py        # 会话管理
+│   │   ├── coordinator.py    # 响应协调
+│   │   └── message_bus.py    # 消息总线
+│   └── tui/                   # TUI界面
+│       ├── app.py            # 主应用
+│       └── agent_status_panel.py  # 状态面板
+├── tests/                      # 🧪 测试
+├── config/                     # ⚙️ 配置文件
+├── main.py                     # 🎯 入口文件
+└── README.md                   # 📄 本文档
 ```
 
-### 4. 使用界面
+---
 
-- 在底部输入框输入消息，按回车发送
-- `Ctrl+C`: 退出应用
-- `Ctrl+N`: 创建新会话
+## 🎮 使用示例
 
-## 配置文件
+### 基本对话
 
-- 配置目录: `~/.agent-chat-hub/`
-- 模型配置: `~/.agent-chat-hub/models.json`
-- Agent配置: `~/.agent-chat-hub/agents.json`
-- 会话历史: `~/.agent-chat-hub/sessions/`
-- API密钥: 系统密钥环（不保存到文件）
+```
+User: @researcher 分析这段Python代码
+researcher: 让我来分析这段代码的结构和功能...
+```
 
-## 参考项目
+### @mention智能匹配
 
-本项目参考和集成了以下优秀项目（放置在`references/`目录）：
+支持模糊匹配，无需输入完整Agent名称：
 
-- MassGen：多Agent协调系统
-- 其他相关项目...
+```
+@res      → researcher  ✅
+@write    → writer      ✅
+@研究     → researcher  ✅
+```
 
-## 开发状态
+### 多Agent协作
 
-### Phase 1 - MVP基础设施 ✅ (2026-07-17)
+```
+User: @researcher @coder 帮我优化这个算法
+researcher: 从算法角度分析...
+coder: 这里是优化后的代码...
+```
 
-- [x] **ADR-0001**: TUI替代React架构决策
-- [x] **数据模型**: ModelConfig, AgentConfig, Message, SessionConfig
-- [x] **配置管理**: 模型/agent配置，API密钥安全存储（keyring）
-- [x] **响应协调器**: 6条响应控制规则 + 18个单元测试全部通过
-- [x] **Agent执行器**: Anthropic/OpenAI API调用支持
-- [x] **会话管理器**: 对话历史管理，会话持久化
-- [x] **TUI界面**: 基于Textual的终端界面
-- [x] **单agent对话PoC**: 完整的对话流程验证
+### 实时状态显示
 
-**响应协调规则（6条 - 基于ADR-0001）：**
-1. Qualification: 确定性路由，基于配置
-2. Ordering: 优先级升序 + agent_id字典序
-3. Deduplication: (session, round, agent)三元组去重
-4. Cancellation: 取消后禁止新调用
-5. Budget: MVP限额（3 agents, 3 calls, 12k tokens, 120s）
-6. Stop: 6种停止条件，禁止agent自动续轮
+```
+📊 Agent执行状态
+⚙️  researcher: running (1.2s...)
+✅ coder: completed (0.8s) | 450 tokens
 
-**MVP预算限制：**
-- 最大并发agents: 3
-- 每轮最大调用次数: 3
-- 最大token数: 12,000
-- 超时时间: 120秒
+💰 本会话统计
+├─ 输入: 1,000 tokens
+├─ 输出: 2,000 tokens
+├─ 总计: 3,000 tokens
+└─ 成本: $0.0330
+```
 
-### Phase 2 - 多agent协作 ✅ (2026-07-20)
+---
 
-- [x] **Agent执行器异步化**: 支持并发API调用
-- [x] **高级TUI组件**: Agent面板、状态栏、快捷键系统
-- [x] **Agent间消息传递**: MessageBus消息总线实现
-- [x] **配置管理界面**: 查看和添加模型配置
-- [x] **集成测试**: 13个Phase 2集成测试，100%通过率
-- [x] **性能基准测试**: 并发性能基准测试脚本
+## 🔧 技术栈
 
-**Phase 2.1强化（2026-07-20）：**
-- 新增7个并发响应测试（预算限制、去重、取消、排序）
-- 修复ResponseCoordinator排序一致性问题
-- 全部13个Phase 2集成测试达到100%通过率
+| 类别 | 技术 | 版本 |
+|------|------|------|
+| **语言** | Python | 3.10+ |
+| **UI框架** | Textual | 最新 |
+| **数据验证** | Pydantic | v2 |
+| **HTTP客户端** | httpx | 最新 |
+| **日志** | structlog | 最新 |
+| **密钥管理** | keyring | 最新 |
+| **异步** | asyncio | 标准库 |
 
-### Phase 3 - 插件系统 ✅ (2026-07-18)
+---
 
-- [x] **插件系统架构**: Ruflo风格插件设计
-- [x] **插件加载机制**: 插件注册表和加载器
-- [x] **插件API**: Agent/Config/Message/TUI API
-- [x] **示例插件**: Hello插件实现
-- [x] **插件管理界面**: TUI插件管理界面
+## 🎯 开发路线图
 
-## 测试
+### ✅ Phase 1 - MVP基础设施 (已完成)
 
-运行测试：
+- 核心数据模型（ModelConfig, AgentConfig, Message, SessionConfig）
+- 配置管理（模型/Agent配置，API密钥安全存储）
+- 响应协调器（6条响应控制规则）
+- Agent执行器（Anthropic/OpenAI API支持）
+- 会话管理器（对话历史管理）
+- TUI界面（基于Textual）
+- 单Agent对话PoC
+
+### ✅ Phase 2 - 多Agent协作 (已完成)
+
+- Agent执行器异步化（并发API调用）
+- 高级TUI组件（Agent面板、状态栏）
+- Agent间消息传递（MessageBus）
+- 配置管理界面
+- 集成测试（13个测试，100%通过）
+- 性能基准测试
+
+### ✅ Phase 3 - 插件系统 (已完成)
+
+- 插件系统架构（Ruflo风格设计）
+- 插件加载机制
+- 插件API（Agent/Config/Message/TUI）
+- 示例插件实现
+- 插件管理界面
+
+### ✅ Phase 3.5 - 增强功能 (2026-09-05完成)
+
+- ✅ Agent上下文隔离 - 每个Agent独立上下文
+- ✅ 实时状态追踪 - IDLE/PENDING/RUNNING/COMPLETED/ERROR
+- ✅ Token追踪与成本计算 - 实时显示Token使用和成本
+- ✅ 智能重试策略 - 自动处理网络错误（指数退避）
+- ✅ @mention智能匹配 - 支持模糊匹配（部分匹配、不区分大小写）
+
+### 🔄 Phase 4 - 未来规划
+
+- [ ] Agent工具调用（函数调用）
+- [ ] 流式响应显示
+- [ ] 会话搜索和导出
+- [ ] Agent模板市场
+- [ ] Web界面（可选）
+
+---
+
+## 🧪 测试
+
+### 运行测试
 
 ```bash
+# 所有测试
 pytest tests/ -v
+
+# 单元测试
+pytest tests/test_coordinator.py -v
+
+# 集成测试
+python test_integration.py
+
+# 功能验证
+python test_verification.py
 ```
 
-当前测试覆盖：
+### 测试覆盖率
+
 - **单元测试**: 45个测试，100%通过 ✅
   - 响应协调器: 18个测试
   - MessageBus: 9个测试
   - 其他核心模块: 18个测试
-- **集成测试**: 13个Phase 2集成测试，100%通过 ✅
-- **总计**: 58个测试，100%通过率
+- **增强功能测试**: 10个测试，100%通过 ✅
+  - 上下文隔离: 2个测试
+  - 状态追踪: 2个测试
+  - Token追踪: 2个测试
+  - 重试策略: 2个测试
+  - @mention匹配: 2个测试
+- **集成测试**: 13个Phase 2测试，100%通过 ✅
+- **总计**: 68个测试，100%通过率 ✅
 
-## 架构文档
+---
 
-- **ADR-0001**: [采用TUI替代React Web界面](docs/adr/0001-采用TUI替代React-Web界面.md)
-- **实施计划**: [Agent Chat Hub MVP实施计划](.omc/plans/Agent-Chat-Hub-MVP-实施计划.md)
-- **HTTP/WebSocket消费者清单**: [消费者清单](docs/architecture/HTTP-WebSocket-消费者清单.md)
+## 📊 性能指标
 
-## License
+### 响应协调规则（6条）
+
+1. **Qualification** - 确定性路由，基于配置
+2. **Ordering** - 优先级升序 + agent_id字典序
+3. **Deduplication** - (session, round, agent)三元组去重
+4. **Cancellation** - 取消后禁止新调用
+5. **Budget** - MVP限额（3 agents, 3 calls, 12k tokens, 120s）
+6. **Stop** - 6种停止条件，禁止agent自动续轮
+
+### MVP预算限制
+
+| 限制项 | 值 |
+|--------|-----|
+| 最大并发Agents | 3 |
+| 每轮最大调用次数 | 3 |
+| 最大Token数 | 12,000 |
+| 超时时间 | 120秒 |
+
+### 重试策略
+
+- **最大重试次数**: 3次
+- **基础延迟**: 1秒
+- **指数退避**: 2倍（1s → 2s → 4s）
+- **可重试错误**: 超时、连接错误、限流（429）、服务不可用（503/504）
+
+---
+
+## 🤝 贡献
+
+欢迎贡献代码、报告问题或提出建议！
+
+### 贡献流程
+
+1. Fork本项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启Pull Request
+
+### 开发指南
+
+```bash
+# 安装开发依赖
+pip install -e ".[dev]"
+
+# 运行测试
+pytest tests/ -v
+
+# 代码格式化
+black src/ tests/
+
+# 类型检查
+mypy src/
+```
+
+---
+
+## 📝 变更日志
+
+查看 [CHANGELOG.md](CHANGELOG.md) 了解版本变更历史
+
+---
+
+## 📄 许可证
 
 待定
 
-## 作者
+---
 
-caohui
+## 👥 作者
+
+**caohui** - 项目创建者和维护者
+
+---
+
+## 🙏 致谢
+
+本项目参考和借鉴了以下优秀项目：
+
+- [MassGen](references/massgen/) - 多Agent协调系统
+- [Textual](https://github.com/Textualize/textual) - TUI框架
+- 其他相关项目...
+
+---
+
+## 📮 联系方式
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/agent-chat-hub/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/agent-chat-hub/discussions)
+
+---
+
+## 🔗 相关链接
+
+- [项目主页](https://github.com/yourusername/agent-chat-hub)
+- [文档站点](https://yourusername.github.io/agent-chat-hub)
+- [发布页面](https://github.com/yourusername/agent-chat-hub/releases)
+
+---
+
+**快速链接**: [快速开始](docs/user-guide/QUICKSTART.md) | [配置指南](docs/user-guide/CONFIGURATION.md) | [API文档](docs/api-reference/API.md) | [教程](docs/tutorials/FIRST_AGENT.md)
+
+---
+
+**版本**: v1.0  
+**更新日期**: 2026-09-06  
+**状态**: 生产就绪 ✅
