@@ -13,6 +13,7 @@ from src.core.config import ConfigManager
 from src.core.exceptions import UnsupportedProviderError
 from src.core.retry_policy import RetryPolicy
 from src.core.token_tracker import TokenTracker, AgentTokenUsage
+from src.core.cli_adapter import get_cli_adapter
 
 if TYPE_CHECKING:
     from src.agents.message_bus import MessageBus
@@ -73,6 +74,9 @@ class AgentExecutor:
 
         # 新增：Token追踪器
         self.token_tracker = TokenTracker()
+
+        # 新增：CLI适配器（优先使用CLI工具）
+        self.cli_adapter = get_cli_adapter()
 
         # 初始化ModelRouter（AI角色系统集成）
         if MODEL_ROUTER_AVAILABLE:
@@ -136,6 +140,8 @@ class AgentExecutor:
     ) -> str:
         """调用Anthropic API（异步）
 
+        优先使用Claude CLI工具，如果不可用则使用HTTP API
+
         Args:
             model_config: 模型配置
             messages: API格式的消息列表
@@ -148,6 +154,43 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
+        # 优先使用CLI工具
+        if self.cli_adapter.is_available("anthropic"):
+            try:
+                logger.info("using_claude_cli", agent_id=agent_id)
+                response, token_usage = await self.cli_adapter.call_claude(
+                    messages=messages,
+                    system_prompt=system_prompt,
+                    model=model_config.model_id,
+                    max_tokens=model_config.max_tokens,
+                    temperature=model_config.temperature
+                )
+
+                # 记录Token使用
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0)
+                    ))
+
+                # 发布事件
+                if self.message_bus:
+                    await self._publish_usage(model_config.model_id, TokenUsage(
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0),
+                        cache_read_tokens=0,
+                        cache_write_tokens=0
+                    ))
+
+                return response
+
+            except Exception as e:
+                logger.warning("claude_cli_failed_fallback_to_http", error=str(e))
+                # CLI失败，继续尝试HTTP API
+
+        # 使用HTTP API（原有逻辑）
         # 优先使用配置文件中的api_key，否则从keyring读取
         api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
@@ -226,14 +269,18 @@ class AgentExecutor:
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        agent_id: Optional[str] = None
     ) -> str:
         """调用OpenAI API（异步）
+
+        优先使用Codex CLI工具，如果不可用则使用HTTP API
 
         Args:
             model_config: 模型配置
             messages: API格式的消息列表
             system_prompt: 系统提示词
+            agent_id: Agent ID（用于Token追踪）
 
         Returns:
             模型响应内容
@@ -241,6 +288,43 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
+        # 优先使用CLI工具
+        if self.cli_adapter.is_available("openai"):
+            try:
+                logger.info("using_codex_cli", agent_id=agent_id)
+                response, token_usage = await self.cli_adapter.call_codex(
+                    messages=messages,
+                    system_prompt=system_prompt,
+                    model=model_config.model_id,
+                    max_tokens=model_config.max_tokens,
+                    temperature=model_config.temperature
+                )
+
+                # 记录Token使用
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0)
+                    ))
+
+                # 发布事件
+                if self.message_bus:
+                    await self._publish_usage(model_config.model_id, TokenUsage(
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0),
+                        cache_read_tokens=0,
+                        cache_write_tokens=0
+                    ))
+
+                return response
+
+            except Exception as e:
+                logger.warning("codex_cli_failed_fallback_to_http", error=str(e))
+                # CLI失败，继续尝试HTTP API
+
+        # 使用HTTP API（原有逻辑）
         # 优先使用配置文件中的api_key，否则从keyring读取
         api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
@@ -300,14 +384,18 @@ class AgentExecutor:
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        agent_id: Optional[str] = None
     ) -> str:
         """通过HTTP API调用Gemini（改进版）
+
+        优先使用Gemini CLI工具，如果不可用则使用HTTP API
 
         Args:
             model_config: 模型配置
             messages: API格式的消息列表（完整历史）
             system_prompt: 系统提示词
+            agent_id: Agent ID（用于Token追踪）
 
         Returns:
             模型响应内容
@@ -315,6 +403,43 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
+        # 优先使用CLI工具
+        if self.cli_adapter.is_available("gemini"):
+            try:
+                logger.info("using_gemini_cli", agent_id=agent_id)
+                response, token_usage = await self.cli_adapter.call_gemini(
+                    messages=messages,
+                    system_prompt=system_prompt,
+                    model=model_config.model_id,
+                    max_tokens=model_config.max_tokens,
+                    temperature=model_config.temperature
+                )
+
+                # 记录Token使用
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0)
+                    ))
+
+                # 发布事件
+                if self.message_bus:
+                    await self._publish_usage(model_config.model_id, TokenUsage(
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0),
+                        cache_read_tokens=0,
+                        cache_write_tokens=0
+                    ))
+
+                return response
+
+            except Exception as e:
+                logger.warning("gemini_cli_failed_fallback_to_http", error=str(e))
+                # CLI失败，继续尝试HTTP API
+
+        # 使用HTTP API（原有逻辑）
         try:
             # 获取API密钥
             api_key = model_config.api_key or self.config_manager.get_api_key(
@@ -509,12 +634,14 @@ class AgentExecutor:
             return await self._call_openai(
                 model_config,
                 api_messages,
-                agent_config.system_prompt
+                agent_config.system_prompt,
+                agent_config.agent_id
             )
         elif model_config.provider == "gemini-http":
             return await self._call_gemini_http(
                 model_config,
                 api_messages,
-                agent_config.system_prompt
+                agent_config.system_prompt,
+                agent_config.agent_id
             )
 
