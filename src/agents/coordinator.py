@@ -13,12 +13,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional, List, Set, Tuple
 from time import time
-import logging
+import structlog
 
 from src.core.models import AgentConfig, Message
 from src.agents.rule_checker import RuleChecker
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class StopReason(Enum):
@@ -226,11 +226,7 @@ class ResponseCoordinator:
                 matched_agent = MentionMatcher.match_agent(qualified, mention, threshold=0.6)
                 if matched_agent:
                     matched_agents.append(matched_agent)
-                    logger.info(
-                        "mention_matched",
-                        mention=mention,
-                        matched_agent=matched_agent.agent_id
-                    )
+                    logger.info("mention_matched", mention=mention, matched_agent=matched_agent.agent_id)
                 else:
                     logger.warning("mention_no_match", mention=mention)
 
