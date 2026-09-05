@@ -218,19 +218,24 @@ class ResponseCoordinator:
 
         # @mention路由规则
         if mentions:
-            # 有@mentions：只保留被@的agents（支持部分匹配）
-            def matches_mention(agent: AgentConfig, mention: str) -> bool:
-                """检查agent是否匹配mention（不区分大小写的部分匹配）"""
-                mention_lower = mention.lower()
-                # 精确匹配agent_id或name
-                if agent.agent_id == mention or agent.name == mention:
-                    return True
-                # 部分匹配agent_id或name
-                if mention_lower in agent.agent_id.lower() or mention_lower in agent.name.lower():
-                    return True
-                return False
+            # 使用MentionMatcher进行智能匹配
+            from src.core.mention_matcher import MentionMatcher
 
-            qualified = [a for a in qualified if any(matches_mention(a, m) for m in mentions)]
+            matched_agents = []
+            for mention in mentions:
+                matched_agent = MentionMatcher.match_agent(qualified, mention, threshold=0.6)
+                if matched_agent:
+                    matched_agents.append(matched_agent)
+                    logger.info(
+                        "mention_matched",
+                        mention=mention,
+                        matched_agent=matched_agent.agent_id
+                    )
+                else:
+                    logger.warning("mention_no_match", mention=mention)
+
+            # 去重
+            qualified = list({a.agent_id: a for a in matched_agents}.values())
         else:
             # 无@mentions：只保留总管角色
             qualified = [a for a in qualified if a.role_type == 'coordinator' or a.agent_id == 'coordinator']

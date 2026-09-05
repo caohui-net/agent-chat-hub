@@ -11,6 +11,8 @@ from pathlib import Path
 from src.core.models import AgentConfig, ModelConfig, Message, TokenUsage, AgentMessage
 from src.core.config import ConfigManager
 from src.core.exceptions import UnsupportedProviderError
+from src.core.retry_policy import RetryPolicy
+from src.core.token_tracker import TokenTracker, AgentTokenUsage
 
 if TYPE_CHECKING:
     from src.agents.message_bus import MessageBus
@@ -65,6 +67,12 @@ class AgentExecutor:
         self.config_manager = config_manager
         self.message_bus = message_bus
         self.http_client = httpx.AsyncClient(timeout=120.0)
+
+        # 新增：重试策略
+        self.retry_policy = RetryPolicy(max_retries=3, base_delay=1.0)
+
+        # 新增：Token追踪器
+        self.token_tracker = TokenTracker()
 
         # 初始化ModelRouter（AI角色系统集成）
         if MODEL_ROUTER_AVAILABLE:
@@ -123,7 +131,8 @@ class AgentExecutor:
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        agent_id: Optional[str] = None
     ) -> str:
         """调用Anthropic API（异步）
 
@@ -131,6 +140,7 @@ class AgentExecutor:
             model_config: 模型配置
             messages: API格式的消息列表
             system_prompt: 系统提示词
+            agent_id: Agent ID（用于Token追踪）
 
         Returns:
             模型响应内容
@@ -181,6 +191,15 @@ class AgentExecutor:
                     cache_write_tokens=usage_data.get("cache_creation_input_tokens", 0)
                 )
                 await self._publish_usage(model_config.model_id, token_usage)
+
+                # 新增：记录Token使用到TokenTracker
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=usage_data.get("input_tokens", 0),
+                        output_tokens=usage_data.get("output_tokens", 0)
+                    ))
 
             # 提取响应内容（支持Extended Thinking格式）
             # Extended Thinking: content数组可能包含多个元素，需要找到type="text"的元素
@@ -379,7 +398,32 @@ class AgentExecutor:
         agent_config: AgentConfig,
         messages: List[Message]
     ) -> str:
-        """执行agent调用（异步）
+        """执行agent调用（异步，带重试和Token追踪）
+
+        Args:
+            agent_config: Agent配置
+            messages: 对话历史消息
+
+        Returns:
+            Agent响应内容
+
+        Raises:
+            AgentExecutionError: 执行失败
+        """
+        # 使用重试策略包装执行逻辑
+        response = await self.retry_policy.execute_with_retry(
+            self._execute_internal,
+            agent_config,
+            messages
+        )
+        return response
+
+    async def _execute_internal(
+        self,
+        agent_config: AgentConfig,
+        messages: List[Message]
+    ) -> str:
+        """内部执行逻辑（被重试策略包装）
 
         Args:
             agent_config: Agent配置
@@ -458,7 +502,8 @@ class AgentExecutor:
             return await self._call_anthropic(
                 model_config,
                 api_messages,
-                agent_config.system_prompt
+                agent_config.system_prompt,
+                agent_config.agent_id
             )
         elif model_config.provider == "openai":
             return await self._call_openai(
