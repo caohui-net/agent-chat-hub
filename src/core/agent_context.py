@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 import structlog
 
-from ..core.models import Message
+from .models import Message
 
 logger = structlog.get_logger()
 

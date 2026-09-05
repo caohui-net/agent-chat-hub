@@ -5,7 +5,7 @@ from typing import List, Optional, Tuple
 
 import structlog
 
-from ..core.models import AgentConfig
+from .models import AgentConfig
 
 logger = structlog.get_logger()
 
