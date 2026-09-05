@@ -10,6 +10,7 @@ from textual.binding import Binding
 from src.agents.session import SessionManager
 from src.tui.config_screen import ConfigScreen
 from src.tui.plugin_screen import PluginScreen
+from src.tui.agent_status_panel import AgentStatusPanel, TokenStatsPanel
 
 
 class ChatApp(App):
@@ -62,6 +63,12 @@ class ChatApp(App):
         height: 1fr;
         border: solid $success;
         padding: 1;
+    }
+
+    #status_panels {
+        dock: bottom;
+        height: auto;
+        layout: vertical;
     }
 
     #status_bar {
@@ -126,6 +133,13 @@ class ChatApp(App):
                     yield Button("📤 上传文件", id="upload_btn", variant="primary")
                     yield Button("📥 下载选中", id="download_btn")
                     yield Button("🗑️ 删除选中", id="delete_btn", variant="error")
+
+        # 状态面板容器（底部）
+        with Vertical(id="status_panels"):
+            # Agent状态面板
+            yield AgentStatusPanel(self.session_manager.status_manager)
+            # Token统计面板
+            yield TokenStatsPanel(self.session_manager.token_tracker)
 
         # 状态栏
         yield Label("", id="status_bar")

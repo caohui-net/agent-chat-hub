@@ -14,6 +14,11 @@ from src.core.exceptions import UnsupportedProviderError
 from src.core.retry_policy import RetryPolicy
 from src.core.token_tracker import TokenTracker, AgentTokenUsage
 from src.core.cli_adapter import get_cli_adapter
+from src.core.errors import (
+    NetworkError, APILimitError, ConfigurationError,
+    InternalError, ExternalError
+)
+from src.utils.error_diagnostics import ErrorDiagnostics
 
 if TYPE_CHECKING:
     from src.agents.message_bus import MessageBus
@@ -258,12 +263,76 @@ class AgentExecutor:
             raise AgentExecutionError("API响应格式异常：未找到text内容")
 
         except httpx.HTTPStatusError as e:
-            logger.error("anthropic_api_error", status=e.response.status_code, body=e.response.text)
-            raise AgentExecutionError(f"Anthropic API错误: {e.response.status_code}")
+            # 分类HTTP错误
+            status_code = e.response.status_code
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "status_code": status_code
+            }
+
+            if status_code == 429:
+                error = APILimitError(
+                    f"Anthropic API限流: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            elif 500 <= status_code < 600:
+                error = ExternalError(
+                    f"Anthropic API服务错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            else:
+                error = ExternalError(
+                    f"Anthropic API错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.TimeoutException as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "timeout": 120.0
+            }
+            error = NetworkError(
+                "Anthropic API请求超时",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.NetworkError as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = NetworkError(
+                f"网络连接失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
         except Exception as e:
-            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(网络、JSON解析等)
-            logger.error("anthropic_call_failed", error=str(e))
-            raise AgentExecutionError(f"调用Anthropic失败: {e}")
+            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(JSON解析等)
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = InternalError(
+                f"调用Anthropic失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
     async def _call_openai(
         self,
@@ -373,12 +442,76 @@ class AgentExecutor:
             return data["choices"][0]["message"]["content"]
 
         except httpx.HTTPStatusError as e:
-            logger.error("openai_api_error", status=e.response.status_code, body=e.response.text)
-            raise AgentExecutionError(f"OpenAI API错误: {e.response.status_code}")
+            # 分类HTTP错误
+            status_code = e.response.status_code
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "status_code": status_code
+            }
+
+            if status_code == 429:
+                error = APILimitError(
+                    f"OpenAI API限流: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            elif 500 <= status_code < 600:
+                error = ExternalError(
+                    f"OpenAI API服务错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            else:
+                error = ExternalError(
+                    f"OpenAI API错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.TimeoutException as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "timeout": 120.0
+            }
+            error = NetworkError(
+                "OpenAI API请求超时",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.NetworkError as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = NetworkError(
+                f"网络连接失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
         except Exception as e:
-            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(网络、JSON解析等)
-            logger.error("openai_call_failed", error=str(e))
-            raise AgentExecutionError(f"调用OpenAI失败: {e}")
+            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(JSON解析等)
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = InternalError(
+                f"调用OpenAI失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
     async def _call_gemini_http(
         self,
@@ -510,13 +643,75 @@ class AgentExecutor:
             return response_text
 
         except httpx.HTTPStatusError as e:
-            logger.error("gemini_http_error",
-                        status=e.response.status_code,
-                        detail=e.response.text)
-            raise AgentExecutionError(f"Gemini API调用失败: {e.response.status_code}")
+            # 分类HTTP错误
+            status_code = e.response.status_code
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "status_code": status_code
+            }
+
+            if status_code == 429:
+                error = APILimitError(
+                    f"Gemini API限流: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            elif 500 <= status_code < 600:
+                error = ExternalError(
+                    f"Gemini API服务错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            else:
+                error = ExternalError(
+                    f"Gemini API错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.TimeoutException as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "timeout": 120.0
+            }
+            error = NetworkError(
+                "Gemini API请求超时",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.NetworkError as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = NetworkError(
+                f"网络连接失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
         except Exception as e:
-            logger.error("gemini_http_failed", error=str(e))
-            raise AgentExecutionError(f"调用Gemini HTTP API失败: {e}")
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = InternalError(
+                f"调用Gemini HTTP API失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
     async def execute(
         self,
@@ -601,7 +796,15 @@ class AgentExecutor:
 
         model_config = self.config_manager.get_model(selected_model_id)
         if not model_config:
-            raise AgentExecutionError(f"模型配置不存在: {selected_model_id}")
+            error = ConfigurationError(
+                f"模型配置不存在: {selected_model_id}",
+                context={
+                    "agent_id": agent_config.agent_id,
+                    "model_id": selected_model_id
+                }
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
         # 检查provider支持（执行层拦截）
         if model_config.provider not in self.SUPPORTED_PROVIDERS:

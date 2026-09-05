@@ -36,7 +36,8 @@ class SessionManager:
         config_manager: ConfigManager,
         coordinator: ResponseCoordinator,
         executor: AgentExecutor,
-        session_dir: Optional[Path] = None
+        session_dir: Optional[Path] = None,
+        status_callback: Optional[callable] = None
     ):
         """初始化会话管理器
 
@@ -45,6 +46,7 @@ class SessionManager:
             coordinator: 响应协调器
             executor: Agent执行器
             session_dir: 会话存储目录
+            status_callback: 状态变化回调函数（用于通知TUI更新）
         """
         self.config_manager = config_manager
         self.coordinator = coordinator
@@ -63,6 +65,9 @@ class SessionManager:
 
         # 新增：Token追踪器
         self.token_tracker = TokenTracker()
+
+        # 新增：状态变化回调
+        self.status_callback = status_callback
 
         self.current_session: Optional[SessionConfig] = None
         self.current_round = 0
@@ -163,6 +168,8 @@ class SessionManager:
             """调用单个agent（捕获异常）"""
             # 标记Agent为RUNNING状态
             self.status_manager.mark_running(agent_config.agent_id)
+            if self.status_callback:
+                self.status_callback()
 
             try:
                 response = await self.executor.execute(
@@ -172,11 +179,15 @@ class SessionManager:
 
                 # 标记Agent为COMPLETED状态
                 self.status_manager.mark_completed(agent_config.agent_id, len(response))
+                if self.status_callback:
+                    self.status_callback()
 
                 return (agent_config, response, None)
             except Exception as e:
                 # 标记Agent为ERROR状态
                 self.status_manager.mark_error(agent_config.agent_id, str(e))
+                if self.status_callback:
+                    self.status_callback()
                 # P3-005: 保留Exception兜底 - 并发调用容错设计，捕获单个agent异常不影响其他
                 return (agent_config, None, e)
 
