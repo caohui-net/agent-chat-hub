@@ -11,6 +11,7 @@ from src.agents.session import SessionManager
 from src.tui.config_screen import ConfigScreen
 from src.tui.plugin_screen import PluginScreen
 from src.tui.agent_status_panel import AgentStatusPanel, TokenStatsPanel
+from src.tui.file_upload_screen import FileUploadScreen
 
 
 class ChatApp(App):
@@ -102,6 +103,7 @@ class ChatApp(App):
         """
         super().__init__()
         self.session_manager = session_manager
+        self.uploaded_files = []  # 存储已上传的文件路径
 
     def compose(self) -> ComposeResult:
         """构建UI组件"""
@@ -164,8 +166,7 @@ class ChatApp(App):
         # 初始化文件表格
         file_table = self.query_one("#file_table", DataTable)
         file_table.add_columns("文件名", "大小", "类型")
-        # 默认显示提示信息
-        file_table.add_row("暂无文件", "-", "-")
+        self.refresh_file_table()
 
         # 更新状态栏
         self.update_status_bar()
@@ -174,6 +175,54 @@ class ChatApp(App):
         """应用退出时清理资源"""
         # 关闭异步HTTP客户端
         await self.session_manager.executor.aclose()
+
+    def refresh_file_table(self) -> None:
+        """刷新文件列表显示"""
+        from pathlib import Path
+
+        file_table = self.query_one("#file_table", DataTable)
+        file_table.clear()
+
+        if not self.uploaded_files:
+            file_table.add_row("暂无文件", "-", "-")
+            return
+
+        for file_path_str in self.uploaded_files:
+            file_path = Path(file_path_str)
+            file_name = file_path.name
+            file_size = file_path.stat().st_size
+
+            # 格式化文件大小
+            if file_size < 1024:
+                size_str = f"{file_size}B"
+            elif file_size < 1024 * 1024:
+                size_str = f"{file_size / 1024:.1f}KB"
+            else:
+                size_str = f"{file_size / (1024 * 1024):.1f}MB"
+
+            # 获取文件类型
+            file_type = file_path.suffix[1:].upper() if file_path.suffix else "未知"
+
+            file_table.add_row(file_name, size_str, file_type)
+
+    def on_file_uploaded(self, file_path: str) -> None:
+        """文件上传成功回调
+
+        Args:
+            file_path: 上传的文件路径
+        """
+        from pathlib import Path
+
+        # 添加到文件列表
+        if file_path not in self.uploaded_files:
+            self.uploaded_files.append(file_path)
+
+        # 刷新文件表格
+        self.refresh_file_table()
+
+        # 显示成功消息
+        file_name = Path(file_path).name
+        self.update_display(f"✅ 文件已上传: {file_name}\n路径: {file_path}")
 
     def update_display(self, content: str) -> None:
         """更新聊天显示区域
@@ -323,11 +372,27 @@ class ChatApp(App):
         button_id = event.button.id
 
         if button_id == "upload_btn":
-            self.update_display("📤 文件上传功能：请将文件拖拽到终端或使用系统文件对话框")
+            # 打开文件上传对话框
+            upload_screen = FileUploadScreen(callback=self.on_file_uploaded)
+            self.push_screen(upload_screen)
         elif button_id == "download_btn":
-            self.update_display("📥 文件下载功能：请先选择文件列表中的文件")
+            # 获取选中的文件
+            file_table = self.query_one("#file_table", DataTable)
+            if file_table.cursor_row is not None and 0 <= file_table.cursor_row < len(self.uploaded_files):
+                file_path = self.uploaded_files[file_table.cursor_row]
+                self.update_display(f"📥 文件路径: {file_path}\n提示: 文件已在本地，可直接访问")
+            else:
+                self.update_display("📥 请先在文件列表中选择要下载的文件")
         elif button_id == "delete_btn":
-            self.update_display("🗑️ 文件删除功能：请先选择文件列表中的文件")
+            # 删除选中的文件
+            file_table = self.query_one("#file_table", DataTable)
+            if file_table.cursor_row is not None and 0 <= file_table.cursor_row < len(self.uploaded_files):
+                file_path = self.uploaded_files.pop(file_table.cursor_row)
+                self.refresh_file_table()
+                from pathlib import Path
+                self.update_display(f"🗑️ 已从列表移除: {Path(file_path).name}")
+            else:
+                self.update_display("🗑️ 请先在文件列表中选择要删除的文件")
 
     def action_new_session(self) -> None:
         """创建新会话"""
