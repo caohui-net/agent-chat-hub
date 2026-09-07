@@ -282,10 +282,20 @@ class ChatApp(App):
         event.input.value = ""
 
         try:
+            # 立即显示用户输入的消息
+            current_history = self.session_manager.get_message_history()
+            current_history.append(f"👤 用户: {user_input}")
+            display_content = "\n\n".join(current_history)
+            self.update_display(display_content)
+
+            # 添加"处理中"提示
+            display_content += "\n\n⏳ 处理中..."
+            self.update_display(display_content)
+
             # 处理用户输入并获取响应（异步并发）
             responses = await self.session_manager.process_user_input(user_input)
 
-            # 更新显示
+            # 更新显示（包含AI响应）
             history = self.session_manager.get_message_history()
             display_content = "\n\n".join(history)
 
