@@ -2,9 +2,9 @@
   "project_name": "Agent Chat Hub",
   "version": "1.0.0",
   "status": "production-ready",
-  "current_phase": "Phase 5 - 生产验证与硬化",
-  "phase_status": "completed",
-  "last_updated": "2026-09-06",
+  "current_phase": "维护与优化",
+  "phase_status": "active",
+  "last_updated": "2026-09-07",
   "phases": {
     "phase1": {
       "name": "TUI集成与实时状态显示",
@@ -32,6 +32,15 @@
       "completion_date": "2026-09-06"
     }
   },
+  "recent_fixes": {
+    "2026-09-07": [
+      "UI响应延迟 - 用户输入立即显示",
+      "Token统计修复 - 共享tracker实例",
+      "对话区滚动 - 添加can_focus支持",
+      "Codex CLI调用 - 修正命令格式",
+      "文件上传功能 - 完整实现"
+    ]
+  },
   "metrics": {
     "test_coverage": "85%",
     "total_tests": 65,
@@ -44,8 +53,8 @@
     }
   },
   "next_actions": [
+    "用户测试最新修复（消息显示/滚动/token/codex/文件上传）",
     "部署到staging环境进行真实API验证",
-    "运行 ./scripts/validate_production.sh 进行最终验证",
-    "监控前48小时运行状况"
+    "运行 ./scripts/validate_production.sh 进行最终验证"
   ]
 }
