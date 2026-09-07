@@ -131,26 +131,33 @@ class CLIAdapter:
         if system_prompt:
             prompt = f"{system_prompt}\n\n{prompt}"
 
-        # 构建命令 - 使用 exec 子命令进行非交互式调用
+        # 构建命令 - codex exec 需要prompt作为参数
         cmd = ["codex", "exec", "--model", model, prompt]
 
-        logger.info("calling_codex_cli", command=" ".join(cmd[:3]))
+        logger.info("calling_codex_cli", command=" ".join(cmd[:4]))
 
         try:
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL  # 明确不使用stdin
             )
 
             stdout, stderr = await process.communicate()
 
             if process.returncode != 0:
                 error_msg = stderr.decode('utf-8')
-                logger.error("codex_cli_failed", error=error_msg)
-                raise Exception(f"Codex CLI调用失败: {error_msg}")
+                logger.error("codex_cli_failed", error=error_msg, returncode=process.returncode)
+                raise Exception(f"Codex CLI调用失败 (code {process.returncode}): {error_msg}")
 
             response = stdout.decode('utf-8').strip()
+
+            # 如果响应为空，记录警告
+            if not response:
+                logger.warning("codex_cli_empty_response", stderr=stderr.decode('utf-8'))
+                response = "[Codex无响应]"
+
             token_usage = self._estimate_tokens(prompt, response)
 
             return response, token_usage

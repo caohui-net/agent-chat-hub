@@ -114,10 +114,11 @@ class ChatApp(App):
                 yield Static("📋 Agents", classes="panel-title")
                 yield DataTable(id="agent_table")
 
-            # 中间：对话显示区
+            # 中间：对话显示区（添加滚动支持）
             yield ScrollableContainer(
                 Static("", id="chat_display"),
-                id="chat_container"
+                id="chat_container",
+                can_focus=True  # 允许聚焦以支持滚动
             )
 
             # 右侧：文件面板

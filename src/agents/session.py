@@ -63,8 +63,8 @@ class SessionManager:
         # 新增：Agent状态管理器
         self.status_manager = AgentStatusManager()
 
-        # 新增：Token追踪器
-        self.token_tracker = TokenTracker()
+        # 新增：Token追踪器（使用executor的实例，保证数据一致）
+        self.token_tracker = executor.token_tracker
 
         # 新增：状态变化回调
         self.status_callback = status_callback
