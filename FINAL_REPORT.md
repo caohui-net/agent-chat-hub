@@ -44,12 +44,14 @@
 
 ### 启动应用
 ```bash
-# 推荐方式（会自动激活虚拟环境）
+# 方式1: 推荐（会自动激活虚拟环境）
 ./start.sh
 
-# 手动方式
+# 方式2: 手动方式
 source venv/bin/activate
 python3 main.py
+
+# 注意: 确保在项目根目录（包含 start.sh 的目录）
 ```
 
 ### 快速体验

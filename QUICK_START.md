@@ -3,11 +3,14 @@
 ## 🚀 立即开始
 
 ```bash
+# 如果在工作空间目录，先进入项目
+cd agent-chat-hub
+
 # 方式1: 使用启动脚本（推荐）
 ./start.sh
 
 # 方式2: 手动启动
-source venv/bin/activate  # 先激活虚拟环境
+source venv/bin/activate
 python3 main.py
 ```
 
