@@ -405,42 +405,58 @@ class ChatApp(App):
 
         elif button_id == "view_btn":
             # 查看选中文件的内容
-            file_table = self.query_one("#file_table", DataTable)
-            if file_table.cursor_row is not None and 0 <= file_table.cursor_row < len(self.uploaded_files):
-                file_path = self.uploaded_files[file_table.cursor_row]
-                from pathlib import Path
-                path = Path(file_path)
+            try:
+                file_table = self.query_one("#file_table", DataTable)
+                if file_table.cursor_row is not None and 0 <= file_table.cursor_row < len(self.uploaded_files):
+                    file_path = self.uploaded_files[file_table.cursor_row]
+                    from pathlib import Path
+                    path = Path(file_path)
 
-                if not path.exists():
-                    self.update_display(f"❌ 文件不存在: {path.name}")
-                    return
+                    if not path.exists():
+                        self.update_display(f"❌ 文件不存在: {path.name}")
+                        return
 
-                # 备份当前聊天历史
-                chat_display = self.query_one("#chat_display", Static)
-                self.chat_history_backup = chat_display.renderable
+                    # 备份当前聊天历史
+                    chat_display = self.query_one("#chat_display", Static)
+                    self.chat_history_backup = str(chat_display.renderable)
 
-                # 读取文件内容（限制大小）
-                try:
-                    if path.stat().st_size > 1024 * 1024:  # 1MB
-                        preview_content = f"📄 文件过大，仅显示路径:\n{file_path}\n\n"
-                        preview_content += f"💡 提示: 按Ctrl+B返回聊天历史"
-                        self.update_display(preview_content)
-                    else:
-                        content = path.read_text(encoding='utf-8', errors='ignore')
-                        lines = content.split('\n')
-                        preview = '\n'.join(lines[:50])  # 只显示前50行
-                        if len(lines) > 50:
-                            preview += f"\n\n... (共 {len(lines)} 行，仅显示前50行)"
+                    # 读取文件内容（限制大小）
+                    try:
+                        file_size = path.stat().st_size
+                        if file_size > 1024 * 1024:  # 1MB
+                            preview_content = f"📄 文件过大，仅显示路径:\n{file_path}\n\n"
+                            preview_content += f"💡 提示: 按Ctrl+B返回聊天历史"
+                            self.update_display(preview_content)
+                        else:
+                            # 尝试读取文件内容
+                            content = path.read_text(encoding='utf-8', errors='ignore')
+                            lines = content.split('\n')
+                            preview = '\n'.join(lines[:50])  # 只显示前50行
+                            if len(lines) > 50:
+                                preview += f"\n\n... (共 {len(lines)} 行，仅显示前50行)"
 
-                        preview_content = f"📄 {path.name}:\n\n{preview}\n\n"
-                        preview_content += f"{'─' * 40}\n💡 提示: 按Ctrl+B返回聊天历史"
-                        self.update_display(preview_content)
-                except Exception as e:
-                    error_content = f"❌ 读取失败: {e}\n路径: {file_path}\n\n"
-                    error_content += f"💡 提示: 按Ctrl+B返回聊天历史"
-                    self.update_display(error_content)
-            else:
-                self.update_display("📄 请先在文件列表中选择要查看的文件")
+                            preview_content = f"📄 {path.name}:\n\n{preview}\n\n"
+                            preview_content += f"{'─' * 40}\n💡 提示: 按Ctrl+B返回聊天历史"
+                            self.update_display(preview_content)
+                    except UnicodeDecodeError as e:
+                        error_content = f"❌ 文件编码错误（非UTF-8）: {path.name}\n"
+                        error_content += f"路径: {file_path}\n\n"
+                        error_content += f"💡 提示: 按Ctrl+B返回聊天历史"
+                        self.update_display(error_content)
+                    except Exception as e:
+                        error_content = f"❌ 读取失败: {str(e)}\n"
+                        error_content += f"文件: {path.name}\n路径: {file_path}\n\n"
+                        error_content += f"💡 提示: 按Ctrl+B返回聊天历史"
+                        self.update_display(error_content)
+                else:
+                    self.update_display("📄 请先在文件列表中选择要查看的文件")
+            except Exception as e:
+                # 捕获任何未预期的错误
+                import traceback
+                error_msg = f"❌ 预览文件时发生错误:\n{str(e)}\n\n"
+                error_msg += f"详细信息:\n{traceback.format_exc()}\n\n"
+                error_msg += f"💡 提示: 按Ctrl+B返回聊天历史"
+                self.update_display(error_msg)
 
         elif button_id == "delete_btn":
             # 从列表移除选中的文件
