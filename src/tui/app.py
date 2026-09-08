@@ -38,6 +38,8 @@ class ChatApp(App):
 
     #agent_panel {
         width: 30;
+        min-width: 20;
+        max-width: 50;
         border: solid $accent;
         padding: 1;
     }
@@ -50,6 +52,8 @@ class ChatApp(App):
 
     #file_panel {
         width: 35;
+        min-width: 25;
+        max-width: 60;
         layout: vertical;
         border: solid $success;
     }
@@ -88,11 +92,17 @@ class ChatApp(App):
     DataTable {
         height: 1fr;
     }
+
+    /* 分隔符样式 */
+    .splitter {
+        background: $accent;
+    }
     """
 
     BINDINGS = [
         Binding("ctrl+c", "quit", "退出", priority=True),
         Binding("ctrl+n", "new_session", "新会话"),
+        Binding("ctrl+b", "restore_chat", "返回聊天", show=True),
     ]
 
     def __init__(self, session_manager: SessionManager):
@@ -104,6 +114,7 @@ class ChatApp(App):
         super().__init__()
         self.session_manager = session_manager
         self.uploaded_files = []  # 存储已上传的文件路径
+        self.chat_history_backup = ""  # 备份聊天历史，用于从文件预览返回
 
     def compose(self) -> ComposeResult:
         """构建UI组件"""
@@ -135,6 +146,7 @@ class ChatApp(App):
                     yield Static("🔧 文件操作", classes="panel-title")
                     yield Button("📤 浏览上传", id="upload_btn", variant="primary")
                     yield Button("📝 查看内容", id="view_btn")
+                    yield Button("↩️ 返回聊天", id="restore_btn", variant="success")
                     yield Button("🗑️ 移除选中", id="delete_btn", variant="error")
                     yield Static("", id="file_count_label")
 
@@ -403,19 +415,30 @@ class ChatApp(App):
                     self.update_display(f"❌ 文件不存在: {path.name}")
                     return
 
+                # 备份当前聊天历史
+                chat_display = self.query_one("#chat_display", Static)
+                self.chat_history_backup = chat_display.renderable
+
                 # 读取文件内容（限制大小）
                 try:
                     if path.stat().st_size > 1024 * 1024:  # 1MB
-                        self.update_display(f"📄 文件过大，仅显示路径:\n{file_path}")
+                        preview_content = f"📄 文件过大，仅显示路径:\n{file_path}\n\n"
+                        preview_content += f"💡 提示: 按Ctrl+B返回聊天历史"
+                        self.update_display(preview_content)
                     else:
                         content = path.read_text(encoding='utf-8', errors='ignore')
                         lines = content.split('\n')
                         preview = '\n'.join(lines[:50])  # 只显示前50行
                         if len(lines) > 50:
                             preview += f"\n\n... (共 {len(lines)} 行，仅显示前50行)"
-                        self.update_display(f"📄 {path.name}:\n\n{preview}")
+
+                        preview_content = f"📄 {path.name}:\n\n{preview}\n\n"
+                        preview_content += f"{'─' * 40}\n💡 提示: 按Ctrl+B返回聊天历史"
+                        self.update_display(preview_content)
                 except Exception as e:
-                    self.update_display(f"❌ 读取失败: {e}\n路径: {file_path}")
+                    error_content = f"❌ 读取失败: {e}\n路径: {file_path}\n\n"
+                    error_content += f"💡 提示: 按Ctrl+B返回聊天历史"
+                    self.update_display(error_content)
             else:
                 self.update_display("📄 请先在文件列表中选择要查看的文件")
 
@@ -430,10 +453,29 @@ class ChatApp(App):
             else:
                 self.update_display("🗑️ 请先在文件列表中选择要移除的文件")
 
+        elif button_id == "restore_btn":
+            # 返回聊天历史
+            self.action_restore_chat()
+
     def action_new_session(self) -> None:
         """创建新会话"""
         self.session_manager.create_session("新对话")
         self.update_display("新会话已创建！\n请输入消息开始对话...")
+
+    def action_restore_chat(self) -> None:
+        """恢复聊天历史（从文件预览返回）"""
+        if self.chat_history_backup:
+            chat_display = self.query_one("#chat_display", Static)
+            chat_display.update(self.chat_history_backup)
+            self.chat_history_backup = ""  # 清空备份
+        else:
+            # 如果没有备份，显示当前会话历史
+            history = self.session_manager.get_message_history()
+            if history:
+                display_content = "\n\n".join(history)
+                self.update_display(display_content)
+            else:
+                self.update_display("欢迎使用 Agent Chat Hub!\n请输入消息开始对话...")
 
 
 def run_app(session_manager: SessionManager) -> None:
