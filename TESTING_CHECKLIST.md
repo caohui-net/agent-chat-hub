@@ -4,7 +4,11 @@
 
 ### 启动应用
 ```bash
-cd /home/caohui/orca/workspaces/agent-chat-hub/agent-chat-hub
+# 推荐: 使用启动脚本
+./start.sh
+
+# 或者手动启动（需先激活虚拟环境）
+source venv/bin/activate
 python3 main.py
 ```
 

@@ -80,6 +80,16 @@ python3 main.py
 
 ## 🧪 测试清单
 
+运行应用:
+```bash
+# 推荐方式
+./start.sh
+
+# 手动方式
+source venv/bin/activate
+python3 main.py
+```
+
 运行验证脚本:
 ```bash
 ./verify_file_upload.sh
