@@ -16,6 +16,7 @@ Agent Chat Hub是一个强大的多模型AI Agent管理平台，允许用户与�
 - 📊 **状态追踪** - 实时显示Agent状态、Token使用和成本
 - 🛡️ **智能重试** - 自动处理网络错误和API限流
 - 🔒 **安全存储** - API密钥安全存储在系统密钥环
+- 📁 **文件上传** - 完整文件浏览器，支持文件预览和管理
 
 ---
 
@@ -58,12 +59,19 @@ python init_config.py
 - [快速开始](docs/user-guide/QUICKSTART.md) - 5分钟上手指南
 - [配置指南](docs/user-guide/CONFIGURATION.md) - 完整配置说明
 - [故障排除](docs/user-guide/TROUBLESHOOTING.md) - 常见问题解决
+- [文件上传功能](QUICK_START.md) - 文件浏览器使用指南 🆕
 
 ### 开发文档
 
 - [API参考](docs/api-reference/API.md) - 完整API文档
 - [架构设计](docs/architecture/) - 系统架构和设计文档
 - [教程](docs/tutorials/FIRST_AGENT.md) - 创建你的第一个Agent
+
+### 功能文档
+
+- [文件上传完整说明](FILE_UPLOAD_COMPLETE.md) - 文件浏览器详细功能 🆕
+- [UI改进说明](UI_IMPROVEMENTS.md) - 最新UI改进 🆕
+- [测试清单](TESTING_CHECKLIST.md) - 功能测试指南 🆕
 
 ### ADR文档
 
