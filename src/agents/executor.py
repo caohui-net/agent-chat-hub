@@ -11,6 +11,14 @@ from pathlib import Path
 from src.core.models import AgentConfig, ModelConfig, Message, TokenUsage, AgentMessage
 from src.core.config import ConfigManager
 from src.core.exceptions import UnsupportedProviderError
+from src.core.retry_policy import RetryPolicy
+from src.core.token_tracker import TokenTracker, AgentTokenUsage
+from src.core.cli_adapter import get_cli_adapter
+from src.core.errors import (
+    NetworkError, APILimitError, ConfigurationError,
+    InternalError, ExternalError
+)
+from src.utils.error_diagnostics import ErrorDiagnostics
 
 if TYPE_CHECKING:
     from src.agents.message_bus import MessageBus
@@ -65,6 +73,15 @@ class AgentExecutor:
         self.config_manager = config_manager
         self.message_bus = message_bus
         self.http_client = httpx.AsyncClient(timeout=120.0)
+
+        # 新增：重试策略
+        self.retry_policy = RetryPolicy(max_retries=3, base_delay=1.0)
+
+        # 新增：Token追踪器
+        self.token_tracker = TokenTracker()
+
+        # 新增：CLI适配器（优先使用CLI工具）
+        self.cli_adapter = get_cli_adapter()
 
         # 初始化ModelRouter（AI角色系统集成）
         if MODEL_ROUTER_AVAILABLE:
@@ -123,14 +140,18 @@ class AgentExecutor:
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        agent_id: Optional[str] = None
     ) -> str:
         """调用Anthropic API（异步）
+
+        优先使用Claude CLI工具，如果不可用则使用HTTP API
 
         Args:
             model_config: 模型配置
             messages: API格式的消息列表
             system_prompt: 系统提示词
+            agent_id: Agent ID（用于Token追踪）
 
         Returns:
             模型响应内容
@@ -138,6 +159,43 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
+        # 优先使用CLI工具
+        if self.cli_adapter.is_available("anthropic"):
+            try:
+                logger.info("using_claude_cli", agent_id=agent_id)
+                response, token_usage = await self.cli_adapter.call_claude(
+                    messages=messages,
+                    system_prompt=system_prompt,
+                    model=model_config.model_id,
+                    max_tokens=model_config.max_tokens,
+                    temperature=model_config.temperature
+                )
+
+                # 记录Token使用
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0)
+                    ))
+
+                # 发布事件
+                if self.message_bus:
+                    await self._publish_usage(model_config.model_id, TokenUsage(
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0),
+                        cache_read_tokens=0,
+                        cache_write_tokens=0
+                    ))
+
+                return response
+
+            except Exception as e:
+                logger.warning("claude_cli_failed_fallback_to_http", error=str(e))
+                # CLI失败，继续尝试HTTP API
+
+        # 使用HTTP API（原有逻辑）
         # 优先使用配置文件中的api_key，否则从keyring读取
         api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
@@ -182,6 +240,15 @@ class AgentExecutor:
                 )
                 await self._publish_usage(model_config.model_id, token_usage)
 
+                # 新增：记录Token使用到TokenTracker
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=usage_data.get("input_tokens", 0),
+                        output_tokens=usage_data.get("output_tokens", 0)
+                    ))
+
             # 提取响应内容（支持Extended Thinking格式）
             # Extended Thinking: content数组可能包含多个元素，需要找到type="text"的元素
             content_blocks = data.get("content", [])
@@ -196,25 +263,93 @@ class AgentExecutor:
             raise AgentExecutionError("API响应格式异常：未找到text内容")
 
         except httpx.HTTPStatusError as e:
-            logger.error("anthropic_api_error", status=e.response.status_code, body=e.response.text)
-            raise AgentExecutionError(f"Anthropic API错误: {e.response.status_code}")
+            # 分类HTTP错误
+            status_code = e.response.status_code
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "status_code": status_code
+            }
+
+            if status_code == 429:
+                error = APILimitError(
+                    f"Anthropic API限流: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            elif 500 <= status_code < 600:
+                error = ExternalError(
+                    f"Anthropic API服务错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            else:
+                error = ExternalError(
+                    f"Anthropic API错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.TimeoutException as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "timeout": 120.0
+            }
+            error = NetworkError(
+                "Anthropic API请求超时",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.NetworkError as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = NetworkError(
+                f"网络连接失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
         except Exception as e:
-            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(网络、JSON解析等)
-            logger.error("anthropic_call_failed", error=str(e))
-            raise AgentExecutionError(f"调用Anthropic失败: {e}")
+            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(JSON解析等)
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = InternalError(
+                f"调用Anthropic失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
     async def _call_openai(
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        agent_id: Optional[str] = None
     ) -> str:
         """调用OpenAI API（异步）
+
+        优先使用Codex CLI工具，如果不可用则使用HTTP API
 
         Args:
             model_config: 模型配置
             messages: API格式的消息列表
             system_prompt: 系统提示词
+            agent_id: Agent ID（用于Token追踪）
 
         Returns:
             模型响应内容
@@ -222,6 +357,43 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
+        # 优先使用CLI工具
+        if self.cli_adapter.is_available("openai"):
+            try:
+                logger.info("using_codex_cli", agent_id=agent_id)
+                response, token_usage = await self.cli_adapter.call_codex(
+                    messages=messages,
+                    system_prompt=system_prompt,
+                    model=model_config.model_id,
+                    max_tokens=model_config.max_tokens,
+                    temperature=model_config.temperature
+                )
+
+                # 记录Token使用
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0)
+                    ))
+
+                # 发布事件
+                if self.message_bus:
+                    await self._publish_usage(model_config.model_id, TokenUsage(
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0),
+                        cache_read_tokens=0,
+                        cache_write_tokens=0
+                    ))
+
+                return response
+
+            except Exception as e:
+                logger.warning("codex_cli_failed_fallback_to_http", error=str(e))
+                # CLI失败，继续尝试HTTP API
+
+        # 使用HTTP API（原有逻辑）
         # 优先使用配置文件中的api_key，否则从keyring读取
         api_key = model_config.api_key or self.config_manager.get_api_key(model_config.api_key_name)
         if not api_key:
@@ -270,25 +442,93 @@ class AgentExecutor:
             return data["choices"][0]["message"]["content"]
 
         except httpx.HTTPStatusError as e:
-            logger.error("openai_api_error", status=e.response.status_code, body=e.response.text)
-            raise AgentExecutionError(f"OpenAI API错误: {e.response.status_code}")
+            # 分类HTTP错误
+            status_code = e.response.status_code
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "status_code": status_code
+            }
+
+            if status_code == 429:
+                error = APILimitError(
+                    f"OpenAI API限流: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            elif 500 <= status_code < 600:
+                error = ExternalError(
+                    f"OpenAI API服务错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            else:
+                error = ExternalError(
+                    f"OpenAI API错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.TimeoutException as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "timeout": 120.0
+            }
+            error = NetworkError(
+                "OpenAI API请求超时",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.NetworkError as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = NetworkError(
+                f"网络连接失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
         except Exception as e:
-            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(网络、JSON解析等)
-            logger.error("openai_call_failed", error=str(e))
-            raise AgentExecutionError(f"调用OpenAI失败: {e}")
+            # P3-005: 保留Exception兜底 - API调用可能出现多种异常(JSON解析等)
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = InternalError(
+                f"调用OpenAI失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
     async def _call_gemini_http(
         self,
         model_config: ModelConfig,
         messages: List[Dict[str, str]],
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        agent_id: Optional[str] = None
     ) -> str:
         """通过HTTP API调用Gemini（改进版）
+
+        优先使用Gemini CLI工具，如果不可用则使用HTTP API
 
         Args:
             model_config: 模型配置
             messages: API格式的消息列表（完整历史）
             system_prompt: 系统提示词
+            agent_id: Agent ID（用于Token追踪）
 
         Returns:
             模型响应内容
@@ -296,6 +536,43 @@ class AgentExecutor:
         Raises:
             AgentExecutionError: API调用失败
         """
+        # 优先使用CLI工具
+        if self.cli_adapter.is_available("gemini"):
+            try:
+                logger.info("using_gemini_cli", agent_id=agent_id)
+                response, token_usage = await self.cli_adapter.call_gemini(
+                    messages=messages,
+                    system_prompt=system_prompt,
+                    model=model_config.model_id,
+                    max_tokens=model_config.max_tokens,
+                    temperature=model_config.temperature
+                )
+
+                # 记录Token使用
+                if agent_id:
+                    self.token_tracker.record_usage(AgentTokenUsage(
+                        agent_id=agent_id,
+                        model=model_config.model_id,
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0)
+                    ))
+
+                # 发布事件
+                if self.message_bus:
+                    await self._publish_usage(model_config.model_id, TokenUsage(
+                        input_tokens=token_usage.get("input_tokens", 0),
+                        output_tokens=token_usage.get("output_tokens", 0),
+                        cache_read_tokens=0,
+                        cache_write_tokens=0
+                    ))
+
+                return response
+
+            except Exception as e:
+                logger.warning("gemini_cli_failed_fallback_to_http", error=str(e))
+                # CLI失败，继续尝试HTTP API
+
+        # 使用HTTP API（原有逻辑）
         try:
             # 获取API密钥
             api_key = model_config.api_key or self.config_manager.get_api_key(
@@ -366,20 +643,107 @@ class AgentExecutor:
             return response_text
 
         except httpx.HTTPStatusError as e:
-            logger.error("gemini_http_error",
-                        status=e.response.status_code,
-                        detail=e.response.text)
-            raise AgentExecutionError(f"Gemini API调用失败: {e.response.status_code}")
+            # 分类HTTP错误
+            status_code = e.response.status_code
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "status_code": status_code
+            }
+
+            if status_code == 429:
+                error = APILimitError(
+                    f"Gemini API限流: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            elif 500 <= status_code < 600:
+                error = ExternalError(
+                    f"Gemini API服务错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+            else:
+                error = ExternalError(
+                    f"Gemini API错误: {status_code}",
+                    context=context,
+                    original_error=e
+                )
+
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.TimeoutException as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id,
+                "timeout": 120.0
+            }
+            error = NetworkError(
+                "Gemini API请求超时",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
+        except httpx.NetworkError as e:
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = NetworkError(
+                f"网络连接失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
+
         except Exception as e:
-            logger.error("gemini_http_failed", error=str(e))
-            raise AgentExecutionError(f"调用Gemini HTTP API失败: {e}")
+            context = {
+                "agent_id": agent_id,
+                "model": model_config.model_id
+            }
+            error = InternalError(
+                f"调用Gemini HTTP API失败: {str(e)}",
+                context=context,
+                original_error=e
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
     async def execute(
         self,
         agent_config: AgentConfig,
         messages: List[Message]
     ) -> str:
-        """执行agent调用（异步）
+        """执行agent调用（异步，带重试和Token追踪）
+
+        Args:
+            agent_config: Agent配置
+            messages: 对话历史消息
+
+        Returns:
+            Agent响应内容
+
+        Raises:
+            AgentExecutionError: 执行失败
+        """
+        # 使用重试策略包装执行逻辑
+        response = await self.retry_policy.execute_with_retry(
+            self._execute_internal,
+            agent_config,
+            messages
+        )
+        return response
+
+    async def _execute_internal(
+        self,
+        agent_config: AgentConfig,
+        messages: List[Message]
+    ) -> str:
+        """内部执行逻辑（被重试策略包装）
 
         Args:
             agent_config: Agent配置
@@ -432,7 +796,15 @@ class AgentExecutor:
 
         model_config = self.config_manager.get_model(selected_model_id)
         if not model_config:
-            raise AgentExecutionError(f"模型配置不存在: {selected_model_id}")
+            error = ConfigurationError(
+                f"模型配置不存在: {selected_model_id}",
+                context={
+                    "agent_id": agent_config.agent_id,
+                    "model_id": selected_model_id
+                }
+            )
+            ErrorDiagnostics.log_error(error)
+            raise error
 
         # 检查provider支持（执行层拦截）
         if model_config.provider not in self.SUPPORTED_PROVIDERS:
@@ -458,18 +830,21 @@ class AgentExecutor:
             return await self._call_anthropic(
                 model_config,
                 api_messages,
-                agent_config.system_prompt
+                agent_config.system_prompt,
+                agent_config.agent_id
             )
         elif model_config.provider == "openai":
             return await self._call_openai(
                 model_config,
                 api_messages,
-                agent_config.system_prompt
+                agent_config.system_prompt,
+                agent_config.agent_id
             )
         elif model_config.provider == "gemini-http":
             return await self._call_gemini_http(
                 model_config,
                 api_messages,
-                agent_config.system_prompt
+                agent_config.system_prompt,
+                agent_config.agent_id
             )
 
