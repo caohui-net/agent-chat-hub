@@ -2,9 +2,11 @@
   "project_name": "Agent Chat Hub",
   "version": "1.0.0",
   "status": "production-ready",
-  "current_phase": "维护与优化",
+  "current_phase": "维护与优化 / 准备验收测试",
   "phase_status": "active",
-  "last_updated": "2026-09-08",
+  "last_updated": "2026-09-17",
+  "last_sync": "2026-09-17T00:30:00Z",
+  "working_directory": "/home/caohui/projects/agent-chat-hub",
   "phases": {
     "phase1": {
       "name": "TUI集成与实时状态显示",
@@ -33,6 +35,12 @@
     }
   },
   "recent_fixes": {
+    "2026-09-17": [
+      "项目目录同步完成 - 从 orca 目录迁移所有文件",
+      "CLAUDE.md 开发指南已创建 - 架构和开发工作流",
+      "graphify 知识图谱已构建 - 互动式代码理解工具",
+      "session-context 已更新 - 恢复项目进度信息"
+    ],
     "2026-09-08": [
       "文件预览返回 - 备份恢复机制+快捷键",
       "面板宽度调整 - CSS min/max-width支持",
@@ -62,8 +70,20 @@
     }
   },
   "next_actions": [
-    "用户测试文件浏览器功能（导航/选择/预览）",
+    "运行 python3 main.py 进行功能验收测试",
+    "测试文件浏览器功能（导航/选择/预览）",
     "验证文件上传工作流程完整性",
-    "运行 python3 main.py 进行实际测试"
-  ]
+    "验证 @mention 协作机制",
+    "验证 Agent 协调规则（6 条规则）",
+    "收集性能基准数据"
+  ],
+  "critical_files": {
+    "entry_point": "main.py",
+    "config": "project-state.json",
+    "coordinator": "src/agents/coordinator.py",
+    "tui": "src/tui/app.py",
+    "dev_guide": "CLAUDE.md",
+    "api_reference": "docs/",
+    "knowledge_graph": "graphify-out/"
+  }
 }
