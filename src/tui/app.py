@@ -12,6 +12,9 @@ from src.tui.config_screen import ConfigScreen
 from src.tui.plugin_screen import PluginScreen
 from src.tui.agent_status_panel import AgentStatusPanel, TokenStatsPanel
 from src.tui.file_browser_screen import FileBrowserScreen
+from src.tui.workspace_view import WorkspaceView
+from src.core.workspace import WorkspaceManager
+from src.core.database import Database
 
 
 class ChatApp(App):
@@ -23,6 +26,7 @@ class ChatApp(App):
         Binding("ctrl+r", "refresh_agents", "刷新Agent列表", show=True),
         Binding("ctrl+g", "open_config", "配置管理", show=True),
         Binding("ctrl+p", "open_plugins", "插件管理", show=True),
+        Binding("ctrl+w", "open_workspace", "工作空间", show=True),
         Binding("ctrl+q", "quit", "退出", show=True),
     ]
 
@@ -116,6 +120,13 @@ class ChatApp(App):
         self.uploaded_files = []  # 存储已上传的文件路径
         self.chat_history_backup = ""  # 备份聊天历史，用于从文件预览返回
 
+        # 初始化工作空间管理器
+        from pathlib import Path
+        db_path = Path.home() / ".agent-chat-hub" / "workspace.db"
+        db = Database(str(db_path))
+        self.workspace_manager = WorkspaceManager(db)
+        self.current_workspace = None  # 当前工作空间
+
     def compose(self) -> ComposeResult:
         """构建UI组件"""
         yield Header()
@@ -170,6 +181,13 @@ class ChatApp(App):
         # 创建新会话
         self.session_manager.create_session("Agent Chat Hub")
         self.update_display("欢迎使用 Agent Chat Hub!\n请输入消息开始对话...")
+
+        # 创建默认工作空间
+        if self.session_manager.current_session:
+            self.current_workspace = self.workspace_manager.create_workspace(
+                session_id=self.session_manager.current_session.session_id,
+                title="默认工作空间"
+            )
 
         # 初始化Agent表格
         table = self.query_one("#agent_table", DataTable)
@@ -285,17 +303,25 @@ class ChatApp(App):
         """更新状态栏显示"""
         status_label = self.query_one("#status_bar", Label)
 
+        # 获取工作空间统计
+        workspace_info = ""
+        if self.current_workspace:
+            files_count = len(self.workspace_manager.list_files(self.current_workspace.workspace_id))
+            tasks_count = len(self.workspace_manager.list_tasks(self.current_workspace.workspace_id))
+            workspace_info = f"📁 {files_count} 文件 | ✓ {tasks_count} 任务 | "
+
         # 获取预算统计
         if self.session_manager.coordinator.current_round:
             stats = self.session_manager.coordinator.get_round_stats()
             status_text = (
+                f"{workspace_info}"
                 f"轮次: {stats['round_num']} | "
                 f"调用: {stats['budget_usage']['calls']} | "
                 f"Token: {stats['budget_usage']['tokens']} | "
                 f"时间: {stats['budget_usage']['time']}"
             )
         else:
-            status_text = "就绪 | 等待输入..."
+            status_text = f"{workspace_info}就绪 | 等待输入..."
 
         status_label.update(status_text)
 
@@ -340,6 +366,23 @@ class ChatApp(App):
         # 打开插件管理界面
         plugin_screen = PluginScreen(self.plugin_registry, self.plugin_loader)
         self.push_screen(plugin_screen)
+
+    def action_open_workspace(self) -> None:
+        """打开工作空间视图"""
+        if not self.current_workspace:
+            # 如果没有工作空间，创建一个
+            if self.session_manager.current_session:
+                self.current_workspace = self.workspace_manager.create_workspace(
+                    session_id=self.session_manager.current_session.session_id,
+                    title="默认工作空间"
+                )
+
+        if self.current_workspace:
+            workspace_view = WorkspaceView(
+                self.workspace_manager,
+                self.current_workspace
+            )
+            self.push_screen(workspace_view)
 
     async def on_input_submitted(self, event: Input.Submitted) -> None:
         """处理用户输入（异步，支持并发agent调用）

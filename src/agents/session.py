@@ -70,6 +70,10 @@ class SessionManager:
         # 新增：状态变化回调
         self.status_callback = status_callback
 
+        # 新增：检查点管理器
+        checkpoint_db_path = self.session_dir / "checkpoints.db"
+        self.checkpoint_manager = CheckpointManager(str(checkpoint_db_path))
+
         self.current_session: Optional[SessionConfig] = None
         self.current_round = 0
 
@@ -98,6 +102,14 @@ class SessionManager:
             self.message_bus.register_agent(agent.agent_id)
             # 订阅广播消息
             self.message_bus.subscribe(agent.agent_id, "broadcast")
+
+        # 创建 SESSION_START 检查点
+        self.checkpoint_manager.create_checkpoint(
+            session_id=session_id,
+            round_num=0,
+            checkpoint_type=CheckpointType.SESSION_START,
+            session_snapshot=self._capture_session_state()
+        )
 
         logger.info("session_created", session_id=session_id, title=title,
                    active_agents=len(active_agents))
@@ -146,51 +158,103 @@ class SessionManager:
 
         # 开始新一轮
         self.current_round += 1
-        self.coordinator.start_round(
+
+        # 创建 USER_INPUT 检查点
+        user_input_checkpoint = self.checkpoint_manager.create_checkpoint(
             session_id=self.current_session.session_id,
-            round_num=self.current_round
+            round_num=self.current_round,
+            checkpoint_type=CheckpointType.USER_INPUT,
+            session_snapshot=self._capture_session_state()
         )
 
-        # 获取所有可用的agents
-        available_agents = self.config_manager.list_agents(active_only=True)
-        if not available_agents:
-            logger.warning("no_active_agents")
-            return ["错误：没有可用的agent"]
+        # 激活检查点
+        self.checkpoint_manager.activate_checkpoint(user_input_checkpoint.checkpoint_id)
 
-        # 使用协调器选择agents（传递mentions）
-        selected_agents, stop_reason = self.coordinator.select_agents(available_agents, mentions=mentions)
+        try:
+            self.coordinator.start_round(
+                session_id=self.current_session.session_id,
+                round_num=self.current_round
+            )
 
-        if stop_reason:
-            logger.info("round_stopped", reason=stop_reason.value)
-            return [f"对话已停止：{stop_reason.value}"]
+            # 获取所有可用的agents
+            available_agents = self.config_manager.list_agents(active_only=True)
+            if not available_agents:
+                logger.warning("no_active_agents")
+                self.checkpoint_manager.resolve_checkpoint(user_input_checkpoint.checkpoint_id)
+                return ["错误：没有可用的agent"]
 
-        # 并发调用所有selected agents
-        async def call_agent(agent_config: AgentConfig) -> tuple[AgentConfig, Optional[str], Optional[Exception]]:
-            """调用单个agent（捕获异常）"""
-            # 标记Agent为RUNNING状态
-            self.status_manager.mark_running(agent_config.agent_id)
-            if self.status_callback:
-                self.status_callback()
+            # 使用协调器选择agents（传递mentions）
+            selected_agents, stop_reason = self.coordinator.select_agents(available_agents, mentions=mentions)
 
-            try:
-                response = await self.executor.execute(
-                    agent_config,
-                    self.current_session.messages
+            if stop_reason:
+                logger.info("round_stopped", reason=stop_reason.value)
+                self.checkpoint_manager.resolve_checkpoint(user_input_checkpoint.checkpoint_id)
+                return [f"对话已停止：{stop_reason.value}"]
+
+            # 并发调用所有selected agents
+            async def call_agent(agent_config: AgentConfig) -> tuple[AgentConfig, Optional[str], Optional[Exception]]:
+                """调用单个agent（捕获异常）"""
+                # 创建 AGENT_START 检查点
+                agent_start_checkpoint = self.checkpoint_manager.create_checkpoint(
+                    session_id=self.current_session.session_id,
+                    round_num=self.current_round,
+                    checkpoint_type=CheckpointType.AGENT_START,
+                    agent_id=agent_config.agent_id,
+                    session_snapshot=self._capture_session_state()
                 )
 
-                # 标记Agent为COMPLETED状态
-                self.status_manager.mark_completed(agent_config.agent_id, len(response))
+                # 标记Agent为RUNNING状态
+                self.status_manager.mark_running(agent_config.agent_id)
                 if self.status_callback:
                     self.status_callback()
 
-                return (agent_config, response, None)
-            except Exception as e:
-                # 标记Agent为ERROR状态
-                self.status_manager.mark_error(agent_config.agent_id, str(e))
-                if self.status_callback:
-                    self.status_callback()
-                # P3-005: 保留Exception兜底 - 并发调用容错设计，捕获单个agent异常不影响其他
-                return (agent_config, None, e)
+                try:
+                    response = await self.executor.execute(
+                        agent_config,
+                        self.current_session.messages
+                    )
+
+                    # 创建 AGENT_COMPLETE 检查点
+                    self.checkpoint_manager.create_checkpoint(
+                        session_id=self.current_session.session_id,
+                        round_num=self.current_round,
+                        checkpoint_type=CheckpointType.AGENT_COMPLETE,
+                        agent_id=agent_config.agent_id,
+                        response_data={"content": response},
+                        session_snapshot=self._capture_session_state()
+                    )
+
+                    # 解决 AGENT_START 检查点
+                    self.checkpoint_manager.resolve_checkpoint(agent_start_checkpoint.checkpoint_id)
+
+                    # 标记Agent为COMPLETED状态
+                    self.status_manager.mark_completed(agent_config.agent_id, len(response))
+                    if self.status_callback:
+                        self.status_callback()
+
+                    return (agent_config, response, None)
+                except Exception as e:
+                    # 创建 AGENT_ERROR 检查点
+                    self.checkpoint_manager.create_checkpoint(
+                        session_id=self.current_session.session_id,
+                        round_num=self.current_round,
+                        checkpoint_type=CheckpointType.AGENT_ERROR,
+                        agent_id=agent_config.agent_id,
+                        error=str(e)
+                    )
+
+                    # 失败 AGENT_START 检查点
+                    self.checkpoint_manager.fail_checkpoint(
+                        agent_start_checkpoint.checkpoint_id,
+                        error=str(e)
+                    )
+
+                    # 标记Agent为ERROR状态
+                    self.status_manager.mark_error(agent_config.agent_id, str(e))
+                    if self.status_callback:
+                        self.status_callback()
+                    # P3-005: 保留Exception兜底 - 并发调用容错设计，捕获单个agent异常不影响其他
+                    return (agent_config, None, e)
 
         # 使用asyncio.gather并发调用所有agents
         results = await asyncio.gather(*[call_agent(agent) for agent in selected_agents])
@@ -459,3 +523,112 @@ class SessionManager:
             return agent_config.name if agent_config else agent_id
         except:
             return agent_id
+
+    def _capture_session_state(self) -> dict:
+        """捕获当前会话状态快照
+
+        Returns:
+            会话状态字典，包含messages、round_num、token_usage等
+        """
+        if not self.current_session:
+            return {}
+
+        return {
+            "messages": [
+                {
+                    "role": msg.role,
+                    "content": msg.content,
+                    "agent_id": msg.agent_id,
+                    "timestamp": msg.timestamp
+                }
+                for msg in self.current_session.messages
+            ],
+            "active_agent_ids": self.current_session.active_agent_ids,
+            "round_num": self.current_round,
+            "token_usage": {
+                "total_input": self.token_tracker.total_input_tokens,
+                "total_output": self.token_tracker.total_output_tokens,
+                "by_agent": {
+                    agent_id: {
+                        "input": usage.input_tokens,
+                        "output": usage.output_tokens
+                    }
+                    for agent_id, usage in self.token_tracker.agent_usage.items()
+                }
+            },
+            "metadata": {
+                "session_id": self.current_session.session_id,
+                "title": self.current_session.title,
+                "created_at": self.current_session.created_at,
+                "updated_at": self.current_session.updated_at
+            }
+        }
+
+    def rollback_to_checkpoint(self, checkpoint_id: str) -> str:
+        """回滚到指定检查点
+
+        Args:
+            checkpoint_id: 检查点ID
+
+        Returns:
+            回滚结果消息
+
+        Raises:
+            ValueError: 检查点不存在或无活动会话
+        """
+        if not self.current_session:
+            raise ValueError("没有活动会话")
+
+        # 验证检查点存在
+        checkpoint = self.checkpoint_manager.get_checkpoint(checkpoint_id)
+        if not checkpoint:
+            raise ValueError(f"检查点不存在: {checkpoint_id}")
+
+        # 恢复会话状态
+        session_state = self.checkpoint_manager.restore_from_checkpoint(checkpoint_id)
+
+        # 应用状态：恢复消息历史
+        self.current_session.messages.clear()
+        for msg_data in session_state["messages"]:
+            message = Message(
+                role=msg_data["role"],
+                content=msg_data["content"],
+                agent_id=msg_data.get("agent_id"),
+                timestamp=msg_data["timestamp"]
+            )
+            self.current_session.messages.append(message)
+
+        # 恢复轮次编号
+        self.current_round = session_state["round_num"]
+
+        # 恢复Token使用统计
+        if "token_usage" in session_state and "by_agent" in session_state["token_usage"]:
+            self.token_tracker.reset()
+            for agent_id, usage_data in session_state["token_usage"]["by_agent"].items():
+                self.token_tracker.record_usage(
+                    agent_id,
+                    usage_data["input"],
+                    usage_data["output"]
+                )
+
+        # 创建新检查点记录回滚操作
+        rollback_checkpoint = self.checkpoint_manager.create_checkpoint(
+            session_id=self.current_session.session_id,
+            round_num=self.current_round,
+            checkpoint_type=CheckpointType.USER_COMMAND,
+            session_snapshot=session_state,
+            response_data={"rollback_to": checkpoint_id}
+        )
+
+        # 更新会话时间戳
+        self.current_session.updated_at = time()
+
+        logger.info(
+            "session_rollback_complete",
+            session_id=self.current_session.session_id,
+            checkpoint_id=checkpoint_id,
+            round_num=self.current_round,
+            message_count=len(self.current_session.messages)
+        )
+
+        return f"已回滚到检查点 {checkpoint_id[:8]}... (轮次 {checkpoint.round_num})"
