@@ -155,6 +155,7 @@ class MessageBus:
         message_type: str = "notification",
         reply_to: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        mention_contexts: Optional[List[Dict[str, Any]]] = None,
     ) -> AgentMessage:
         """创建消息的辅助方法
 
@@ -165,6 +166,7 @@ class MessageBus:
             message_type: 消息类型
             reply_to: 回复的消息ID
             metadata: 消息元数据
+            mention_contexts: 解析后的引用上下文列表
 
         Returns:
             AgentMessage对象
@@ -177,4 +179,5 @@ class MessageBus:
             content=content,
             metadata=metadata or {},
             reply_to=reply_to,
+            mention_contexts=mention_contexts,
         )

@@ -17,6 +17,7 @@ from src.core.mention_parser import parse_mentions
 from src.core.agent_context import ContextManager
 from src.core.agent_status import AgentStatusManager
 from src.core.token_tracker import TokenTracker, AgentTokenUsage
+from src.core.checkpoint import CheckpointManager, CheckpointType
 
 logger = structlog.get_logger()
 

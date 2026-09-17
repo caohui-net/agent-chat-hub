@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 from typing import Optional, Dict, Any, List
+from enum import Enum, auto
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from dataclasses import dataclass
 
@@ -132,6 +133,10 @@ class Message(BaseModel):
     agent_id: Optional[str] = Field(default=None, description="发送此消息的Agent ID（若为Agent消息）")
     timestamp: float = Field(default_factory=_current_timestamp, description="消息时间戳")
     mentions: List[str] = Field(default_factory=list, description="@提及的agent_id列表，用于@mention路由")
+    mention_contexts: Optional[List[Dict[str, Any]]] = Field(
+        default=None,
+        description="解析后的引用上下文列表（包含 @history、@file、@task 等）"
+    )
 
     @field_validator("role")
     @classmethod
@@ -185,9 +190,62 @@ class AgentMessage(BaseModel):
     # 消息内容
     content: str = Field(..., description="消息内容")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="消息元数据")
+    mention_contexts: Optional[List[Dict[str, Any]]] = Field(
+        default=None,
+        description="解析后的引用上下文列表（包含 @history、@file、@task 等）"
+    )
 
     # 时间戳
     timestamp: float = Field(default_factory=_current_timestamp, description="消息时间戳")
 
     # 关联信息（用于响应消息）
     reply_to: Optional[str] = Field(default=None, description="回复的消息ID")
+
+
+class CoordinationCommand(str, Enum):
+    """协调命令类型
+
+    用于显式控制 agent 响应行为。
+    """
+    SCHEDULE = "schedule"       # 调度指定 agents 响应
+    DELEGATE = "delegate"       # 委托任务给指定 agents
+    ACKNOWLEDGE = "acknowledge" # 确认收到，不响应
+    COMPLETE = "complete"       # 标记任务完成
+
+
+class CoordinationMode(str, Enum):
+    """协调模式
+
+    区分自动模式和显式模式。
+    """
+    AUTO = "auto"           # 自动模式：遵循现有 6 条规则
+    EXPLICIT = "explicit"   # 显式模式：用户明确指定
+
+
+class ExplicitCoordinationRequest(BaseModel):
+    """显式协调请求
+
+    用于用户明确控制哪些 agents 应该响应。
+    """
+    model_config = ConfigDict(frozen=False)
+
+    # 命令信息
+    command: CoordinationCommand = Field(..., description="协调命令类型")
+    agent_ids: List[str] = Field(..., description="目标 agent ID 列表")
+
+    # 上下文信息
+    context: str = Field(..., description="任务上下文或用户消息")
+    round_num: int = Field(..., description="轮次编号")
+    session_id: str = Field(..., description="会话 ID")
+
+    # 可选配置
+    priority_override: Optional[int] = Field(default=None, description="覆盖默认优先级")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="额外元数据")
+
+    @field_validator("agent_ids")
+    @classmethod
+    def validate_agent_ids(cls, v: List[str]) -> List[str]:
+        """验证 agent_ids 非空"""
+        if not v:
+            raise ValueError("agent_ids 不能为空")
+        return v
