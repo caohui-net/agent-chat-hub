@@ -15,7 +15,7 @@ from typing import Optional, List, Set, Tuple
 from time import time
 import structlog
 
-from src.core.models import AgentConfig, Message
+from src.core.models import AgentConfig, Message, ExplicitCoordinationRequest, CoordinationCommand, CoordinationMode
 from src.agents.rule_checker import RuleChecker
 
 logger = structlog.get_logger(__name__)
@@ -46,11 +46,17 @@ class CallRecord:
 
 @dataclass
 class BudgetLimits:
-    """预算限制配置"""
+    """预算限制配置
+
+    超时策略：
+    - 默认 300 秒（5 分钟）用于支持复杂多轮对话
+    - 生产环境可通过 ConfigManager 自定义
+    - 超时时优雅关闭，记录停止原因为 TIMEOUT
+    """
     max_agents: int = 3           # 最大并发agent数
     max_calls_per_round: int = 3  # 每轮最大调用次数
     max_tokens: int = 12000       # 最大token数
-    timeout_seconds: float = 120.0  # 超时时间（秒）
+    timeout_seconds: float = 300.0  # 超时时间（秒），默认5分钟
 
 
 @dataclass
@@ -86,6 +92,8 @@ class ResponseCoordinator:
         self.budget_limits = budget_limits or BudgetLimits()
         self.current_round: Optional[RoundState] = None
         self.rule_checker = RuleChecker()  # AI角色系统规则检查器
+        self.coordination_mode: CoordinationMode = CoordinationMode.AUTO  # 默认自动模式
+        self.explicit_request: Optional[ExplicitCoordinationRequest] = None  # 显式请求
 
     def start_round(self, session_id: str, round_num: int) -> None:
         """开始新的一轮对话
@@ -104,6 +112,69 @@ class ResponseCoordinator:
         if self.current_round:
             self.current_round.cancelled = True
             self.current_round.stop_reason = StopReason.USER_CANCEL
+
+    def process_explicit_command(
+        self,
+        request: ExplicitCoordinationRequest,
+        available_agents: List[AgentConfig]
+    ) -> List[AgentConfig]:
+        """处理显式协调命令
+
+        显式模式优先级高于自动模式，直接返回用户指定的 agents。
+
+        Args:
+            request: 显式协调请求
+            available_agents: 可用的 agent 配置列表
+
+        Returns:
+            根据命令选择的 agents 列表
+        """
+        self.coordination_mode = CoordinationMode.EXPLICIT
+        self.explicit_request = request
+
+        # 根据命令类型处理
+        if request.command == CoordinationCommand.ACKNOWLEDGE:
+            # ACKNOWLEDGE: 不响应，返回空列表
+            logger.info("explicit_command_acknowledge", agent_ids=request.agent_ids)
+            return []
+
+        if request.command == CoordinationCommand.COMPLETE:
+            # COMPLETE: 标记完成，不响应
+            logger.info("explicit_command_complete", agent_ids=request.agent_ids)
+            if self.current_round:
+                self.current_round.stop_reason = StopReason.ROUND_COMPLETE
+            return []
+
+        # SCHEDULE 和 DELEGATE: 选择指定的 agents
+        # 从 available_agents 中筛选出用户指定的 agent_ids
+        agent_map = {a.agent_id: a for a in available_agents}
+        selected = []
+
+        for agent_id in request.agent_ids:
+            if agent_id in agent_map:
+                agent = agent_map[agent_id]
+                # 检查 agent 是否 active
+                if agent.active:
+                    selected.append(agent)
+                else:
+                    logger.warning("explicit_agent_inactive", agent_id=agent_id)
+            else:
+                logger.warning("explicit_agent_not_found", agent_id=agent_id)
+
+        # 如果有优先级覆盖，应用到选中的 agents
+        if request.priority_override is not None:
+            for agent in selected:
+                # 临时覆盖优先级（不修改原配置）
+                pass  # 优先级覆盖将在排序时处理
+
+        logger.info(
+            "explicit_command_processed",
+            command=request.command.value,
+            requested_agents=request.agent_ids,
+            selected_agents=[a.agent_id for a in selected]
+        )
+
+        return selected
 
     def sort_agents(self, agents: List[AgentConfig]) -> List[AgentConfig]:
         """Rule 2: Ordering - 对agents排序
@@ -168,6 +239,10 @@ class ResponseCoordinator:
         2. 调用次数：total_calls >= max_calls_per_round
         3. Token数：total_tokens >= max_tokens
 
+        超时警告：
+        - 当运行时间达到 80% 超时限制时，记录警告日志
+        - 帮助用户在超时前了解剩余时间
+
         Returns:
             StopReason if 超出预算，None if 未超出
         """
@@ -176,8 +251,30 @@ class ResponseCoordinator:
 
         # 检查超时
         elapsed = time() - self.current_round.start_time
-        if elapsed >= self.budget_limits.timeout_seconds:
+        timeout_limit = self.budget_limits.timeout_seconds
+
+        if elapsed >= timeout_limit:
+            logger.warning(
+                "timeout_exceeded",
+                elapsed_seconds=elapsed,
+                timeout_seconds=timeout_limit,
+                session_id=self.current_round.session_id,
+                round_num=self.current_round.round_num
+            )
             return StopReason.TIMEOUT
+
+        # 超时警告：80% 阈值
+        warning_threshold = timeout_limit * 0.8
+        if elapsed >= warning_threshold:
+            remaining = timeout_limit - elapsed
+            logger.warning(
+                "timeout_approaching",
+                elapsed_seconds=elapsed,
+                remaining_seconds=remaining,
+                timeout_seconds=timeout_limit,
+                session_id=self.current_round.session_id,
+                round_num=self.current_round.round_num
+            )
 
         # 检查调用次数
         if self.current_round.total_calls >= self.budget_limits.max_calls_per_round:
@@ -193,24 +290,32 @@ class ResponseCoordinator:
         self,
         available_agents: List[AgentConfig],
         max_agents: Optional[int] = None,
-        mentions: Optional[List[str]] = None
+        mentions: Optional[List[str]] = None,
+        explicit_request: Optional[ExplicitCoordinationRequest] = None
     ) -> List[AgentConfig]:
         """Rule 1: Qualification - 资格判定
 
         确定性路由规则：
-        1. 仅选择active=True的agents
-        2. 如果有@mentions，仅选择被@的agents
-        3. 如果无@mentions，仅选择总管角色（coordinator）
-        4. 最多选择max_agents个（默认使用budget限制）
+        1. 如果是显式模式（explicit_request 不为 None），优先处理显式命令
+        2. 仅选择active=True的agents
+        3. 如果有@mentions，仅选择被@的agents
+        4. 如果无@mentions，仅选择总管角色（coordinator）
+        5. 最多选择max_agents个（默认使用budget限制）
 
         Args:
             available_agents: 可用的agent配置列表
             max_agents: 最大agent数，默认使用预算限制
             mentions: @提及的agent_id列表
+            explicit_request: 显式协调请求（如果提供，则进入显式模式）
 
         Returns:
             合格的agent列表
         """
+        # 显式模式：优先处理显式命令
+        if explicit_request is not None:
+            return self.process_explicit_command(explicit_request, available_agents)
+
+        # 自动模式：原有逻辑
         max_count = max_agents if max_agents is not None else self.budget_limits.max_agents
 
         # 过滤active agents

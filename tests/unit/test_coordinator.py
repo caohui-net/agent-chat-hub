@@ -35,7 +35,8 @@ def sample_agents():
             role="assistant",
             model_id="model1",
             priority=200,
-            active=True
+            active=True,
+            role_type="coordinator"  # 设置为coordinator以符合qualify_agents逻辑
         ),
         AgentConfig(
             agent_id="agent_a",
@@ -43,7 +44,8 @@ def sample_agents():
             role="assistant",
             model_id="model1",
             priority=100,
-            active=True
+            active=True,
+            role_type="coordinator"
         ),
         AgentConfig(
             agent_id="agent_b",
@@ -51,7 +53,8 @@ def sample_agents():
             role="assistant",
             model_id="model1",
             priority=100,
-            active=True
+            active=True,
+            role_type="coordinator"
         ),
         AgentConfig(
             agent_id="agent_d",
@@ -59,7 +62,8 @@ def sample_agents():
             role="assistant",
             model_id="model1",
             priority=50,
-            active=False  # 不活跃
+            active=False,  # 不活跃
+            role_type="coordinator"
         ),
     ]
 

@@ -497,6 +497,96 @@ print('✅ AgentExecutor初始化成功')
 
 ---
 
+## 超时配置 - Timeout Strategy
+
+Agent Chat Hub 使用看门狗机制管理会话运行时间，防止无限运行。
+
+### 超时参数
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| **默认超时** | 300 秒 (5 分钟) | 支持复杂多轮对话 |
+| **警告阈值** | 240 秒 (80%) | 记录警告日志 |
+| **最大超时** | 可自定义 | 生产环境可配置 |
+
+### 超时行为
+
+当会话达到超时限制时：
+
+1. **240 秒（80%）**: 系统记录警告日志
+   ```
+   [WARNING] timeout_approaching: 
+     elapsed_seconds=240
+     remaining_seconds=60
+     session_id=sess-xxx
+   ```
+
+2. **300 秒（100%）**: 系统立即停止会话
+   ```
+   [WARNING] timeout_exceeded:
+     elapsed_seconds=300
+     timeout_seconds=300
+     session_id=sess-xxx
+   ```
+
+### 自定义超时时间
+
+#### 方法1：通过代码设置
+
+```python
+from src.agents.coordinator import ResponseCoordinator, BudgetLimits
+
+# 自定义超时（秒）
+custom_limits = BudgetLimits(
+    max_agents=3,
+    max_calls_per_round=3,
+    max_tokens=12000,
+    timeout_seconds=600.0  # 10分钟
+)
+
+coordinator = ResponseCoordinator(budget_limits=custom_limits)
+```
+
+#### 方法2：环境变量
+
+```bash
+# 设置超时为 600 秒（10分钟）
+export AGENT_TIMEOUT_SECONDS=600
+
+python main.py
+```
+
+### 超时预设
+
+| 场景 | 推荐超时 | 说明 |
+|------|---------|------|
+| 快速问答 | 60 秒 | 单轮简单对话 |
+| 标准对话 | 300 秒 (默认) | 多轮复杂对话 |
+| 深度分析 | 600 秒 | 需要多个Agent协作 |
+| 研究任务 | 900 秒 | 长时间研究和综合 |
+
+### 监控超时
+
+#### 查看会话统计
+
+```python
+stats = coordinator.get_round_stats()
+print(f"运行时间: {stats['elapsed_seconds']:.1f}s")
+print(f"剩余时间: {stats['budget_usage']['time']}")
+```
+
+#### 日志中的超时信息
+
+```bash
+# 查看超时相关日志
+grep -E "timeout_" ~/.agent-chat-hub/logs/*.log
+
+# 监控实时超时事件
+tail -f ~/.agent-chat-hub/logs/app.log | grep timeout
+```
+
+---
+
 ## 故障排除
 
 ### 配置文件损坏
